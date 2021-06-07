@@ -1,0 +1,19 @@
+--- client/routes/get_route_origin_destination_parameters.go	2021-06-07 22:43:02.000000000 +0200
++++ client/routes/get_route_origin_destination_parameters.go	2021-06-07 22:50:45.000000000 +0200
+@@ -277,7 +260,15 @@
+ 		return err
+ 	}
+ 
+-	valuesConnections := o.Connections
++	var valuesConnections []string
++	for _, innerConnection := range o.Connections {
++		var valuesConnection []string
++		for _, v := range innerConnection {
++			valuesConnection = append(valuesConnection, swag.FormatInt32(v))
++		}
++		joinedConnection := swag.JoinByFormat(valuesConnections, "pipes")
++		valuesConnections = append(valuesConnections, joinedConnection...)
++	}
+ 
+ 	joinedConnections := swag.JoinByFormat(valuesConnections, "")
+ 	// query array param connections
