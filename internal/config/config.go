@@ -14,30 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package site
+package config
 
-import (
-	"github.com/cjslep/dharma/internal/async"
-	"github.com/cjslep/dharma/internal/db"
-	"github.com/go-fed/apcore/app"
-)
-
-type Site struct {
-	db *db.DB
-	m  *async.Messenger
-	f  app.Framework
-}
-
-func New(db *db.DB, m *async.Messenger, f app.Framework) *Site {
-	return &Site{
-		db: db,
-		m:  m,
-		f:  f,
-	}
-}
-
-func (s *Site) Route(r app.Router) {
-	// TODO
-	r.Methods("GET").WebOnlyHandlerFunc("/", s.getHome)
-	r.Methods("GET").WebOnlyHandlerFunc("/about", s.getAbout)
+type Config struct {
 }

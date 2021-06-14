@@ -3,17 +3,11 @@ module github.com/cjslep/dharma
 go 1.15
 
 require (
-	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a
-	github.com/go-fed/apcore v0.0.0-20210530175116-d4154a500416
-	github.com/go-openapi/analysis v0.20.1 // indirect
+	github.com/go-fed/apcore v0.0.0-20210614084011-9178ad6b4ea9
 	github.com/go-openapi/errors v0.20.0
-	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/runtime v0.19.29
 	github.com/go-openapi/strfmt v0.20.1
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-openapi/validate v0.20.2
-	github.com/mailru/easyjson v0.7.7 // indirect
-	go.mongodb.org/mongo-driver v1.5.3 // indirect
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
 )

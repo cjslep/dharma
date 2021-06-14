@@ -14,30 +14,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package site
+package esiauth
 
 import (
+	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/go-fed/apcore/app"
 )
 
-type Site struct {
-	db *db.DB
-	m  *async.Messenger
-	f  app.Framework
+type ESIAuth struct {
+	db  *db.DB
+	m   *async.Messenger
+	f   app.Framework
+	oac *esi.OAuth2Client
 }
 
-func New(db *db.DB, m *async.Messenger, f app.Framework) *Site {
-	return &Site{
-		db: db,
-		m:  m,
-		f:  f,
+func New(db *db.DB, m *async.Messenger, f app.Framework, oac *esi.OAuth2Client) *ESIAuth {
+	return &ESIAuth{
+		db:  db,
+		m:   m,
+		f:   f,
+		oac: oac,
 	}
 }
 
-func (s *Site) Route(r app.Router) {
-	// TODO
-	r.Methods("GET").WebOnlyHandlerFunc("/", s.getHome)
-	r.Methods("GET").WebOnlyHandlerFunc("/about", s.getAbout)
+func (e *ESIAuth) Route(r app.Router) {
+	r.Methods("GET").WebOnlyHandlerFunc("/esi/auth", e.getAuth)
+	r.Methods("POST").WebOnlyHandlerFunc("/esi/auth", e.postAuth)
+	r.Methods("GET").WebOnlyHandlerFunc("/esi/callback", e.getCallback)
 }

@@ -14,30 +14,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package site
+package sessions
 
 import (
-	"github.com/cjslep/dharma/internal/async"
-	"github.com/cjslep/dharma/internal/db"
 	"github.com/go-fed/apcore/app"
 )
 
-type Site struct {
-	db *db.DB
-	m  *async.Messenger
-	f  app.Framework
+const (
+	esiOAuth2State = "dharma-esi-oauth2-state"
+)
+
+func SetESIOAuth2State(k app.Session, state string) {
+	k.Set(esiOAuth2State, state)
 }
 
-func New(db *db.DB, m *async.Messenger, f app.Framework) *Site {
-	return &Site{
-		db: db,
-		m:  m,
-		f:  f,
+func GetESIOAuth2State(k app.Session) string {
+	v, _ := k.Get(esiOAuth2State)
+	if s, ok := v.(string); !ok {
+		return ""
+	} else {
+		return s
 	}
-}
-
-func (s *Site) Route(r app.Router) {
-	// TODO
-	r.Methods("GET").WebOnlyHandlerFunc("/", s.getHome)
-	r.Methods("GET").WebOnlyHandlerFunc("/about", s.getAbout)
 }

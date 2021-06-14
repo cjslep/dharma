@@ -14,30 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package site
+package esiauth
 
 import (
-	"github.com/cjslep/dharma/internal/async"
-	"github.com/cjslep/dharma/internal/db"
-	"github.com/go-fed/apcore/app"
+	"net/http"
 )
 
-type Site struct {
-	db *db.DB
-	m  *async.Messenger
-	f  app.Framework
-}
-
-func New(db *db.DB, m *async.Messenger, f app.Framework) *Site {
-	return &Site{
-		db: db,
-		m:  m,
-		f:  f,
-	}
-}
-
-func (s *Site) Route(r app.Router) {
+func (e *ESIAuth) getAuth(w http.ResponseWriter, r *http.Request) {
 	// TODO
-	r.Methods("GET").WebOnlyHandlerFunc("/", s.getHome)
-	r.Methods("GET").WebOnlyHandlerFunc("/about", s.getAbout)
 }

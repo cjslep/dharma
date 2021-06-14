@@ -25,12 +25,14 @@ import (
 type Forum struct {
 	db *db.DB
 	m  *async.Messenger
+	f  app.Framework
 }
 
-func New(db *db.DB, m *async.Messenger) *Forum {
+func New(db *db.DB, m *async.Messenger, f app.Framework) *Forum {
 	return &Forum{
 		db: db,
 		m:  m,
+		f:  f,
 	}
 }
 

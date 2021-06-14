@@ -17,8 +17,10 @@
 package server
 
 import (
+	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/activitypub"
 	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/esiauth"
 	"github.com/cjslep/dharma/internal/api/forum"
 	"github.com/cjslep/dharma/internal/api/site"
 	"github.com/cjslep/dharma/internal/async"
@@ -31,8 +33,10 @@ type Server struct {
 
 	apiQueue *async.Queue
 	fedQueue *async.Queue
-	db       *db.DB
-	f        app.Framework
+	oac      *esi.OAuth2Client
+
+	db *db.DB
+	f  app.Framework
 }
 
 func New() *Server {
@@ -40,6 +44,10 @@ func New() *Server {
 	w := &Server{
 		apiQueue: async.NewQueue(),
 		fedQueue: async.NewQueue(),
+		oac: &esi.OAuth2Client{
+			RedirectURI: "", // TODO
+			ClientID:    "", // TODO
+		},
 	}
 	w.FederatedApp = activitypub.New(w.fedQueue.Messenger(), w.start, w.stop, w.buildRoutes)
 	return w
@@ -47,9 +55,11 @@ func New() *Server {
 
 func (w *Server) buildRoutes(ar app.Router, d app.Database, f app.Framework) error {
 	w.db = db.New(d)
+	w.f = f
 	r := []api.Router{
-		forum.New(w.db, w.apiQueue.Messenger()),
-		site.New(w.db, w.apiQueue.Messenger()),
+		forum.New(w.db, w.apiQueue.Messenger(), f),
+		site.New(w.db, w.apiQueue.Messenger(), f),
+		esiauth.New(w.db, w.apiQueue.Messenger(), f, w.oac),
 	}
 	api.BuildRoutes(ar, r)
 	return nil
