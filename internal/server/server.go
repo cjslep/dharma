@@ -17,6 +17,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/activitypub"
 	"github.com/cjslep/dharma/internal/api"
@@ -41,12 +43,15 @@ type Server struct {
 
 func New() *Server {
 	// TODO
+	c := &http.Client{} // TODO
 	w := &Server{
 		apiQueue: async.NewQueue(),
 		fedQueue: async.NewQueue(),
 		oac: &esi.OAuth2Client{
 			RedirectURI: "", // TODO
 			ClientID:    "", // TODO
+			Secret:      "", // TODO
+			Client:      c,
 		},
 	}
 	w.FederatedApp = activitypub.New(w.fedQueue.Messenger(), w.start, w.stop, w.buildRoutes)

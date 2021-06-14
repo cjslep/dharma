@@ -36,3 +36,7 @@ func GetESIOAuth2State(k app.Session) string {
 		return s
 	}
 }
+
+func ClearESIOAuth2State(k app.Session) {
+	k.Delete(esiOAuth2State)
+}

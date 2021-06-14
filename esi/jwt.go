@@ -14,39 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package db
+package esi
 
-import (
-	"github.com/cjslep/dharma/esi"
-	"github.com/go-fed/apcore/app"
-)
-
-type DB struct {
-	db app.Database
-}
-
-func New(db app.Database) *DB {
-	return &DB{
-		db: db,
-	}
-}
-
-func (d *DB) SetEvePublicKeys(o *esi.OAuthKeysMetadata) error {
-	// TODO
-	return nil
-}
-
-func (d *DB) GetEvePublicKeys() (*esi.OAuthKeysMetadata, error) {
-	// TODO
-	return nil, nil
-}
-
-func (d *DB) SetEveTokens(t *esi.Tokens) error {
-	// TODO
-	return nil
-}
-
-func (d *DB) GetEveTokens() (*esi.Tokens, error) {
-	// TODO
-	return nil, nil
+type JWTResponse struct {
+	AccessToken  string `json:"access_token"`
+	ExpiresIn    int    `json:"expires_in"`
+	TokenType    string `json:"token_type"`
+	RefreshToken string `json:"refresh_token"`
 }

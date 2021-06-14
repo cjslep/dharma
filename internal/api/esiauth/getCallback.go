@@ -18,8 +18,73 @@ package esiauth
 
 import (
 	"net/http"
+
+	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/internal/sessions"
 )
 
 func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request) {
-	// TODO
+	k, err := e.f.Session(r)
+	if err != nil {
+		// TODO
+		return
+	}
+
+	// Enforce state integrity
+	state := r.URL.Query().Get("state")
+	myState := sessions.GetESIOAuth2State(k)
+	sessions.ClearESIOAuth2State(k)
+	if myState == "" || state != myState {
+		if err := k.Save(r, w); err != nil {
+			// TODO
+			return
+		}
+		// TODO
+		return
+	}
+
+	// Exchange the short-lived code for long-term authorization.
+	code := r.URL.Query().Get("code")
+	jwt, err := e.oac.GetAuthorization(code)
+	if err != nil {
+		// TODO
+		return
+	}
+
+	// Verify the authenticity of the authorization.
+	ek, err := e.db.GetEvePublicKeys()
+	if err != nil {
+		// TODO
+		return
+	}
+	jwtk := ek.JWTKey()
+	if jwtk == nil {
+		// TODO
+		return
+	}
+	claims, err := jwtk.ValidateToken([]byte(jwt.AccessToken))
+	if err != nil {
+		// TODO
+		return
+	}
+
+	// Construct our internal representation of a validated token, and
+	// store it.
+	tokens, err := esi.NewTokens(jwt, claims)
+	if err != nil {
+		// TODO
+		return
+	}
+	err = e.db.SetEveTokens(tokens)
+	if err != nil {
+		// TODO
+		return
+	}
+	// TODO: Launch periodic jobs to refresh expiring access tokens.
+
+	// Finally, write the response to the awaiting connection.
+	if err := k.Save(r, w); err != nil {
+		// TODO
+	}
+	http.Redirect(w, r /*TODO*/, "", http.StatusFound)
 }
