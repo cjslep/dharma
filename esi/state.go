@@ -14,33 +14,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package esiauth
+package esi
 
 import (
-	"net/http"
-
-	"github.com/cjslep/dharma/esi"
-	"github.com/cjslep/dharma/internal/sessions"
-	"github.com/pkg/errors"
+	"crypto/rand"
+	"encoding/base64"
 )
 
-func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request) {
-	k, err := e.C.F.Session(r)
+func randb(n int) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	return b, err
+}
+
+func Random(n int) (string, error) {
+	b, err := randb(n)
 	if err != nil {
-		e.C.ErrorHandler(w, r, errors.New("could not retrieve session"))
-		return
+		return "", err
 	}
-	state, err := esi.Random(64)
-	if err != nil {
-		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not generate state for oauth2"))
-		return
-	}
-	var scopes []string // TODO
-	sessions.SetESIOAuth2State(k, state)
-	u := e.C.OAC.GetURL(state, scopes)
-	if err := k.Save(r, w); err != nil {
-		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not save session"))
-		return
-	}
-	http.Redirect(w, r, u.String(), http.StatusFound)
+	return base64.URLEncoding.EncodeToString(b), nil
 }
