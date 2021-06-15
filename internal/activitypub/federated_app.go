@@ -21,27 +21,31 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/async"
+	"github.com/cjslep/dharma/internal/config"
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
+	"github.com/pkg/errors"
 )
 
 var _ app.Application = new(FederatedApp)
 var _ app.S2SApplication = new(FederatedApp)
 
 type FederatedApp struct {
-	m           *async.Messenger
-	start       func() error
-	stop        func() error
-	buildRoutes func(r app.Router, db app.Database, f app.Framework) error
+	m                  *async.Messenger
+	start              func() error
+	stop               func() error
+	buildRoutes        func(r app.Router, db app.Database, f app.Framework) error
+	onSetConfiguration func(c *config.Config, apc app.APCoreConfig)
 }
 
-func New(m *async.Messenger, start, stop func() error, buildRoutes func(r app.Router, db app.Database, f app.Framework) error) *FederatedApp {
+func New(m *async.Messenger, start, stop func() error, buildRoutes func(r app.Router, db app.Database, f app.Framework) error, onSetConfig func(c *config.Config, apc app.APCoreConfig)) *FederatedApp {
 	return &FederatedApp{
-		m:           m,
-		start:       start,
-		stop:        stop,
-		buildRoutes: buildRoutes,
+		m:                  m,
+		start:              start,
+		stop:               stop,
+		buildRoutes:        buildRoutes,
+		onSetConfiguration: onSetConfig,
 	}
 }
 
@@ -54,12 +58,22 @@ func (a *FederatedApp) Stop() error {
 }
 
 func (a *FederatedApp) NewConfiguration() interface{} {
-	// TODO
-	return nil
+	return &config.Config{
+		EnableConsoleLogging: false,
+		LogDir:               "./",
+		LogFile:              "dharma.log",
+		NLogFiles:            5,
+		MaxMBSizeLogFiles:    100,
+		MaxDayAgeLogFiles:    0,
+	}
 }
 
-func (a *FederatedApp) SetConfiguration(i interface{}) error {
-	// TODO
+func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig) error {
+	c, ok := i.(*config.Config)
+	if !ok {
+		return errors.New("configuration is not of type *config.Config")
+	}
+	a.onSetConfiguration(c, apc)
 	return nil
 }
 

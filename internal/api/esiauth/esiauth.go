@@ -21,6 +21,10 @@ import (
 	"github.com/go-fed/apcore/app"
 )
 
+const (
+	Callback = "/esi/callback"
+)
+
 type ESIAuth struct {
 	C *api.Context
 }
@@ -28,5 +32,5 @@ type ESIAuth struct {
 func (e *ESIAuth) Route(r app.Router) {
 	r.Methods("GET").WebOnlyHandlerFunc("/esi/auth", e.getAuth)
 	r.Methods("POST").WebOnlyHandlerFunc("/esi/auth", e.postAuth)
-	r.Methods("GET").WebOnlyHandlerFunc("/esi/callback", e.getCallback)
+	r.Methods("GET").WebOnlyHandlerFunc(Callback, e.getCallback)
 }

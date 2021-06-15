@@ -26,6 +26,7 @@ import (
 	"github.com/cjslep/dharma/internal/api/forum"
 	"github.com/cjslep/dharma/internal/api/site"
 	"github.com/cjslep/dharma/internal/async"
+	"github.com/cjslep/dharma/internal/config"
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/log"
@@ -36,32 +37,27 @@ import (
 type Server struct {
 	*activitypub.FederatedApp
 
+	// At constructor time
 	apiQueue *async.Queue
 	fedQueue *async.Queue
-	oac      *esi.OAuth2Client
-	l        *zerolog.Logger
 	features *features.Engine
 
+	// At config-setting time
+	l   *zerolog.Logger
+	oac *esi.OAuth2Client
+
+	// At build routes time
 	db *db.DB
 	f  app.Framework
 }
 
 func New(f *features.Engine) *Server {
-	// TODO
-	c := &http.Client{} // TODO
 	w := &Server{
 		apiQueue: async.NewQueue(),
 		fedQueue: async.NewQueue(),
-		oac: &esi.OAuth2Client{
-			RedirectURI: "", // TODO
-			ClientID:    "", // TODO
-			Secret:      "", // TODO
-			Client:      c,
-		},
 		features: f,
-		l:        log.Logger(true, "./", "dharma.log", 5, 100, 0), // TODO
 	}
-	w.FederatedApp = activitypub.New(w.fedQueue.Messenger(), w.start, w.stop, w.buildRoutes)
+	w.FederatedApp = activitypub.New(w.fedQueue.Messenger(), w.start, w.stop, w.buildRoutes, w.onSetConfiguration)
 	return w
 }
 
@@ -103,6 +99,17 @@ func (w *Server) stop() error {
 	w.apiQueue.Stop()
 	// TODO
 	return nil
+}
+
+func (w *Server) onSetConfiguration(c *config.Config, apc app.APCoreConfig) {
+	h := &http.Client{} // TODO
+	w.oac = &esi.OAuth2Client{
+		RedirectURI: "https://" + apc.Host() + esiauth.Callback,
+		ClientID:    c.ClientID,
+		Secret:      c.APIKey,
+		Client:      h,
+	}
+	w.l = log.Logger(c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
 }
 
 func (w *Server) errorHandler(wr http.ResponseWriter, r *http.Request, err error) {
