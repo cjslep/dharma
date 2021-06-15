@@ -22,6 +22,7 @@ import (
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/cjslep/dharma/internal/features"
 	"github.com/go-fed/apcore/app"
 	"github.com/rs/zerolog"
 )
@@ -33,5 +34,6 @@ type Context struct {
 	L            *zerolog.Logger
 	DB           *db.DB
 	F            app.Framework
+	Features     *features.Engine
 	ErrorHandler func(http.ResponseWriter, *http.Request, error)
 }

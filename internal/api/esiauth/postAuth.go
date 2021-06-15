@@ -30,12 +30,23 @@ func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request) {
 		e.C.ErrorHandler(w, r, errors.New("could not retrieve session"))
 		return
 	}
+
+	f, ok := r.URL.Query()["features"]
+	if !ok {
+		e.C.ErrorHandler(w, r, errors.New("could not get any features selected"))
+		return
+	}
+	scopes, err := e.C.Features.Convert(f)
+	if err != nil {
+		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not convert features to scopes"))
+		return
+	}
+
 	state, err := esi.Random(64)
 	if err != nil {
 		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not generate state for oauth2"))
 		return
 	}
-	var scopes []string // TODO
 	sessions.SetESIOAuth2State(k, state)
 	u := e.C.OAC.GetURL(state, scopes)
 	if err := k.Save(r, w); err != nil {

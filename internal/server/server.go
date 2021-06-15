@@ -27,6 +27,7 @@ import (
 	"github.com/cjslep/dharma/internal/api/site"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/log"
 	"github.com/go-fed/apcore/app"
 	"github.com/rs/zerolog"
@@ -39,12 +40,13 @@ type Server struct {
 	fedQueue *async.Queue
 	oac      *esi.OAuth2Client
 	l        *zerolog.Logger
+	features *features.Engine
 
 	db *db.DB
 	f  app.Framework
 }
 
-func New() *Server {
+func New(f *features.Engine) *Server {
 	// TODO
 	c := &http.Client{} // TODO
 	w := &Server{
@@ -56,7 +58,8 @@ func New() *Server {
 			Secret:      "", // TODO
 			Client:      c,
 		},
-		l: log.Logger(true, "./", "dharma.log", 5, 100, 0), // TODO
+		features: f,
+		l:        log.Logger(true, "./", "dharma.log", 5, 100, 0), // TODO
 	}
 	w.FederatedApp = activitypub.New(w.fedQueue.Messenger(), w.start, w.stop, w.buildRoutes)
 	return w
@@ -70,6 +73,7 @@ func (w *Server) apiContext() *api.Context {
 		L:            w.l,
 		DB:           w.db,
 		F:            w.f,
+		Features:     w.features,
 		ErrorHandler: w.errorHandler,
 	}
 }
