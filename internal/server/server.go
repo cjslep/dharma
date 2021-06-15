@@ -27,7 +27,9 @@ import (
 	"github.com/cjslep/dharma/internal/api/site"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/cjslep/dharma/internal/log"
 	"github.com/go-fed/apcore/app"
+	"github.com/rs/zerolog"
 )
 
 type Server struct {
@@ -36,6 +38,7 @@ type Server struct {
 	apiQueue *async.Queue
 	fedQueue *async.Queue
 	oac      *esi.OAuth2Client
+	l        *zerolog.Logger
 
 	db *db.DB
 	f  app.Framework
@@ -53,18 +56,31 @@ func New() *Server {
 			Secret:      "", // TODO
 			Client:      c,
 		},
+		l: log.Logger(true, "./", "dharma.log", 5, 100, 0), // TODO
 	}
 	w.FederatedApp = activitypub.New(w.fedQueue.Messenger(), w.start, w.stop, w.buildRoutes)
 	return w
 }
 
+func (w *Server) apiContext() *api.Context {
+	return &api.Context{
+		APIQueue: w.apiQueue,
+		FedQueue: w.fedQueue,
+		OAC:      w.oac,
+		L:        w.l,
+		DB:       w.db,
+		F:        w.f,
+	}
+}
+
 func (w *Server) buildRoutes(ar app.Router, d app.Database, f app.Framework) error {
 	w.db = db.New(d)
 	w.f = f
+	ctx := w.apiContext()
 	r := []api.Router{
-		forum.New(w.db, w.apiQueue.Messenger(), f),
-		site.New(w.db, w.apiQueue.Messenger(), f),
-		esiauth.New(w.db, w.apiQueue.Messenger(), f, w.oac),
+		&forum.Forum{ctx},
+		&site.Site{ctx},
+		&esiauth.ESIAuth{ctx},
 	}
 	api.BuildRoutes(ar, r)
 	return nil

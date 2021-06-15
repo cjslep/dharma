@@ -14,19 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package esiauth
+package api
 
 import (
-	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/internal/async"
+	"github.com/cjslep/dharma/internal/db"
 	"github.com/go-fed/apcore/app"
+	"github.com/rs/zerolog"
 )
 
-type ESIAuth struct {
-	C *api.Context
-}
-
-func (e *ESIAuth) Route(r app.Router) {
-	r.Methods("GET").WebOnlyHandlerFunc("/esi/auth", e.getAuth)
-	r.Methods("POST").WebOnlyHandlerFunc("/esi/auth", e.postAuth)
-	r.Methods("GET").WebOnlyHandlerFunc("/esi/callback", e.getCallback)
+type Context struct {
+	APIQueue *async.Queue
+	FedQueue *async.Queue
+	OAC      *esi.OAuth2Client
+	L        *zerolog.Logger
+	DB       *db.DB
+	F        app.Framework
 }

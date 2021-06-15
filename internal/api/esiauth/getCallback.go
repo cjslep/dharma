@@ -24,7 +24,7 @@ import (
 )
 
 func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request) {
-	k, err := e.f.Session(r)
+	k, err := e.C.F.Session(r)
 	if err != nil {
 		// TODO
 		return
@@ -45,14 +45,14 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request) {
 
 	// Exchange the short-lived code for long-term authorization.
 	code := r.URL.Query().Get("code")
-	jwt, err := e.oac.GetAuthorization(code)
+	jwt, err := e.C.OAC.GetAuthorization(code)
 	if err != nil {
 		// TODO
 		return
 	}
 
 	// Verify the authenticity of the authorization.
-	ek, err := e.db.GetEvePublicKeys()
+	ek, err := e.C.DB.GetEvePublicKeys()
 	if err != nil {
 		// TODO
 		return
@@ -75,7 +75,7 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request) {
 		// TODO
 		return
 	}
-	err = e.db.SetEveTokens(tokens)
+	err = e.C.DB.SetEveTokens(tokens)
 	if err != nil {
 		// TODO
 		return

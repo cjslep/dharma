@@ -23,7 +23,7 @@ import (
 )
 
 func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request) {
-	k, err := e.f.Session(r)
+	k, err := e.C.F.Session(r)
 	if err != nil {
 		// TODO
 		return
@@ -31,7 +31,7 @@ func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request) {
 	var state string    // TODO
 	var scopes []string // TODO
 	sessions.SetESIOAuth2State(k, state)
-	u := e.oac.GetURL(state, scopes)
+	u := e.C.OAC.GetURL(state, scopes)
 	if err := k.Save(r, w); err != nil {
 		// TODO
 		return

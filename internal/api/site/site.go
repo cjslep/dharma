@@ -17,23 +17,12 @@
 package site
 
 import (
-	"github.com/cjslep/dharma/internal/async"
-	"github.com/cjslep/dharma/internal/db"
+	"github.com/cjslep/dharma/internal/api"
 	"github.com/go-fed/apcore/app"
 )
 
 type Site struct {
-	db *db.DB
-	m  *async.Messenger
-	f  app.Framework
-}
-
-func New(db *db.DB, m *async.Messenger, f app.Framework) *Site {
-	return &Site{
-		db: db,
-		m:  m,
-		f:  f,
-	}
+	C *api.Context
 }
 
 func (s *Site) Route(r app.Router) {

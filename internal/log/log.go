@@ -14,19 +14,38 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package esiauth
+package log
 
 import (
-	"github.com/cjslep/dharma/internal/api"
-	"github.com/go-fed/apcore/app"
+	"io"
+	"os"
+	"path"
+
+	"github.com/rs/zerolog"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-type ESIAuth struct {
-	C *api.Context
-}
-
-func (e *ESIAuth) Route(r app.Router) {
-	r.Methods("GET").WebOnlyHandlerFunc("/esi/auth", e.getAuth)
-	r.Methods("POST").WebOnlyHandlerFunc("/esi/auth", e.postAuth)
-	r.Methods("GET").WebOnlyHandlerFunc("/esi/callback", e.getCallback)
+func Logger(debug bool, dir, filename string, backups, size, age int) *zerolog.Logger {
+	if size < 0 {
+		size = 100
+	}
+	if backups < 0 {
+		backups = 0
+	}
+	if age < 0 {
+		age = 0
+	}
+	writers := make([]io.Writer, 0, 2)
+	writers = append(writers, &lumberjack.Logger{
+		Filename:   path.Join(dir, filename),
+		MaxBackups: backups,
+		MaxSize:    size,
+		MaxAge:     age,
+	})
+	if debug {
+		writers = append(writers, zerolog.ConsoleWriter{Out: os.Stderr})
+	}
+	w := io.MultiWriter(writers...)
+	l := zerolog.New(w).With().Timestamp().Logger()
+	return &l
 }
