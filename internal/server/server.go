@@ -64,12 +64,13 @@ func New() *Server {
 
 func (w *Server) apiContext() *api.Context {
 	return &api.Context{
-		APIQueue: w.apiQueue,
-		FedQueue: w.fedQueue,
-		OAC:      w.oac,
-		L:        w.l,
-		DB:       w.db,
-		F:        w.f,
+		APIQueue:     w.apiQueue,
+		FedQueue:     w.fedQueue,
+		OAC:          w.oac,
+		L:            w.l,
+		DB:           w.db,
+		F:            w.f,
+		ErrorHandler: w.errorHandler,
 	}
 }
 
@@ -98,4 +99,9 @@ func (w *Server) stop() error {
 	w.apiQueue.Stop()
 	// TODO
 	return nil
+}
+
+func (w *Server) errorHandler(wr http.ResponseWriter, r *http.Request, err error) {
+	w.l.Error().Stack().Err(err).Msg("")
+	w.InternalServerErrorHandler(w.f).ServeHTTP(wr, r)
 }

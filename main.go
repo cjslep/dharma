@@ -19,9 +19,12 @@ package dharma
 import (
 	"github.com/cjslep/dharma/internal/server"
 	"github.com/go-fed/apcore"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/pkgerrors"
 )
 
 func main() {
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	s := server.New()
 	apcore.Run(s)
 }

@@ -20,12 +20,13 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/sessions"
+	"github.com/pkg/errors"
 )
 
 func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request) {
 	k, err := e.C.F.Session(r)
 	if err != nil {
-		// TODO
+		e.C.ErrorHandler(w, r, errors.New("could not retrieve session"))
 		return
 	}
 	var state string    // TODO
@@ -33,7 +34,7 @@ func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request) {
 	sessions.SetESIOAuth2State(k, state)
 	u := e.C.OAC.GetURL(state, scopes)
 	if err := k.Save(r, w); err != nil {
-		// TODO
+		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not save session"))
 		return
 	}
 	http.Redirect(w, r, u.String(), http.StatusFound)

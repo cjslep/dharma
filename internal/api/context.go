@@ -17,6 +17,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
@@ -25,10 +27,11 @@ import (
 )
 
 type Context struct {
-	APIQueue *async.Queue
-	FedQueue *async.Queue
-	OAC      *esi.OAuth2Client
-	L        *zerolog.Logger
-	DB       *db.DB
-	F        app.Framework
+	APIQueue     *async.Queue
+	FedQueue     *async.Queue
+	OAC          *esi.OAuth2Client
+	L            *zerolog.Logger
+	DB           *db.DB
+	F            app.Framework
+	ErrorHandler func(http.ResponseWriter, *http.Request, error)
 }

@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-openapi/validate v0.20.2
 	github.com/pascaldekloe/jwt v1.10.0
+	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.15.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
