@@ -1,3 +1,4 @@
 **/.*~
 esi/client
 esi/models
+locales/gen_locales.go

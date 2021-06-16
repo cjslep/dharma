@@ -1,0 +1,29 @@
+[fileABug]
+description = "Prompts the user to click on this text in order to file an issue against the software"
+hash = "sha1-a46a021fcff55ff8c830aa3968b11d1b5663d2ee"
+other = "Please consider filing a bug report"
+
+[internalServerError]
+description = "Notifies the user that the server had an internal error"
+hash = "sha1-72dd90c44e522475bc9efcde04cedc25b80ad3c3"
+other = "An unrecoverable error occurred within the server."
+
+[methodNotAllowed]
+description = "Notifies the user that the browser issued an unsupported HTTP method"
+hash = "sha1-7be7c312d951dce96481296dce8897d3e653d95b"
+other = "Your browser issued a request with a method that is disallowed"
+
+[pageNotFound]
+description = "Notifies the user that the webpage was not found"
+hash = "sha1-86d27287b7d00987ea2a30d4b3f563091fcedf92"
+other = "The requested page was not found."
+
+[uedamaGateCampRequest]
+description = "Jovial comment that perhaps a user's HTTP request was gate-camped and blown up in an EVE Online system named Uedama"
+hash = "sha1-9a5df48ea786c9e9087510c97a604009c52eebd0"
+other = "Perhaps your request was blown up in an Uedama gate camp?"
+
+[uhOh]
+description = "Exclaimation that a mistake or accident happened"
+hash = "sha1-50e6e9cc806d045631c457c3da6a3dd33d6143b3"
+other = "Uh oh!"

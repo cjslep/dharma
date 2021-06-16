@@ -1,0 +1,27 @@
+[badRequest]
+description = "Notifies the user that the browser issued a bad request"
+other = "Your browser issued a bad request."
+
+[fileABug]
+description = "Prompts the user to click on this text in order to file an issue against the software"
+other = "Please consider filing a bug report"
+
+[internalServerError]
+description = "Notifies the user that the server had an internal error"
+other = "An unrecoverable error occurred within the server."
+
+[methodNotAllowed]
+description = "Notifies the user that the browser issued an unsupported HTTP method"
+other = "Your browser issued a request with a method that is disallowed"
+
+[pageNotFound]
+description = "Notifies the user that the webpage was not found"
+other = "The requested page was not found."
+
+[uedamaGateCampRequest]
+description = "Jovial comment that perhaps a user's HTTP request was gate-camped and blown up in an EVE Online system named Uedama"
+other = "Perhaps your request was blown up in an Uedama gate camp?"
+
+[uhOh]
+description = "Exclaimation that a mistake or accident happened"
+other = "Uh oh!"
