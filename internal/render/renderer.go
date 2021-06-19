@@ -17,17 +17,26 @@
 package render
 
 import (
+	"html/template"
+	"runtime"
+
+	"github.com/cjslep/dharma/assets"
+	"github.com/cjslep/dharma/internal/config"
 	"github.com/cjslep/dharma/locales"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pelletier/go-toml/v2"
+	"github.com/pkg/errors"
+	"github.com/unrolled/render"
 	"golang.org/x/text/language"
 )
 
 type Renderer struct {
-	b *i18n.Bundle
+	b     *i18n.Bundle
+	r     *render.Render
+	debug bool
 }
 
-func New() (*Renderer, error) {
+func New(c *config.Config, debug bool) (*Renderer, error) {
 	b := i18n.NewBundle(language.English)
 	b.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
@@ -35,7 +44,95 @@ func New() (*Renderer, error) {
 		return nil, err
 	}
 
-	return &Renderer{
-		b: b,
-	}, nil
+	r := &Renderer{
+		b:     b,
+		debug: debug,
+	}
+	rn := render.New(render.Options{
+		Funcs:                     r.newFuncMap(),
+		JSONContentType:           "application/json;charset=utf-8",
+		Asset:                     r.asset,
+		AssetNames:                r.assetNames,
+		IsDevelopment:             r.debug,
+		DisableHTTPErrorRendering: true,
+	})
+	r.r = rn
+
+	return r, nil
+}
+
+func (r *Renderer) Render(v *View) error {
+	if v.isHTML() {
+		return r.html(v)
+	} else if v.isJSON() {
+		return r.json(v)
+	} else {
+		return errors.New("unsupported view type")
+	}
+}
+
+func (r *Renderer) html(v *View) error {
+	return r.r.HTML(v.w, v.status, v.htmlData.Name, v.htmlData.Data)
+}
+
+func (r *Renderer) json(v *View) error {
+	return r.r.JSON(v.w, v.status, v.jsonData.Payload)
+}
+
+func (r *Renderer) asset(name string) ([]byte, error) {
+	return assets.Asset(name)
+}
+
+func (r *Renderer) assetNames() []string {
+	return assets.AssetNames()
+}
+
+func (r *Renderer) newFuncMap() []template.FuncMap {
+	return []template.FuncMap{
+		{
+			// Application
+			"goVersion": func() string {
+				return runtime.Version()
+			},
+			"dharmaName": func() string {
+				return "" // TODO
+			},
+			"version": func() string {
+				return "" // TODO
+			},
+			"templateDir": func() string {
+				return "" // TODO
+			},
+			"imgDir": func() string {
+				return "" // TODO
+			},
+			"jsDir": func() string {
+				return "" // TODO
+			},
+			"cssDir": func() string {
+				return "" // TODO
+			},
+			// Debug
+			"debug": func() bool {
+				return r.debug
+			},
+			// Date & Time
+			"longDate": func() string {
+				return "" // TODO
+			},
+			"shortDate": func() string {
+				return "" // TODO
+			},
+			// EVE Online
+			"corpName": func() string {
+				return "" // TODO
+			},
+			"allianceName": func() string {
+				return "" // TODO
+			},
+			"coalitionAffiliations": func() []string {
+				return nil // TODO
+			},
+		},
+	}
 }

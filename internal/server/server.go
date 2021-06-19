@@ -30,6 +30,7 @@ import (
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/log"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
 	"github.com/rs/zerolog"
 )
@@ -45,10 +46,14 @@ type Server struct {
 	// At config-setting time
 	l   *zerolog.Logger
 	oac *esi.OAuth2Client
+	r   *render.Renderer
 
 	// At build routes time
 	db *db.DB
 	f  app.Framework
+
+	// At start time
+	startupErr error
 }
 
 func New(f *features.Engine) *Server {
@@ -91,7 +96,7 @@ func (w *Server) start() error {
 	w.apiQueue.Start()
 	w.fedQueue.Start()
 	// TODO
-	return nil
+	return w.startupErr
 }
 
 func (w *Server) stop() error {
@@ -101,7 +106,7 @@ func (w *Server) stop() error {
 	return nil
 }
 
-func (w *Server) onSetConfiguration(c *config.Config, apc app.APCoreConfig) {
+func (w *Server) onSetConfiguration(c *config.Config, apc app.APCoreConfig, debug bool) {
 	h := &http.Client{} // TODO
 	w.oac = &esi.OAuth2Client{
 		RedirectURI: "https://" + apc.Host() + esiauth.Callback,
@@ -109,6 +114,7 @@ func (w *Server) onSetConfiguration(c *config.Config, apc app.APCoreConfig) {
 		Secret:      c.APIKey,
 		Client:      h,
 	}
+	w.r, w.startupErr = render.New(c, debug)
 	w.l = log.Logger(c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
 }
 

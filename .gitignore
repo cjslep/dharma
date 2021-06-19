@@ -2,3 +2,4 @@
 esi/client
 esi/models
 locales/gen_locales.go
+assets/gen_assets.go

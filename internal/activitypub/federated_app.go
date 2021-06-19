@@ -36,10 +36,10 @@ type FederatedApp struct {
 	start              func() error
 	stop               func() error
 	buildRoutes        func(r app.Router, db app.Database, f app.Framework) error
-	onSetConfiguration func(c *config.Config, apc app.APCoreConfig)
+	onSetConfiguration func(c *config.Config, apc app.APCoreConfig, debug bool)
 }
 
-func New(m *async.Messenger, start, stop func() error, buildRoutes func(r app.Router, db app.Database, f app.Framework) error, onSetConfig func(c *config.Config, apc app.APCoreConfig)) *FederatedApp {
+func New(m *async.Messenger, start, stop func() error, buildRoutes func(r app.Router, db app.Database, f app.Framework) error, onSetConfig func(*config.Config, app.APCoreConfig, bool)) *FederatedApp {
 	return &FederatedApp{
 		m:                  m,
 		start:              start,
@@ -68,12 +68,12 @@ func (a *FederatedApp) NewConfiguration() interface{} {
 	}
 }
 
-func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig) error {
+func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, debug bool) error {
 	c, ok := i.(*config.Config)
 	if !ok {
 		return errors.New("configuration is not of type *config.Config")
 	}
-	a.onSetConfiguration(c, apc)
+	a.onSetConfiguration(c, apc, debug)
 	return nil
 }
 
