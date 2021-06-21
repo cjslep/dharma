@@ -1,12 +1,22 @@
+[authorize]
+description = "Authorize label for the OAuth2 authorization page"
+hash = "sha1-d920d181114a8d9148f3dfdf395365da8ce41586"
+other = "Authorize"
+
 [badRequest]
 description = "Notifies the user that the browser issued a bad request"
 hash = "sha1-838b13767108eeb22f95ab2dd862dfc6e8b95dd0"
 other = "Your browser issued a bad request."
 
+[email]
+description = "E-Mail label for the login & register pages"
+hash = "sha1-564518b6a27f6e6495006780dc17ee3ecebc9f76"
+other = "Email"
+
 [fileABug]
 description = "Prompts the user to click on this text in order to file an issue against the software"
-hash = "sha1-a46a021fcff55ff8c830aa3968b11d1b5663d2ee"
-other = "Please consider filing a bug report"
+hash = "sha1-849e0bab1d6a75d9b6a70645705770e0ddfbb911"
+other = "Found a problem? Please consider filing a bug report"
 
 [internalServerError]
 description = "Notifies the user that the server had an internal error"
@@ -22,6 +32,11 @@ other = "Your browser issued a request with a method that is disallowed"
 description = "Notifies the user that the webpage was not found"
 hash = "sha1-86d27287b7d00987ea2a30d4b3f563091fcedf92"
 other = "The requested page was not found."
+
+[password]
+description = "Password label for the login & register pages"
+hash = "sha1-5f515cbca6ac1f9dd4d4df4a8b8b0f37c9d63b3d"
+other = "Password"
 
 [uedamaGateCampRequest]
 description = "Jovial comment that perhaps a user's HTTP request was gate-camped and blown up in an EVE Online system named Uedama"

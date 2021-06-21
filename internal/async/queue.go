@@ -154,6 +154,10 @@ func (a *Queue) Messenger() *Messenger {
 }
 
 func (a *Queue) closed() bool {
-	_, ok := <-a.done
-	return !ok
+	select {
+	case _, ok := <-a.done:
+		return !ok
+	default:
+		return false
+	}
 }

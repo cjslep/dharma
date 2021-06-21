@@ -1,10 +1,18 @@
+[authorize]
+description = "Authorize label for the OAuth2 authorization page"
+other = "Authorize"
+
 [badRequest]
 description = "Notifies the user that the browser issued a bad request"
 other = "Your browser issued a bad request."
 
+[email]
+description = "E-Mail label for the login & register pages"
+other = "Email"
+
 [fileABug]
 description = "Prompts the user to click on this text in order to file an issue against the software"
-other = "Please consider filing a bug report"
+other = "Found a problem? Please consider filing a bug report"
 
 [internalServerError]
 description = "Notifies the user that the server had an internal error"
@@ -17,6 +25,10 @@ other = "Your browser issued a request with a method that is disallowed"
 [pageNotFound]
 description = "Notifies the user that the webpage was not found"
 other = "The requested page was not found."
+
+[password]
+description = "Password label for the login & register pages"
+other = "Password"
 
 [uedamaGateCampRequest]
 description = "Jovial comment that perhaps a user's HTTP request was gate-camped and blown up in an EVE Online system named Uedama"
