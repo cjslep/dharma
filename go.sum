@@ -61,8 +61,8 @@ github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb/go.mod h1:xkRDCp4j0
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a h1:a1eN6o5bSw3oYKql7FDioTjE7zYp7NTq6pf3Vu8HWv4=
 github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a/go.mod h1:v4QoPaAzjWZ8zN2VFVGL5ep9C02mst0hQYHUpQwso4Q=
-github.com/go-fed/apcore v0.0.0-20210619180831-3a63c6eb76e5 h1:nR8W+1Xe8dyPcfHznZsLjc9v4C5P0D/EZfyGiZvF1IA=
-github.com/go-fed/apcore v0.0.0-20210619180831-3a63c6eb76e5/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
+github.com/go-fed/apcore v0.0.0-20210621220533-70e6ca7d559f h1:JJ6fo0tktcrM8rjwMyu5VJa2zdLhV2tjrYU88O7drNk=
+github.com/go-fed/apcore v0.0.0-20210621220533-70e6ca7d559f/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
 github.com/go-fed/httpsig v0.1.1-0.20190914113940-c2de3672e5b5/go.mod h1:T56HUNYZUQ1AGUzhAYPugZfp36sKApVnGBgKlIY+aIE=
 github.com/go-fed/httpsig v1.1.1-0.20201221212626-dda7895774cb h1:0TkVxVVllUkoQwsW2ePyZyJD5Sd1wS8fMmMRG2slrOU=
 github.com/go-fed/httpsig v1.1.1-0.20201221212626-dda7895774cb/go.mod h1:RCMrTZvN1bJYtofsG4rd5NaO5obxQ5xBkdiS7xsT7bM=
@@ -415,10 +415,6 @@ github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNX
 github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24/go.mod h1:M+9NzErvs504Cn4c5DxATwIqPbtswREoFCre64PpcG4=
 github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc h1:jUIKcSPO9MoMJBbEoyE/RJoE8vz7Mb8AjvifMMwSyvY=
 github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
-github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749 h1:bUGsEnyNbVPw06Bs80sCeARAlK8lhwqGyi6UT8ymuGk=
-github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749/go.mod h1:ZY1cvUeJuFPAdZ/B6v7RHavJWZn2YPVFQ1OSXhCGOkg=
-github.com/shurcooL/vfsgen v0.0.0-20200824052919-0d455de96546 h1:pXY9qYc/MP5zdvqWEUH6SjNiu7VhSjuVFTFiTcphaLU=
-github.com/shurcooL/vfsgen v0.0.0-20200824052919-0d455de96546/go.mod h1:TrYk7fJVaAttu97ZZKrO9UbRa8izdowaMIZcxYMbVaw=
 github.com/sirupsen/logrus v1.4.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=

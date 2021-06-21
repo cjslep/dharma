@@ -26,16 +26,16 @@ import (
 )
 
 type Router interface {
-	Route(app.Route)
+	Route(app.Router)
 }
 
 func BuildRoutes(ar app.Router, rt []Router, ctx *Context) {
 	ar.Use(getSession(ctx),
 		getLanguageTags(ctx))
 	// Capture the locale in routing HTML rendered web pages
-	localeRoute := ar.PathPrefix("/{locale}")
+	localeRouter := ar.PathPrefix("/{locale}").Subrouter()
 	for _, r := range rt {
-		r.Route(localeRoute)
+		r.Route(localeRouter)
 	}
 }
 
