@@ -23,9 +23,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Note: Order matters, as the order of parsing affects the []language.Tag
+// stored in the underlying bundle. That bundle order is then passed into
+// language.Matcher, which uses the order as preference for finding an
+// acceptable near language.
 var messageFiles = []string{
-	"active.de-DE.toml",
 	"active.en.toml",
+	"active.de-DE.toml",
 	"active.ru-RU.toml",
 	"active.zh-Hans.toml",
 	"active.zh-Hant.toml",

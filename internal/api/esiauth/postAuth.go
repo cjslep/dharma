@@ -21,36 +21,32 @@ import (
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/sessions"
+	"github.com/go-fed/apcore/app"
 	"github.com/pkg/errors"
+	"golang.org/x/text/language"
 )
 
-func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request) {
-	k, err := e.C.F.Session(r)
-	if err != nil {
-		e.C.ErrorHandler(w, r, errors.New("could not retrieve session"))
-		return
-	}
-
+func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	f, ok := r.URL.Query()["features"]
 	if !ok {
-		e.C.ErrorHandler(w, r, errors.New("could not get any features selected"))
+		e.C.MustRenderError(w, errors.New("could not get any features selected"), langs...)
 		return
 	}
 	scopes, err := e.C.Features.Convert(f)
 	if err != nil {
-		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not convert features to scopes"))
+		e.C.MustRenderError(w, errors.Wrap(err, "could not convert features to scopes"), langs...)
 		return
 	}
 
 	state, err := esi.Random(64)
 	if err != nil {
-		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not generate state for oauth2"))
+		e.C.MustRenderError(w, errors.Wrap(err, "could not generate state for oauth2"), langs...)
 		return
 	}
 	sessions.SetESIOAuth2State(k, state)
 	u := e.C.OAC.GetURL(state, scopes)
 	if err := k.Save(r, w); err != nil {
-		e.C.ErrorHandler(w, r, errors.Wrap(err, "could not save session"))
+		e.C.MustRenderError(w, errors.Wrap(err, "could not save session"), langs...)
 		return
 	}
 	http.Redirect(w, r, u.String(), http.StatusFound)

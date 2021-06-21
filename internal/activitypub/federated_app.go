@@ -20,41 +20,87 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/esiauth"
+	"github.com/cjslep/dharma/internal/api/forum"
+	"github.com/cjslep/dharma/internal/api/site"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/config"
+	"github.com/cjslep/dharma/internal/db"
+	"github.com/cjslep/dharma/internal/features"
+	"github.com/cjslep/dharma/internal/log"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
+	"golang.org/x/text/language"
 )
 
 var _ app.Application = new(FederatedApp)
 var _ app.S2SApplication = new(FederatedApp)
 
 type FederatedApp struct {
-	m                  *async.Messenger
-	start              func() error
-	stop               func() error
-	buildRoutes        func(r app.Router, db app.Database, f app.Framework) error
-	onSetConfiguration func(c *config.Config, apc app.APCoreConfig, debug bool)
+	// At constructor time
+	apiQueue *async.Queue
+	fedQueue *async.Queue
+	features *features.Engine
+
+	// At config-setting time
+	l   *zerolog.Logger
+	oac *esi.OAuth2Client
+	r   *render.Renderer
+
+	// At build routes time
+	db *db.DB
+	f  app.Framework
+
+	// At start time
+	startupErr error
 }
 
-func New(m *async.Messenger, start, stop func() error, buildRoutes func(r app.Router, db app.Database, f app.Framework) error, onSetConfig func(*config.Config, app.APCoreConfig, bool)) *FederatedApp {
+func New(f *features.Engine) *FederatedApp {
 	return &FederatedApp{
-		m:                  m,
-		start:              start,
-		stop:               stop,
-		buildRoutes:        buildRoutes,
-		onSetConfiguration: onSetConfig,
+		apiQueue: async.NewQueue(),
+		fedQueue: async.NewQueue(),
+		features: f,
+	}
+}
+
+func (a *FederatedApp) apiContext() *api.Context {
+	return &api.Context{
+		APIQueue:              a.apiQueue,
+		FedQueue:              a.fedQueue,
+		OAC:                   a.oac,
+		L:                     a.l,
+		DB:                    a.db,
+		F:                     a.f,
+		Features:              a.features,
+		MustRender:            a.mustRender,
+		SupportedLanguageTags: a.r.LanguageTags,
+	}
+}
+
+func (a *FederatedApp) mustRender(v *render.View) {
+	if err := a.r.Render(v); err != nil {
+		a.l.Error().Stack().Err(err).Msg("")
 	}
 }
 
 func (a *FederatedApp) Start() error {
-	return a.start()
+	a.apiQueue.Start()
+	a.fedQueue.Start()
+	// TODO
+	return a.startupErr
 }
 
 func (a *FederatedApp) Stop() error {
-	return a.stop()
+	a.fedQueue.Stop()
+	a.apiQueue.Stop()
+	// TODO
+	return nil
 }
 
 func (a *FederatedApp) NewConfiguration() interface{} {
@@ -73,13 +119,31 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 	if !ok {
 		return errors.New("configuration is not of type *config.Config")
 	}
-	a.onSetConfiguration(c, apc, debug)
+	h := &http.Client{} // TODO
+	a.oac = &esi.OAuth2Client{
+		RedirectURI: "https://" + apc.Host() + esiauth.Callback,
+		ClientID:    c.ClientID,
+		Secret:      c.APIKey,
+		Client:      h,
+	}
+	a.r, a.startupErr = render.New(c, debug)
+	a.l = log.Logger(c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
 	return nil
 }
 
 func (a *FederatedApp) NotFoundHandler(f app.Framework) http.Handler {
-	// TODO
-	return nil
+	ctx := a.apiContext()
+	return http.HandlerFunc(api.MustHaveLanguageCode(
+		ctx,
+		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			v := render.NewHTMLView(
+				w,
+				http.StatusNotFound,
+				"status/not_found",
+				nil,
+				langs...)
+			ctx.MustRender(v)
+		}))
 }
 
 func (a *FederatedApp) MethodNotAllowedHandler(f app.Framework) http.Handler {
@@ -132,8 +196,17 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 	return nil, nil
 }
 
-func (a *FederatedApp) BuildRoutes(r app.Router, db app.Database, f app.Framework) error {
-	return a.buildRoutes(r, db, f)
+func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
+	a.db = db.New(d)
+	a.f = f
+	ctx := a.apiContext()
+	r := []api.Router{
+		&forum.Forum{ctx},
+		&site.Site{ctx},
+		&esiauth.ESIAuth{ctx},
+	}
+	api.BuildRoutes(ar, r, ctx)
+	return nil
 }
 
 func (a *FederatedApp) NewIDPath(c context.Context, t vocab.Type) (path string, err error) {

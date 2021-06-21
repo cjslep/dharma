@@ -18,8 +18,11 @@ package site
 
 import (
 	"net/http"
+
+	"github.com/go-fed/apcore/app"
+	"golang.org/x/text/language"
 )
 
-func (s *Site) getHome(w http.ResponseWriter, r *http.Request) {
+func (s *Site) getHome(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	// TODO
 }

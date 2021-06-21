@@ -17,7 +17,14 @@
 package render
 
 import (
+	"html/template"
 	"io"
+	"net/http"
+
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
+	"github.com/unrolled/render"
+	"golang.org/x/text/language"
 )
 
 type View struct {
@@ -28,21 +35,34 @@ type View struct {
 }
 
 type htmlData struct {
-	Name string
-	Data map[string]interface{}
+	Name  string
+	Data  map[string]interface{}
+	Langs []string
 }
 
 type jsonData struct {
 	Payload interface{}
 }
 
-func NewHTMLView(w io.Writer, status int, name string, data map[string]interface{}) *View {
+func NewErrorView(w io.Writer, l *zerolog.Logger, e error, langs ...language.Tag) *View {
+	l.Error().Stack().Err(e).Msg("")
+	return NewHTMLView(w, http.StatusInternalServerError, "status/internal_error", map[string]interface{}{
+		"err": e,
+	}, langs...)
+}
+
+func NewHTMLView(w io.Writer, status int, name string, data map[string]interface{}, langs ...language.Tag) *View {
+	l := make([]string, len(langs))
+	for i := range langs {
+		l[i] = langs[i].String()
+	}
 	return &View{
 		w:      w,
 		status: status,
 		htmlData: &htmlData{
-			Name: name,
-			Data: data,
+			Name:  name,
+			Data:  data,
+			Langs: l,
 		},
 	}
 }
@@ -63,4 +83,26 @@ func (v *View) isHTML() bool {
 
 func (v *View) isJSON() bool {
 	return v.jsonData != nil
+}
+
+func (v *View) render(base render.Options, funcMap func(langs ...string) []template.FuncMap) error {
+	if v.isHTML() {
+		base.Funcs = funcMap(v.htmlData.Langs...)
+		r := render.New(base)
+		return v.html(r)
+	} else if v.isJSON() {
+		base.Funcs = funcMap()
+		r := render.New(base)
+		return v.json(r)
+	} else {
+		return errors.New("unsupported view type")
+	}
+}
+
+func (v *View) html(r *render.Render) error {
+	return r.HTML(v.w, v.status, v.htmlData.Name, v.htmlData.Data)
+}
+
+func (v *View) json(r *render.Render) error {
+	return r.JSON(v.w, v.status, v.jsonData.Payload)
 }

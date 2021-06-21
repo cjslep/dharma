@@ -14,21 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package dharma
+package views
 
 import (
-	"github.com/cjslep/dharma/internal/activitypub"
-	"github.com/cjslep/dharma/internal/features"
-	"github.com/go-fed/apcore"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/pkgerrors"
+	"io"
+	"net/http"
+
+	"github.com/cjslep/dharma/internal/render"
 )
 
-func main() {
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-
-	var f []features.Feature
-	e := features.New(f)
-	a := activitypub.New(e)
-	apcore.Run(a)
+func NotFoundView(w io.Writer, path string, langs ...string) *render.View {
+	return render.NewHTMLView(w, http.StatusNotFound, "status/not_found", map[string]interface{}{
+		"path": path,
+	})
 }

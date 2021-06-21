@@ -25,9 +25,9 @@ type Forum struct {
 	C *api.Context
 }
 
-func (f *Forum) Route(r app.Router) {
+func (f *Forum) Route(r app.Route) {
 	// TODO
-	r.Methods("GET").WebOnlyHandlerFunc("/forum", f.getForum)
-	r.Methods("GET").WebOnlyHandlerFunc("/forum/tags", f.getTags)
-	r.Methods("GET").WebOnlyHandlerFunc("/forum/threads", f.getThreads)
+	r.Methods("GET").WebOnlyHandlerFunc("/forum", api.MustHaveSessionAndLanguageCode(f.C, f.getForum))
+	r.Methods("GET").WebOnlyHandlerFunc("/forum/tags", api.MustHaveSessionAndLanguageCode(f.C, f.getTags))
+	r.Methods("GET").WebOnlyHandlerFunc("/forum/threads", api.MustHaveSessionAndLanguageCode(f.C, f.getThreads))
 }

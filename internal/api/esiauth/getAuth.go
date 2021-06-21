@@ -18,8 +18,11 @@ package esiauth
 
 import (
 	"net/http"
+
+	"github.com/go-fed/apcore/app"
+	"golang.org/x/text/language"
 )
 
-func (e *ESIAuth) getAuth(w http.ResponseWriter, r *http.Request) {
+func (e *ESIAuth) getAuth(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	// TODO
 }

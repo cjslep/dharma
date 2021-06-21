@@ -25,8 +25,8 @@ type Site struct {
 	C *api.Context
 }
 
-func (s *Site) Route(r app.Router) {
+func (s *Site) Route(r app.Route) {
 	// TODO
-	r.Methods("GET").WebOnlyHandlerFunc("/", s.getHome)
-	r.Methods("GET").WebOnlyHandlerFunc("/about", s.getAbout)
+	r.Methods("GET").WebOnlyHandlerFunc("/", api.MustHaveSessionAndLanguageCode(s.C, s.getHome))
+	r.Methods("GET").WebOnlyHandlerFunc("/about", api.MustHaveSessionAndLanguageCode(s.C, s.getAbout))
 }

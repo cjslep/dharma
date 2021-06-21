@@ -29,8 +29,8 @@ type ESIAuth struct {
 	C *api.Context
 }
 
-func (e *ESIAuth) Route(r app.Router) {
-	r.Methods("GET").WebOnlyHandlerFunc("/esi/auth", e.getAuth)
-	r.Methods("POST").WebOnlyHandlerFunc("/esi/auth", e.postAuth)
-	r.Methods("GET").WebOnlyHandlerFunc(Callback, e.getCallback)
+func (e *ESIAuth) Route(r app.Route) {
+	r.Methods("GET").WebOnlyHandlerFunc("/esi/auth", api.MustHaveSessionAndLanguageCode(e.C, e.getAuth))
+	r.Methods("POST").WebOnlyHandlerFunc("/esi/auth", api.MustHaveSessionAndLanguageCode(e.C, e.postAuth))
+	r.Methods("GET").WebOnlyHandlerFunc(Callback, api.MustHaveSession(e.C, e.getCallback))
 }

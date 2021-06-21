@@ -17,23 +17,34 @@
 package api
 
 import (
-	"net/http"
+	"io"
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/features"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
 	"github.com/rs/zerolog"
+	"golang.org/x/text/language"
 )
 
 type Context struct {
-	APIQueue     *async.Queue
-	FedQueue     *async.Queue
-	OAC          *esi.OAuth2Client
-	L            *zerolog.Logger
-	DB           *db.DB
-	F            app.Framework
-	Features     *features.Engine
-	ErrorHandler func(http.ResponseWriter, *http.Request, error)
+	APIQueue              *async.Queue
+	FedQueue              *async.Queue
+	OAC                   *esi.OAuth2Client
+	L                     *zerolog.Logger
+	DB                    *db.DB
+	F                     app.Framework
+	Features              *features.Engine
+	MustRender            func(*render.View)
+	SupportedLanguageTags func() []language.Tag
+}
+
+func (c *Context) MustRenderErrorEnglish(w io.Writer, err error) {
+	c.MustRender(render.NewErrorView(w, c.L, err, language.English))
+}
+
+func (c *Context) MustRenderError(w io.Writer, err error, langs ...language.Tag) {
+	c.MustRender(render.NewErrorView(w, c.L, err, langs...))
 }

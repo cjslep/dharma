@@ -24,6 +24,12 @@ type Messages struct {
 	l *i18n.Localizer
 }
 
+func New(b *i18n.Bundle, langs ...string) *Messages {
+	return &Messages{
+		l: i18n.NewLocalizer(b, langs...),
+	}
+}
+
 func (m *Messages) PageNotFound() (string, error) {
 	return m.l.Localize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
