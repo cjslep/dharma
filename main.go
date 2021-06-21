@@ -29,6 +29,6 @@ func main() {
 
 	var f []features.Feature
 	e := features.New(f)
-	a := activitypub.New(e)
+	a := activitypub.New(e, software)
 	apcore.Run(a)
 }

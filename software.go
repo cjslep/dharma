@@ -15,3 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 package dharma
+
+import (
+	"github.com/go-fed/apcore/app"
+)
+
+var software = app.Software{
+	Name:         "Dharma",
+	UserAgent:    "dharma",
+	MajorVersion: 0,
+	MinorVersion: 0,
+	PatchVersion: 0,
+	Repository:   "https://github.com/cjslep/dharma",
+}

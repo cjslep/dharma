@@ -44,6 +44,7 @@ var _ app.S2SApplication = new(FederatedApp)
 
 type FederatedApp struct {
 	// At constructor time
+	software app.Software
 	apiQueue *async.Queue
 	fedQueue *async.Queue
 	features *features.Engine
@@ -61,8 +62,9 @@ type FederatedApp struct {
 	startupErr error
 }
 
-func New(f *features.Engine) *FederatedApp {
+func New(f *features.Engine, software app.Software) *FederatedApp {
 	return &FederatedApp{
+		software: software,
 		apiQueue: async.NewQueue(),
 		fedQueue: async.NewQueue(),
 		features: f,
@@ -186,13 +188,36 @@ func (a *FederatedApp) BadRequestHandler(f app.Framework) http.Handler {
 }
 
 func (a *FederatedApp) GetLoginWebHandlerFunc(f app.Framework) http.HandlerFunc {
-	// TODO
-	return nil
+	ctx := a.apiContext()
+	return http.HandlerFunc(api.MustHaveLanguageCode(
+		ctx,
+		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			lerr := r.URL.Query().Get("login_error")
+			v := render.NewHTMLView(
+				w,
+				http.StatusOK,
+				"auth/login",
+				map[string]interface{}{
+					"loginError": lerr,
+				},
+				langs...)
+			ctx.MustRender(v)
+		}))
 }
 
 func (a *FederatedApp) GetAuthWebHandlerFunc(f app.Framework) http.HandlerFunc {
-	// TODO
-	return nil
+	ctx := a.apiContext()
+	return http.HandlerFunc(api.MustHaveLanguageCode(
+		ctx,
+		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			v := render.NewHTMLView(
+				w,
+				http.StatusOK,
+				"auth/auth",
+				nil,
+				langs...)
+			ctx.MustRender(v)
+		}))
 }
 
 func (a *FederatedApp) GetOutboxWebHandlerFunc(f app.Framework) func(w http.ResponseWriter, r *http.Request, outbox vocab.ActivityStreamsOrderedCollectionPage) {
@@ -235,7 +260,7 @@ func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framewor
 
 func (a *FederatedApp) NewIDPath(c context.Context, t vocab.Type) (path string, err error) {
 	// TODO
-	return "", nil
+	return "", errors.Errorf("unhandled type name: %s", t.GetTypeName())
 }
 
 func (a *FederatedApp) ScopePermitsPrivateGetInbox(scope string) (permitted bool, err error) {
@@ -264,8 +289,7 @@ func (a *FederatedApp) DefaultAdminPrivileges() interface{} {
 }
 
 func (a *FederatedApp) Software() app.Software {
-	// TODO
-	return app.Software{}
+	return a.software
 }
 
 func (a *FederatedApp) GetInboxWebHandlerFunc(f app.Framework) func(w http.ResponseWriter, r *http.Request, outbox vocab.ActivityStreamsOrderedCollectionPage) {

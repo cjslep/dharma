@@ -99,3 +99,33 @@ func (m *Messages) ConsiderFileABug() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) Email() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "email",
+			Description: "E-Mail label for the login & register pages",
+			Other:       "Email",
+		},
+	})
+}
+
+func (m *Messages) Password() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "password",
+			Description: "Password label for the login & register pages",
+			Other:       "Password",
+		},
+	})
+}
+
+func (m *Messages) Authorize() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "authorize",
+			Description: "Authorize label for the OAuth2 authorization page",
+			Other:       "Authorize",
+		},
+	})
+}

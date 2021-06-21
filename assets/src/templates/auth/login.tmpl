@@ -1,0 +1,15 @@
+{{template "base/header"}}
+<form method="post" action="login">
+  {{if .loginError}}
+  <div>{{.loginError}}</div>
+  {{end}}
+  <div>
+    <label for="email">{{.Locale.Email}}</label>
+    <input id="email" type="text" name="email" value="{{.username}}" autofocus required>
+  </div>
+  <div>
+    <label for="password">{{.Locale.Password}}</label>
+    <input id="password" type="text" name="password" autofocus required>
+  </div>
+</form>
+{{template "base/footer"}}
