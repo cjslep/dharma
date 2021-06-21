@@ -147,18 +147,42 @@ func (a *FederatedApp) NotFoundHandler(f app.Framework) http.Handler {
 }
 
 func (a *FederatedApp) MethodNotAllowedHandler(f app.Framework) http.Handler {
-	// TODO
-	return nil
+	ctx := a.apiContext()
+	return http.HandlerFunc(api.MustHaveLanguageCode(
+		ctx,
+		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			v := render.NewHTMLView(
+				w,
+				http.StatusMethodNotAllowed,
+				"status/method_not_allowed",
+				nil,
+				langs...)
+			ctx.MustRender(v)
+		}))
 }
 
 func (a *FederatedApp) InternalServerErrorHandler(f app.Framework) http.Handler {
-	// TODO
-	return nil
+	ctx := a.apiContext()
+	return http.HandlerFunc(api.MustHaveLanguageCode(
+		ctx,
+		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			ctx.MustRenderError(w, errors.New("an internal error occured"), langs...)
+		}))
 }
 
 func (a *FederatedApp) BadRequestHandler(f app.Framework) http.Handler {
-	// TODO
-	return nil
+	ctx := a.apiContext()
+	return http.HandlerFunc(api.MustHaveLanguageCode(
+		ctx,
+		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			v := render.NewHTMLView(
+				w,
+				http.StatusBadRequest,
+				"status/bad_request",
+				nil,
+				langs...)
+			ctx.MustRender(v)
+		}))
 }
 
 func (a *FederatedApp) GetLoginWebHandlerFunc(f app.Framework) http.HandlerFunc {

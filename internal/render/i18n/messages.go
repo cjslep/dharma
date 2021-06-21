@@ -95,7 +95,7 @@ func (m *Messages) ConsiderFileABug() (string, error) {
 		DefaultMessage: &i18n.Message{
 			ID:          "fileABug",
 			Description: "Prompts the user to click on this text in order to file an issue against the software",
-			Other:       "Please consider filing a bug report",
+			Other:       "Found a problem? Please consider filing a bug report",
 		},
 	})
 }
