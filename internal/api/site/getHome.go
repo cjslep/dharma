@@ -19,10 +19,18 @@ package site
 import (
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
 func (s *Site) getHome(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
-	// TODO
+	// TODO: Logged in version
+	v := render.NewHTMLView(
+		w,
+		http.StatusOK,
+		"site/home",
+		nil,
+		langs...)
+	s.C.MustRender(v)
 }

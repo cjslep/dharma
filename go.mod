@@ -16,6 +16,8 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.0-beta.3
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.23.0
+	github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749 // indirect
+	github.com/shurcooL/vfsgen v0.0.0-20200824052919-0d455de96546 // indirect
 	github.com/unrolled/render v1.4.0
 	golang.org/x/text v0.3.6
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

@@ -30,10 +30,11 @@ type Router interface {
 }
 
 func BuildRoutes(ar app.Router, rt []Router, ctx *Context) {
-	ar.Use(getSession(ctx),
-		getLanguageTags(ctx))
+	ar.Use(getSession(ctx))
 	// Capture the locale in routing HTML rendered web pages
+	ar.NewRoute().WebOnlyHandler("/", redirToEnHomepage())
 	localeRouter := ar.PathPrefix("/{locale}").Subrouter()
+	localeRouter.Use(getLanguageTags(ctx))
 	for _, r := range rt {
 		r.Route(localeRouter)
 	}
@@ -93,4 +94,10 @@ func getLanguageTags(ctx *Context) mux.MiddlewareFunc {
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func redirToEnHomepage() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/en/", http.StatusFound)
+	})
 }
