@@ -129,7 +129,7 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 		Client:      h,
 	}
 	a.r, a.startupErr = render.New(c, debug)
-	a.l = log.Logger(c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
+	a.l = log.Logger(debug || c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
 	return nil
 }
 
