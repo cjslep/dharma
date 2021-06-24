@@ -138,10 +138,12 @@ func (a *FederatedApp) NotFoundHandler(f app.Framework) http.Handler {
 	return http.HandlerFunc(api.MustHaveLanguageCode(
 		ctx,
 		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			rc := api.From(r.Context())
 			v := render.NewHTMLView(
 				w,
 				http.StatusNotFound,
 				"status/not_found",
+				rc,
 				nil,
 				langs...)
 			ctx.MustRender(v)
@@ -153,10 +155,12 @@ func (a *FederatedApp) MethodNotAllowedHandler(f app.Framework) http.Handler {
 	return http.HandlerFunc(api.MustHaveLanguageCode(
 		ctx,
 		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			rc := api.From(r.Context())
 			v := render.NewHTMLView(
 				w,
 				http.StatusMethodNotAllowed,
 				"status/method_not_allowed",
+				rc,
 				nil,
 				langs...)
 			ctx.MustRender(v)
@@ -168,7 +172,7 @@ func (a *FederatedApp) InternalServerErrorHandler(f app.Framework) http.Handler 
 	return http.HandlerFunc(api.MustHaveLanguageCode(
 		ctx,
 		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-			ctx.MustRenderError(w, errors.New("an internal error occured"), langs...)
+			ctx.MustRenderError(w, r, errors.New("an internal error occured"), langs...)
 		}))
 }
 
@@ -177,10 +181,12 @@ func (a *FederatedApp) BadRequestHandler(f app.Framework) http.Handler {
 	return http.HandlerFunc(api.MustHaveLanguageCode(
 		ctx,
 		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			rc := api.From(r.Context())
 			v := render.NewHTMLView(
 				w,
 				http.StatusBadRequest,
 				"status/bad_request",
+				rc,
 				nil,
 				langs...)
 			ctx.MustRender(v)
@@ -192,11 +198,13 @@ func (a *FederatedApp) GetLoginWebHandlerFunc(f app.Framework) http.HandlerFunc 
 	return http.HandlerFunc(api.MustHaveLanguageCode(
 		ctx,
 		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			rc := api.From(r.Context())
 			lerr := r.URL.Query().Get("login_error")
 			v := render.NewHTMLView(
 				w,
 				http.StatusOK,
 				"auth/login",
+				rc,
 				map[string]interface{}{
 					"loginError": lerr,
 				},
@@ -210,10 +218,12 @@ func (a *FederatedApp) GetAuthWebHandlerFunc(f app.Framework) http.HandlerFunc {
 	return http.HandlerFunc(api.MustHaveLanguageCode(
 		ctx,
 		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+			rc := api.From(r.Context())
 			v := render.NewHTMLView(
 				w,
 				http.StatusOK,
 				"auth/auth",
+				rc,
 				nil,
 				langs...)
 			ctx.MustRender(v)

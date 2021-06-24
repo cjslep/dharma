@@ -20,11 +20,13 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
 )
 
-func NotFoundView(w io.Writer, path string, langs ...string) *render.View {
-	return render.NewHTMLView(w, http.StatusNotFound, "status/not_found", map[string]interface{}{
+func NotFoundView(w io.Writer, r *http.Request, path string, langs ...string) *render.View {
+	rc := api.From(r.Context())
+	return render.NewHTMLView(w, http.StatusNotFound, "status/not_found", rc, map[string]interface{}{
 		"path": path,
 	})
 }

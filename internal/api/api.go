@@ -47,7 +47,7 @@ func getSession(ctx *Context) mux.MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			k, err := ctx.F.Session(r)
 			if err != nil {
-				ctx.MustRenderError(w, err)
+				ctx.MustRenderError(w, r, err)
 				return
 			}
 			rc := From(r.Context())

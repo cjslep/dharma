@@ -29,24 +29,24 @@ import (
 func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	f, ok := r.URL.Query()["features"]
 	if !ok {
-		e.C.MustRenderError(w, errors.New("could not get any features selected"), langs...)
+		e.C.MustRenderError(w, r, errors.New("could not get any features selected"), langs...)
 		return
 	}
 	scopes, err := e.C.Features.Convert(f)
 	if err != nil {
-		e.C.MustRenderError(w, errors.Wrap(err, "could not convert features to scopes"), langs...)
+		e.C.MustRenderError(w, r, errors.Wrap(err, "could not convert features to scopes"), langs...)
 		return
 	}
 
 	state, err := esi.Random(64)
 	if err != nil {
-		e.C.MustRenderError(w, errors.Wrap(err, "could not generate state for oauth2"), langs...)
+		e.C.MustRenderError(w, r, errors.Wrap(err, "could not generate state for oauth2"), langs...)
 		return
 	}
 	sessions.SetESIOAuth2State(k, state)
 	u := e.C.OAC.GetURL(state, scopes)
 	if err := k.Save(r, w); err != nil {
-		e.C.MustRenderError(w, errors.Wrap(err, "could not save session"), langs...)
+		e.C.MustRenderError(w, r, errors.Wrap(err, "could not save session"), langs...)
 		return
 	}
 	http.Redirect(w, r, u.String(), http.StatusFound)

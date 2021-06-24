@@ -71,3 +71,19 @@ func (r *RequestContext) LanguageTags() ([]language.Tag, error) {
 		return k, nil
 	}
 }
+
+func (r *RequestContext) navData(signedIn bool) map[string]interface{} {
+	return map[string]interface{}{
+		"signedIn": signedIn,
+	}
+}
+
+func (r *RequestContext) RenderNavData() map[string]interface{} {
+	k, err := r.Session()
+	signedIn := false
+	if err == nil {
+		_, isSignedInErr := k.UserID()
+		signedIn = isSignedInErr == nil
+	}
+	return r.navData(signedIn)
+}

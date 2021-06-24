@@ -44,18 +44,26 @@ type jsonData struct {
 	Payload interface{}
 }
 
-func NewErrorView(w io.Writer, l *zerolog.Logger, e error, langs ...language.Tag) *View {
+type RenderNavDataGetter interface {
+	RenderNavData() map[string]interface{}
+}
+
+func NewErrorView(w io.Writer, l *zerolog.Logger, e error, rc RenderNavDataGetter, langs ...language.Tag) *View {
 	l.Error().Stack().Err(e).Msg("")
-	return NewHTMLView(w, http.StatusInternalServerError, "status/internal_error", map[string]interface{}{
+	return NewHTMLView(w, http.StatusInternalServerError, "status/internal_error", rc, map[string]interface{}{
 		"err": e,
 	}, langs...)
 }
 
-func NewHTMLView(w io.Writer, status int, name string, data map[string]interface{}, langs ...language.Tag) *View {
+func NewHTMLView(w io.Writer, status int, name string, rc RenderNavDataGetter, data map[string]interface{}, langs ...language.Tag) *View {
 	l := make([]string, len(langs))
 	for i := range langs {
 		l[i] = langs[i].String()
 	}
+	if data == nil {
+		data = map[string]interface{}{}
+	}
+	data["nav"] = rc.RenderNavData()
 	return &View{
 		w:      w,
 		status: status,

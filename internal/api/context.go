@@ -18,6 +18,7 @@ package api
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
@@ -41,10 +42,12 @@ type Context struct {
 	SupportedLanguageTags func() []language.Tag
 }
 
-func (c *Context) MustRenderErrorEnglish(w io.Writer, err error) {
-	c.MustRender(render.NewErrorView(w, c.L, err, language.English))
+func (c *Context) MustRenderErrorEnglish(w io.Writer, r *http.Request, err error) {
+	rc := From(r.Context())
+	c.MustRender(render.NewErrorView(w, c.L, err, rc, language.English))
 }
 
-func (c *Context) MustRenderError(w io.Writer, err error, langs ...language.Tag) {
-	c.MustRender(render.NewErrorView(w, c.L, err, langs...))
+func (c *Context) MustRenderError(w io.Writer, r *http.Request, err error, langs ...language.Tag) {
+	rc := From(r.Context())
+	c.MustRender(render.NewErrorView(w, c.L, err, rc, langs...))
 }

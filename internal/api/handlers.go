@@ -33,7 +33,7 @@ func MustHaveSession(ctx *Context, r StatefulRenderHandler) http.HandlerFunc {
 		rc := From(req.Context())
 		k, err := rc.Session()
 		if err != nil {
-			ctx.MustRenderErrorEnglish(w, errors.New("could not retrieve session"))
+			ctx.MustRenderErrorEnglish(w, req, errors.New("could not retrieve session"))
 			return
 		}
 
@@ -46,8 +46,7 @@ func MustHaveLanguageCode(ctx *Context, r LocalizedRenderHandler) http.HandlerFu
 		rc := From(req.Context())
 		langs, err := rc.LanguageTags()
 		if err != nil {
-			ctx.MustRenderErrorEnglish(w, errors.New("could not retrieve request language tags"))
-			return
+			langs = []language.Tag{language.English}
 		}
 		r(w, req, langs)
 	}
@@ -58,13 +57,13 @@ func MustHaveSessionAndLanguageCode(ctx *Context, r LocalizedStatefulRenderHandl
 		rc := From(req.Context())
 		langs, err := rc.LanguageTags()
 		if err != nil {
-			ctx.MustRenderErrorEnglish(w, errors.New("could not retrieve request language tags"))
+			ctx.MustRenderErrorEnglish(w, req, errors.New("could not retrieve request language tags"))
 			return
 		}
 
 		k, err := rc.Session()
 		if err != nil {
-			ctx.MustRenderError(w, errors.New("could not retrieve session"), langs...)
+			ctx.MustRenderError(w, req, errors.New("could not retrieve session"), langs...)
 			return
 		}
 

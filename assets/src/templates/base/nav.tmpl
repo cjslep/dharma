@@ -1,0 +1,22 @@
+<div>
+  <nav>
+    {{if .nav.signedIn}}
+    <div> <!-- Avatar Dropdown -->
+      <div><a>Change Character</a></div>
+      <div><a>Account Profile</a></div>
+      <div><a>Account Settings</a></div>
+      <div><a>Logout</a></div>
+    </div> <!-- End Avatar Dropdown -->
+    <div> <!-- Navigation Dropdown -->
+      <div><a>Forum</a></div>
+      <div><a>Calendar</a></div>
+      <div><a>Killboard</a></div>
+    </div> <!-- End Navigation Dropdown -->
+    <div> <!-- Notifications Dropdown -->
+    </div> <!-- End Notifications Dropdown -->
+    {{else}}
+    <div><a>Register</a></div>
+    <div><a>Login</a></div>
+    {{end}}
+  </nav>
+</div>
