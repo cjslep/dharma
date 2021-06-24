@@ -1,0 +1,8 @@
+<div>
+  <p>Debug Table</p>
+  <table>
+  {{range $k, $v := .debug}}
+    <tr><td>{{$k}}</td><td>{{$v}}</td></tr>
+  {{end}}
+  </table>
+</div>

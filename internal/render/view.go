@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/unrolled/render"
@@ -96,6 +97,7 @@ func (v *View) isJSON() bool {
 func (v *View) render(base render.Options, funcMap func(langs ...string) []template.FuncMap) error {
 	if v.isHTML() {
 		base.Funcs = funcMap(v.htmlData.Langs...)
+		v.maybeAddDebugData(base)
 		r := render.New(base)
 		return v.html(r)
 	} else if v.isJSON() {
@@ -113,4 +115,17 @@ func (v *View) html(r *render.Render) error {
 
 func (v *View) json(r *render.Render) error {
 	return r.JSON(v.w, v.status, v.jsonData.Payload)
+}
+
+func (v *View) maybeAddDebugData(r render.Options) {
+	if !r.IsDevelopment {
+		return
+	}
+	util.SoftMapMergeInto(v.htmlData.Data,
+		"debug",
+		map[string]interface{}{
+			"renderStatus":  v.status,
+			"html":          v.htmlData,
+			"renderOptions": r,
+		})
 }

@@ -4,4 +4,7 @@
   </head>
   <body>
   </body>
-  {{template "base/nav"}}
+  {{if Debug}}
+    {{template "base/debug" .}}
+  {{end}}
+  {{template "base/nav" .}}
