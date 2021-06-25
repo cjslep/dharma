@@ -16,6 +16,4 @@
 
 package assets
 
-// +build assets
-
 //go:generate go run ../gen/assets.go

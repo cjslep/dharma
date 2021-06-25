@@ -16,6 +16,4 @@
 
 package locales
 
-// +build l10n
-
 //go:generate go run ../gen/locales.go

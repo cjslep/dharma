@@ -14,28 +14,57 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// +build !dev
+// +build dev
 
 package assets
 
 import (
+	"io/fs"
 	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/pkg/errors"
 )
 
+const (
+	prefix0 = "assets"
+	prefix1 = "src"
+)
+
+var assets http.FileSystem = http.Dir(filepath.Join(prefix0, prefix1))
+
 func Asset(name string) ([]byte, error) {
-	f, err := assets.Open("/" + name)
-	if err != nil {
+	bs, err := ioutil.ReadFile(filepath.Join(prefix0, prefix1, name))
+	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
-	defer f.Close()
-	return ioutil.ReadAll(f)
+	return bs, nil
 }
 
 func AssetNames() []string {
-	m := assets.(vfsgen۰FS)
-	s := make([]string, 0, len(m))
-	for k, _ := range m {
-		s = append(s, k[1:]) // Omit leading '/'
+	var out []string
+	dir := filepath.Join(prefix0, prefix1)
+	err := filepath.WalkDir(dir,
+		func(path string, d fs.DirEntry, err error) error {
+			locs := strings.Split(path, dir)
+			if len(locs) != 2 {
+				return errors.New("cannot walk asset tree: split could not get sub-file name")
+			}
+			if d.IsDir() {
+				return nil
+			}
+			name := locs[1][1:] // Omit leading slash
+			if !strings.HasSuffix(name, ".tmpl") {
+				return nil
+			}
+			out = append(out, name)
+			return nil
+		})
+	if err != nil {
+		panic(err) // Only permitted with +build dev
 	}
-	return s
+	return out
 }

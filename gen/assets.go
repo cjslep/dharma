@@ -31,6 +31,7 @@ func main() {
 		PackageName:  "assets",
 		VariableName: "assets",
 		Filename:     "gen_assets.go",
+		BuildTags:    "!dev",
 	})
 	if err != nil {
 		log.Fatalln(err)

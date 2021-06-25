@@ -4,3 +4,6 @@ esi/models
 locales/gen_locales.go
 assets/gen_assets.go
 dharma
+config.ini
+cookie_authn.key
+dharma.log
