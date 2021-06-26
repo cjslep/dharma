@@ -19,6 +19,7 @@ package activitypub
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/api"
@@ -266,6 +267,27 @@ func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framewor
 	}
 	api.BuildRoutes(ar, r, ctx)
 	return nil
+}
+
+func (a *FederatedApp) Paths() app.Paths {
+	homepageFn := func(cur string) string {
+		s := strings.Split(cur, "/")
+		if len(s) < 2 {
+			return "/en"
+		}
+		return "/" + s[1]
+	}
+	return app.Paths{
+		GetLogin:            "/{locale}/login",
+		PostLogin:           "/{locale}/login",
+		GetLogout:           "/{locale}/logout",
+		GetOAuth2Authorize:  "/{locale}/oauth2/authorize",
+		PostOAuth2Authorize: "/{locale}/oauth2/authorize",
+		RedirectToHomepage:  homepageFn,
+		RedirectToLogin: func(cur string) string {
+			return homepageFn(cur) + "/login"
+		},
+	}
 }
 
 func (a *FederatedApp) NewIDPath(c context.Context, t vocab.Type) (path string, err error) {
