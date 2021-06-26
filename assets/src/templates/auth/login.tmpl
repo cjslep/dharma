@@ -1,7 +1,7 @@
 {{template "base/header" .}}
 <form method="post" action="login">
   {{if .loginError}}
-  <div>{{.loginError}}</div>
+  <div>{{Locale.LoginError}}</div>
   {{end}}
   <div>
     <label for="email">{{Locale.Email}}</label>
@@ -9,7 +9,8 @@
   </div>
   <div>
     <label for="password">{{Locale.Password}}</label>
-    <input id="password" type="text" name="password" autofocus required>
+    <input id="password" type="password" name="password" required>
   </div>
+  <button>{{Locale.Login}}</button>
 </form>
 {{template "base/footer" .}}

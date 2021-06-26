@@ -129,3 +129,23 @@ func (m *Messages) Authorize() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) Login() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "login",
+			Description: "Login label for the button to submit the login page",
+			Other:       "Login",
+		},
+	})
+}
+
+func (m *Messages) LoginError() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "loginError",
+			Description: "Generic login error message when email, credentials, or something else is invalid",
+			Other:       "Invalid email or password",
+		},
+	})
+}
