@@ -121,7 +121,7 @@ func (r *Renderer) newFuncMap(langs ...string) []template.FuncMap {
 			},
 			// EVE Online
 			"CorpName": func() string {
-				return "" // TODO
+				return "" // TODO: I actually need this.
 			},
 			"AllianceName": func() string {
 				return "" // TODO

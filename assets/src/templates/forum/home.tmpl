@@ -1,0 +1,37 @@
+{{template "base/header" .}}
+<p>{{CorpName}}</p>
+<p>{{Locale.Forum}}</p>
+<div>
+  {{/*BEGIN IF THESE ARE CHANGED: Change data/tag.go */}}
+  <div>
+    <p>{{Locale.Corporation}}</p>
+    {{template "forum/preview" (index .preview "announce")}}
+    {{template "forum/preview" (index .preview "events")}}
+    {{template "forum/preview" (index .preview "discuss")}}
+  </div>
+
+  <div>
+    <p>{{Locale.Activities}}</p>
+    {{template "forum/preview" (index .preview "fleet")}}
+    {{template "forum/preview" (index .preview "industry")}}
+    {{template "forum/preview" (index .preview "market")}}
+    {{template "forum/preview" (index .preview "pvp")}}
+    {{template "forum/preview" (index .preview "pve")}}
+  </div>
+
+  <div>
+    <p>{{Locale.Social}}</p>
+    {{template "forum/preview" (index .preview "relations")}}
+    {{template "forum/preview" (index .preview "intel")}}
+    {{template "forum/preview" (index .preview "justice")}}
+    {{template "forum/preview" (index .preview "qna")}}
+  </div>
+
+  <div>
+    <p>{{Locale.Miscellaneous}}</p>
+    {{template "forum/preview" (index .preview "offtopic")}}
+    {{template "forum/preview" (index .preview "uncategorized")}}
+  </div>
+  {{/*END IF THESE ARE CHANGED: Change data/tag.go */}}
+</div>
+{{template "base/footer" .}}

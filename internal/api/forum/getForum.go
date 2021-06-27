@@ -19,9 +19,12 @@ package forum
 import (
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/async"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/app"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
@@ -40,12 +43,22 @@ func (f *Forum) getForum(w http.ResponseWriter, r *http.Request, k app.Session, 
 		}
 	})
 
-	// TODO
-
 	tagdone := <-tagcb
 	err := tagdone()
 	if err != nil {
-		// TODO
+		f.C.MustRenderError(w, r, errors.Wrap(err, "could not obtain tag previews to render"), langs...)
+		return
 	}
-	// TODO
+
+	rc := api.From(r.Context())
+	v := render.NewHTMLView(
+		w,
+		http.StatusOK,
+		"forum/home",
+		rc,
+		map[string]interface{}{
+			"preview": lt,
+		},
+		langs...)
+	f.C.MustRender(v)
 }

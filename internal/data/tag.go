@@ -24,6 +24,7 @@ var (
 	// These tags are hardcoded for now, as custom tagging will require a
 	// lot of work and special logic for "other" or "uncategorized"
 
+	// BEGIN IF THESE ARE CHANGED: Change forum/home.tmpl
 	// Corp
 	Announce = Tag{"announce"}
 	Events   = Tag{"events"}
@@ -37,14 +38,15 @@ var (
 	PVE      = Tag{"pve"}
 
 	// Social
-	Intel     = Tag{"intel"}
 	Relations = Tag{"relations"}
-	QNA       = Tag{"q&a"}
+	Intel     = Tag{"intel"}
 	Justice   = Tag{"justice"}
+	QNA       = Tag{"qna"}
 
 	// Other
 	OffTopic      = Tag{"offtopic"}
 	Uncategorized = Tag{"uncategorized"}
+	// END IF THESE ARE CHANGED: Change forum/home.tmpl
 )
 
 var AllTags = []Tag{

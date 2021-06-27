@@ -1,3 +1,11 @@
+[activities]
+description = "The categorical word for generally doing things in the game"
+other = "Activities"
+
+[announce]
+description = "A word for announcements and broadcasts"
+other = "Announcements"
+
 [authorize]
 description = "Authorize label for the OAuth2 authorization page"
 other = "Authorize"
@@ -6,21 +14,73 @@ other = "Authorize"
 description = "Notifies the user that the browser issued a bad request"
 other = "Your browser issued a bad request."
 
+[corporation]
+description = "The \"corporation\" is the smallest guild-equivalent in EvE Online"
+other = "Corporation"
+
+[discuss]
+description = "A word for general discussions"
+other = "Discuss"
+
 [email]
 description = "E-Mail label for the login & register pages"
 other = "Email"
+
+[events]
+description = "A word for occurrences and events"
+other = "Events"
 
 [fileABug]
 description = "Prompts the user to click on this text in order to file an issue against the software"
 other = "Found a problem? Please consider filing a bug report"
 
+[fleet]
+description = "A word for a fleet of ships in Eve Online"
+other = "Fleet"
+
+[forum]
+description = "Forum is the name of a bulletin-board like system of long-form posts and replies"
+other = "Forum"
+
+[industry]
+description = "A word for the industry in EvE Online"
+other = "Industry"
+
+[intel]
+description = "A word for dealing with secret or confidential intelligence"
+other = "Intel"
+
 [internalServerError]
 description = "Notifies the user that the server had an internal error"
 other = "An unrecoverable error occurred within the server."
 
+[justice]
+description = "A word for dealing with player actions that the corporation would deem criminal or unwanted"
+other = "Justice"
+
+[login]
+description = "Login label for the button to submit the login page"
+other = "Login"
+
+[loginError]
+description = "Generic login error message when email, credentials, or something else is invalid"
+other = "Invalid email or password"
+
+[market]
+description = "A word for the Market in EvE Online"
+other = "Market"
+
 [methodNotAllowed]
 description = "Notifies the user that the browser issued an unsupported HTTP method"
 other = "Your browser issued a request with a method that is disallowed"
+
+[miscellaneous]
+description = "The categorical word for a collection of numerous other small arbitrary topics"
+other = "Miscellaneous"
+
+[offtopic]
+description = "The categorical word for not being topical for any other topics"
+other = "Off-Topic"
 
 [pageNotFound]
 description = "Notifies the user that the webpage was not found"
@@ -30,6 +90,26 @@ other = "The requested page was not found."
 description = "Password label for the login & register pages"
 other = "Password"
 
+[pve]
+description = "An acronym or word for player-versus-environment gameplay"
+other = "PVE"
+
+[pvp]
+description = "An acronym or word for player-versus-player gameplay"
+other = "PVP"
+
+[question-and-answer]
+description = "A word for dedicating a space for asking questions and receiving answers"
+other = "Q&A"
+
+[relations]
+description = "A word for political relationships between corporations or alliances within EvE"
+other = "Relations"
+
+[social]
+description = "The categorical word for generally interacting with other people"
+other = "Social"
+
 [uedamaGateCampRequest]
 description = "Jovial comment that perhaps a user's HTTP request was gate-camped and blown up in an EVE Online system named Uedama"
 other = "Perhaps your request was blown up in an Uedama gate camp?"
@@ -37,3 +117,7 @@ other = "Perhaps your request was blown up in an Uedama gate camp?"
 [uhOh]
 description = "Exclaimation that a mistake or accident happened"
 other = "Uh oh!"
+
+[uncategorized]
+description = "The word for not having a category"
+other = "Uncategorized"

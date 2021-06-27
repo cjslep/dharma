@@ -17,6 +17,7 @@
 package i18n
 
 import (
+	"github.com/cjslep/dharma/internal/data"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
@@ -148,4 +149,173 @@ func (m *Messages) LoginError() (string, error) {
 			Other:       "Invalid email or password",
 		},
 	})
+}
+
+func (m *Messages) Forum() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "forum",
+			Description: "Forum is the name of a bulletin-board like system of long-form posts and replies",
+			Other:       "Forum",
+		},
+	})
+}
+
+func (m *Messages) Corporation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "corporation",
+			Description: "The \"corporation\" is the smallest guild-equivalent in EvE Online",
+			Other:       "Corporation",
+		},
+	})
+}
+
+func (m *Messages) Activities() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "activities",
+			Description: "The categorical word for generally doing things in the game",
+			Other:       "Activities",
+		},
+	})
+}
+
+func (m *Messages) Social() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "social",
+			Description: "The categorical word for generally interacting with other people",
+			Other:       "Social",
+		},
+	})
+}
+
+func (m *Messages) Miscellaneous() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "miscellaneous",
+			Description: "The categorical word for a collection of numerous other small arbitrary topics",
+			Other:       "Miscellaneous",
+		},
+	})
+}
+
+func (m *Messages) TagName(id string) (string, error) {
+	switch id {
+	case data.Announce.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "announce",
+				Description: "A word for announcements and broadcasts",
+				Other:       "Announcements",
+			},
+		})
+	case data.Events.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "events",
+				Description: "A word for occurrences and events",
+				Other:       "Events",
+			},
+		})
+	case data.Discuss.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "discuss",
+				Description: "A word for general discussions",
+				Other:       "Discuss",
+			},
+		})
+	case data.Fleet.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "fleet",
+				Description: "A word for a fleet of ships in Eve Online",
+				Other:       "Fleet",
+			},
+		})
+	case data.Industry.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "industry",
+				Description: "A word for the industry in EvE Online",
+				Other:       "Industry",
+			},
+		})
+	case data.Market.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "market",
+				Description: "A word for the Market in EvE Online",
+				Other:       "Market",
+			},
+		})
+	case data.PVP.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "pvp",
+				Description: "An acronym or word for player-versus-player gameplay",
+				Other:       "PVP",
+			},
+		})
+	case data.PVE.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "pve",
+				Description: "An acronym or word for player-versus-environment gameplay",
+				Other:       "PVE",
+			},
+		})
+	case data.Relations.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "relations",
+				Description: "A word for political relationships between corporations or alliances within EvE",
+				Other:       "Relations",
+			},
+		})
+	case data.Intel.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "intel",
+				Description: "A word for dealing with secret or confidential intelligence",
+				Other:       "Intel",
+			},
+		})
+	case data.Justice.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "justice",
+				Description: "A word for dealing with player actions that the corporation would deem criminal or unwanted",
+				Other:       "Justice",
+			},
+		})
+	case data.QNA.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "question-and-answer",
+				Description: "A word for dedicating a space for asking questions and receiving answers",
+				Other:       "Q&A",
+			},
+		})
+	case data.OffTopic.ID:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "offtopic",
+				Description: "The categorical word for not being topical for any other topics",
+				Other:       "Off-Topic",
+			},
+		})
+	case data.Uncategorized.ID:
+		fallthrough
+	default:
+		return m.l.Localize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:          "uncategorized",
+				Description: "The word for not having a category",
+				Other:       "Uncategorized",
+			},
+		})
+	}
 }

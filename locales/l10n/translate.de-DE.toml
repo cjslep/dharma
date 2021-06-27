@@ -1,19 +1,64 @@
-[authorize]
-description = "Authorize label for the OAuth2 authorization page"
-hash = "sha1-d920d181114a8d9148f3dfdf395365da8ce41586"
-other = "Authorize"
+[announce]
+description = "A word for announcements and broadcasts"
+hash = "sha1-a29b9e2b3ec29d06d0470eb63e4da78633f59daa"
+other = "Announcements"
 
-[email]
-description = "E-Mail label for the login & register pages"
-hash = "sha1-564518b6a27f6e6495006780dc17ee3ecebc9f76"
-other = "Email"
+[discuss]
+description = "A word for general discussions"
+hash = "sha1-ee16b1cbfd5ef8533bf144cd39bb9b63e3bafc71"
+other = "Discuss"
 
-[fileABug]
-description = "Prompts the user to click on this text in order to file an issue against the software"
-hash = "sha1-849e0bab1d6a75d9b6a70645705770e0ddfbb911"
-other = "Found a problem? Please consider filing a bug report"
+[events]
+description = "A word for occurrences and events"
+hash = "sha1-8d508578031e2cea51e4996e8dff497a161e8fc5"
+other = "Events"
 
-[password]
-description = "Password label for the login & register pages"
-hash = "sha1-5f515cbca6ac1f9dd4d4df4a8b8b0f37c9d63b3d"
-other = "Password"
+[fleet]
+description = "A word for a fleet of ships in Eve Online"
+hash = "sha1-ddbd01bb3db4c1ff35488147212875d5a686f34d"
+other = "Fleet"
+
+[industry]
+description = "A word for the industry in EvE Online"
+hash = "sha1-f3e4b2163f27d950b8fdd9a1d0bfc82eca098b78"
+other = "Industry"
+
+[intel]
+description = "A word for dealing with secret or confidential intelligence"
+hash = "sha1-4c27bbc08319883819e2bfd15df7419e9dad099e"
+other = "Intel"
+
+[justice]
+description = "A word for dealing with player actions that the corporation would deem criminal or unwanted"
+hash = "sha1-9fb1e127ff8b2881cf50f07a3b3ee47176845d57"
+other = "Justice"
+
+[market]
+description = "A word for the Market in EvE Online"
+hash = "sha1-fb28b9224d2aca98336e709bb05f87f78cf40191"
+other = "Market"
+
+[pve]
+description = "An acronym or word for player-versus-environment gameplay"
+hash = "sha1-d1b5a09ca17b08893594f2268a2e25f7a0196924"
+other = "PVE"
+
+[pvp]
+description = "An acronym or word for player-versus-player gameplay"
+hash = "sha1-8753ed2f6eed618a969c1b4eab46710582a8ca4a"
+other = "PVP"
+
+[question-and-answer]
+description = "A word for dedicating a space for asking questions and receiving answers"
+hash = "sha1-eabe91eca288669daf9d02b1ce2ede1e954a8c59"
+other = "Q&A"
+
+[relations]
+description = "A word for political relationships between corporations or alliances within EvE"
+hash = "sha1-efcb97f6cef5ae0240674d93b48b66acd69c1759"
+other = "Relations"
+
+[uncategorized]
+description = "The word for not having a category"
+hash = "sha1-24a131757321e846423a23ce80f8f7a6fd40fb7f"
+other = "Uncategorized"
