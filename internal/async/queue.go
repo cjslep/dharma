@@ -58,10 +58,12 @@ func (m *Messenger) DoAsync(f DoFn) <-chan CallbackFn {
 		}
 		return cb
 	}
-	m.in <- message{
-		Do:  f,
-		Out: cb,
-	}
+	go func() {
+		m.in <- message{
+			Do:  f,
+			Out: cb,
+		}
+	}()
 	return cb
 }
 
@@ -73,8 +75,12 @@ func (m *Messenger) DoBlocking(f DoFn) error {
 }
 
 func (m *Messenger) isClosed() bool {
-	_, ok := <-m.done
-	return !ok
+	select {
+	case _, ok := <-m.done:
+		return !ok
+	default:
+		return false
+	}
 }
 
 // Queue gracefully facilitates fan-in message passing.
