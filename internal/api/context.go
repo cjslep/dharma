@@ -22,9 +22,9 @@ import (
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
-	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/app"
 	"github.com/rs/zerolog"
 	"golang.org/x/text/language"
@@ -35,7 +35,8 @@ type Context struct {
 	FedQueue              *async.Queue
 	OAC                   *esi.OAuth2Client
 	L                     *zerolog.Logger
-	DB                    *db.DB
+	ESI                   *services.ESI
+	Tags                  *services.Tags
 	F                     app.Framework
 	Features              *features.Engine
 	MustRender            func(*render.View)

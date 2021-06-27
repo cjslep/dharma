@@ -19,10 +19,33 @@ package forum
 import (
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/async"
+	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
 func (f *Forum) getForum(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+	m := f.C.APIQueue.Messenger()
+	var lt map[string]*services.LatestTag
+	tagcb := m.DoAsync(func() async.CallbackFn {
+		lang := language.English
+		if len(langs) > 0 {
+			lang = langs[0]
+		}
+		l, err := f.C.Tags.GetLatestSnippets(f.Display, f.NPreview, f.SizePreview, f.MaxHTMLDepth, lang)
+		return func() error {
+			lt = l
+			return err
+		}
+	})
+
+	// TODO
+
+	tagdone := <-tagcb
+	err := tagdone()
+	if err != nil {
+		// TODO
+	}
 	// TODO
 }

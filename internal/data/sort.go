@@ -14,25 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package forum
+package data
 
-import (
-	"github.com/cjslep/dharma/internal/api"
-	"github.com/cjslep/dharma/internal/data"
-	"github.com/go-fed/apcore/app"
-)
+type LatestSnippets []Snippet
 
-type Forum struct {
-	C            *api.Context
-	Display      []data.Tag
-	NPreview     int
-	SizePreview  int
-	MaxHTMLDepth int
+func (l LatestSnippets) Len() int {
+	return len(l)
 }
 
-func (f *Forum) Route(r app.Router) {
-	// TODO
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum", api.MustHaveSessionAndLanguageCode(f.C, f.getForum))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/tags", api.MustHaveSessionAndLanguageCode(f.C, f.getTags))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/threads", api.MustHaveSessionAndLanguageCode(f.C, f.getThreads))
+func (l LatestSnippets) Less(i, j int) bool {
+	return l[i].Created.After(l[j].Created)
+}
+
+func (l LatestSnippets) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
 }

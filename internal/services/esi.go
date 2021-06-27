@@ -14,25 +14,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package forum
+package services
 
 import (
-	"github.com/cjslep/dharma/internal/api"
-	"github.com/cjslep/dharma/internal/data"
-	"github.com/go-fed/apcore/app"
+	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/internal/db"
 )
 
-type Forum struct {
-	C            *api.Context
-	Display      []data.Tag
-	NPreview     int
-	SizePreview  int
-	MaxHTMLDepth int
+type ESI struct {
+	DB *db.DB
 }
 
-func (f *Forum) Route(r app.Router) {
+func (e *ESI) SetEvePublicKeys(o *esi.OAuthKeysMetadata) error {
 	// TODO
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum", api.MustHaveSessionAndLanguageCode(f.C, f.getForum))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/tags", api.MustHaveSessionAndLanguageCode(f.C, f.getTags))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/threads", api.MustHaveSessionAndLanguageCode(f.C, f.getThreads))
+	return e.DB.SetEvePublicKeys(o)
+}
+
+func (e *ESI) GetEvePublicKeys() (*esi.OAuthKeysMetadata, error) {
+	// TODO
+	return e.DB.GetEvePublicKeys()
+}
+
+func (e *ESI) SetEveTokens(t *esi.Tokens) error {
+	// TODO
+	return e.DB.SetEveTokens(t)
+}
+
+func (e *ESI) GetEveTokens() (*esi.Tokens, error) {
+	// TODO
+	return e.DB.GetEveTokens()
 }

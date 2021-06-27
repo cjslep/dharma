@@ -28,10 +28,12 @@ import (
 	"github.com/cjslep/dharma/internal/api/site"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/config"
+	"github.com/cjslep/dharma/internal/data"
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/log"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
@@ -51,9 +53,10 @@ type FederatedApp struct {
 	features *features.Engine
 
 	// At config-setting time
-	l   *zerolog.Logger
-	oac *esi.OAuth2Client
-	r   *render.Renderer
+	config *config.Config
+	l      *zerolog.Logger
+	oac    *esi.OAuth2Client
+	r      *render.Renderer
 
 	// At build routes time
 	db *db.DB
@@ -78,7 +81,8 @@ func (a *FederatedApp) apiContext() *api.Context {
 		FedQueue:              a.fedQueue,
 		OAC:                   a.oac,
 		L:                     a.l,
-		DB:                    a.db,
+		ESI:                   &services.ESI{a.db},
+		Tags:                  &services.Tags{a.db},
 		F:                     a.f,
 		Features:              a.features,
 		MustRender:            a.mustRender,
@@ -114,6 +118,9 @@ func (a *FederatedApp) NewConfiguration() interface{} {
 		NLogFiles:            5,
 		MaxMBSizeLogFiles:    100,
 		MaxDayAgeLogFiles:    0,
+		NPreview:             3,
+		LenPreview:           80,
+		MaxHTMLDepth:         255,
 	}
 }
 
@@ -122,6 +129,7 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 	if !ok {
 		return errors.New("configuration is not of type *config.Config")
 	}
+	a.config = c
 	h := &http.Client{} // TODO
 	a.oac = &esi.OAuth2Client{
 		RedirectURI: "https://" + apc.Host() + esiauth.Callback,
@@ -261,7 +269,7 @@ func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framewor
 	a.f = f
 	ctx := a.apiContext()
 	r := []api.Router{
-		&forum.Forum{ctx},
+		&forum.Forum{ctx, data.AllTags, a.config.NPreview, a.config.LenPreview, a.config.MaxHTMLDepth},
 		&site.Site{ctx},
 		&esiauth.ESIAuth{ctx},
 	}

@@ -48,7 +48,7 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request, k app.Sess
 	}
 
 	// Verify the authenticity of the authorization.
-	ek, err := e.C.DB.GetEvePublicKeys()
+	ek, err := e.C.ESI.GetEvePublicKeys()
 	if err != nil {
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not retrieve EVE public keys"))
 		return
@@ -71,7 +71,7 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request, k app.Sess
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not construct tokens"))
 		return
 	}
-	err = e.C.DB.SetEveTokens(tokens)
+	err = e.C.ESI.SetEveTokens(tokens)
 	if err != nil {
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not store tokens"))
 		return

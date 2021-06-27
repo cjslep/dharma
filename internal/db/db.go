@@ -17,7 +17,11 @@
 package db
 
 import (
+	"time"
+
 	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/internal/data"
+	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
 )
 
@@ -47,6 +51,16 @@ func (d *DB) SetEveTokens(t *esi.Tokens) error {
 }
 
 func (d *DB) GetEveTokens() (*esi.Tokens, error) {
+	// TODO
+	return nil, nil
+}
+
+type LatestPublicTagsResult struct {
+	T        vocab.Type
+	Received time.Time
+}
+
+func (d *DB) FetchLatestPublicTags(display []data.Tag, n int) ([]LatestPublicTagsResult, error) {
 	// TODO
 	return nil, nil
 }
