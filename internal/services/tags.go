@@ -17,6 +17,7 @@
 package services
 
 import (
+	"context"
 	"sort"
 
 	"github.com/cjslep/dharma/internal/data"
@@ -38,8 +39,8 @@ func (l *LatestTag) sort() {
 }
 
 // GetLatestSnippets obtains the latest snippets
-func (t *Tags) GetLatestSnippets(display []data.Tag, n, length, maxHtmlDepth int, preferLang language.Tag) (map[string]*LatestTag, error) {
-	l, err := t.DB.FetchLatestPublicTags(display, n)
+func (t *Tags) GetLatestSnippets(ctx context.Context, display []data.Tag, n, length, maxHtmlDepth int, preferLang language.Tag) (map[string]*LatestTag, error) {
+	l, err := t.DB.FetchLatestPublicTags(ctx, display, n)
 	if err != nil {
 		return nil, err
 	}

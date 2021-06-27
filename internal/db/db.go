@@ -17,6 +17,7 @@
 package db
 
 import (
+	"context"
 	"time"
 
 	"github.com/cjslep/dharma/esi"
@@ -35,22 +36,22 @@ func New(db app.Database) *DB {
 	}
 }
 
-func (d *DB) SetEvePublicKeys(o *esi.OAuthKeysMetadata) error {
+func (d *DB) SetEvePublicKeys(c context.Context, o *esi.OAuthKeysMetadata) error {
 	// TODO
 	return nil
 }
 
-func (d *DB) GetEvePublicKeys() (*esi.OAuthKeysMetadata, error) {
+func (d *DB) GetEvePublicKeys(c context.Context) (*esi.OAuthKeysMetadata, error) {
 	// TODO
 	return nil, nil
 }
 
-func (d *DB) SetEveTokens(t *esi.Tokens) error {
+func (d *DB) SetEveTokens(c context.Context, t *esi.Tokens) error {
 	// TODO
 	return nil
 }
 
-func (d *DB) GetEveTokens() (*esi.Tokens, error) {
+func (d *DB) GetEveTokens(c context.Context) (*esi.Tokens, error) {
 	// TODO
 	return nil, nil
 }
@@ -60,7 +61,7 @@ type LatestPublicTagsResult struct {
 	Received time.Time
 }
 
-func (d *DB) FetchLatestPublicTags(display []data.Tag, n int) ([]LatestPublicTagsResult, error) {
+func (d *DB) FetchLatestPublicTags(c context.Context, display []data.Tag, n int) ([]LatestPublicTagsResult, error) {
 	// TODO
 	return nil, nil
 }

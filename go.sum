@@ -354,6 +354,8 @@ github.com/mattn/go-isatty v0.0.8/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hd
 github.com/mattn/go-isatty v0.0.9/go.mod h1:YNRxwqDuOph6SZLI9vUUz6OYw3QyUt7WiY2yME+cCiQ=
 github.com/mattn/go-isatty v0.0.12 h1:wuysRhFDzyxgEmMf5xjvJ2M9dZoWAXNNr5LSBS7uHXY=
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
+github.com/mholt/binding v0.3.0 h1:gGLnN9XAbyi5st4t1vDfmhOkHUbMwUGegVdnAnCRYvk=
+github.com/mholt/binding v0.3.0/go.mod h1:fdTUY9qwc5FrbACIVqskE2Yjb3O/Kt9cPJ6TauRzkjw=
 github.com/microcosm-cc/bluemonday v1.0.7 h1:6yAQfk4XT+PI/dk1ZeBp1gr3Q2Hd1DR0O3aEyPUJVTE=
 github.com/microcosm-cc/bluemonday v1.0.7/go.mod h1:HOT/6NaBlR0f9XlxD3zolN6Z3N8Lp4pvhp+jLS5ihnI=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=

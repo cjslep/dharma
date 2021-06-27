@@ -66,11 +66,11 @@ type FederatedApp struct {
 	startupErr error
 }
 
-func New(f *features.Engine, software app.Software) *FederatedApp {
+func New(bg context.Context, f *features.Engine, software app.Software) *FederatedApp {
 	return &FederatedApp{
 		software: software,
-		apiQueue: async.NewQueue(),
-		fedQueue: async.NewQueue(),
+		apiQueue: async.NewQueue(bg),
+		fedQueue: async.NewQueue(bg),
 		features: f,
 	}
 }
@@ -83,6 +83,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		L:                     a.l,
 		ESI:                   &services.ESI{a.db},
 		Tags:                  &services.Tags{a.db},
+		Posts:                 &services.Posts{a.db},
 		F:                     a.f,
 		Features:              a.features,
 		MustRender:            a.mustRender,
@@ -191,13 +192,7 @@ func (a *FederatedApp) BadRequestHandler(f app.Framework) http.Handler {
 		ctx,
 		func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 			rc := api.From(r.Context())
-			v := render.NewHTMLView(
-				w,
-				http.StatusBadRequest,
-				"status/bad_request",
-				rc,
-				nil,
-				langs...)
+			v := render.NewBadRequestView(w, rc, langs...)
 			ctx.MustRender(v)
 		}))
 }

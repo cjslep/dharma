@@ -14,4 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package forum
+package services
+
+import (
+	"context"
+	"net/url"
+
+	"github.com/cjslep/dharma/internal/data"
+	"github.com/cjslep/dharma/internal/db"
+	"golang.org/x/text/language"
+)
+
+type Posts struct {
+	DB *db.DB
+}
+
+func (p *Posts) CreateNewPost(c context.Context, title, body, user string, tags []data.Tag, lang language.Tag) (id *url.URL, err error) {
+	// TODO
+	return
+}

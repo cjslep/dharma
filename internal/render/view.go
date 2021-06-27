@@ -56,6 +56,16 @@ func NewErrorView(w io.Writer, l *zerolog.Logger, e error, rc RenderNavDataGette
 	}, langs...)
 }
 
+func NewBadRequestView(w io.Writer, rc RenderNavDataGetter, langs ...language.Tag) *View {
+	return NewHTMLView(
+		w,
+		http.StatusBadRequest,
+		"status/bad_request",
+		rc,
+		nil,
+		langs...)
+}
+
 func NewHTMLView(w io.Writer, status int, name string, rc RenderNavDataGetter, data map[string]interface{}, langs ...language.Tag) *View {
 	l := make([]string, len(langs))
 	for i := range langs {

@@ -17,24 +17,12 @@
 package forum
 
 import (
-	"github.com/cjslep/dharma/internal/api"
-	"github.com/cjslep/dharma/internal/data"
+	"net/http"
+
 	"github.com/go-fed/apcore/app"
+	"golang.org/x/text/language"
 )
 
-type Forum struct {
-	C            *api.Context
-	Display      []data.Tag
-	NPreview     int
-	SizePreview  int
-	MaxHTMLDepth int
-}
-
-func (f *Forum) Route(r app.Router) {
+func (f *Forum) getNewPost(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	// TODO
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum", api.MustHaveSessionAndLanguageCode(f.C, f.getForum))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/tags", api.MustHaveSessionAndLanguageCode(f.C, f.getTags))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/threads", api.MustHaveSessionAndLanguageCode(f.C, f.getThreads))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/post/new", api.MustHaveSessionAndLanguageCode(f.C, f.getNewPost))
-	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/forum/post/new", api.MustHaveSessionAndLanguageCode(f.C, f.postNewPost))
 }

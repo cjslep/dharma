@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-openapi/validate v0.20.2
 	github.com/gorilla/mux v1.8.0
+	github.com/mholt/binding v0.3.0 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.1.2
 	github.com/pascaldekloe/jwt v1.10.0
 	github.com/pelletier/go-toml/v2 v2.0.0-beta.3

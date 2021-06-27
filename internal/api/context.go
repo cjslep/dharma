@@ -37,6 +37,7 @@ type Context struct {
 	L                     *zerolog.Logger
 	ESI                   *services.ESI
 	Tags                  *services.Tags
+	Posts                 *services.Posts
 	F                     app.Framework
 	Features              *features.Engine
 	MustRender            func(*render.View)

@@ -17,6 +17,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/cjslep/dharma/internal/activitypub"
 	"github.com/cjslep/dharma/internal/features"
 	"github.com/go-fed/apcore"
@@ -29,6 +31,6 @@ func main() {
 
 	var f []features.Feature
 	e := features.New(f)
-	a := activitypub.New(e, software)
+	a := activitypub.New(context.Background(), e, software)
 	apcore.Run(a)
 }

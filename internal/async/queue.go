@@ -17,8 +17,11 @@
 package async
 
 import (
+	"context"
 	"errors"
 	"sync"
+
+	"github.com/cjslep/dharma/internal/util"
 )
 
 // CallbackFn is a callback function signature.
@@ -28,7 +31,7 @@ import (
 type CallbackFn func() error
 
 // DoFn is the basic unit of async execution.
-type DoFn func() CallbackFn
+type DoFn func(context.Context) CallbackFn
 
 // message is a generic message to handle asynchronously.
 type message struct {
@@ -36,13 +39,16 @@ type message struct {
 	Do DoFn
 	// Out allows passing back a callback once async processing is done.
 	Out chan<- CallbackFn
+	// The merged context of the request -- the DoFn will be passed this
+	// context in case either the queue or the requestor cancels or times
+	// out.
+	MergedCtx context.Context
 }
 
 // Messenger is held by clients who wish to execute something asynchronously.
 type Messenger struct {
-	closed bool
-	in     chan<- message
-	done   chan bool
+	in        chan<- message
+	parentCtx context.Context
 }
 
 // DoAsync executes the DoFn asynchronously, returning a channel which will have
@@ -50,18 +56,21 @@ type Messenger struct {
 //
 // If the Messenger is already closed, a callback function returning an error is
 // given.
-func (m *Messenger) DoAsync(f DoFn) <-chan CallbackFn {
+func (m *Messenger) DoAsync(ctx context.Context, f DoFn) <-chan CallbackFn {
 	cb := make(chan CallbackFn, 1)
-	if m.isClosed() {
-		cb <- func() error {
-			return errors.New("Queue channel already closed")
-		}
-		return cb
-	}
+	mctx := util.Merge(ctx, m.parentCtx)
 	go func() {
-		m.in <- message{
-			Do:  f,
-			Out: cb,
+		select {
+		case m.in <- message{
+			Do:        f,
+			Out:       cb,
+			MergedCtx: mctx,
+		}:
+		case <-mctx.Done():
+			cb <- func() error {
+				return errors.New("work was interrupted or cancelled")
+			}
+			break
 		}
 	}()
 	return cb
@@ -69,18 +78,9 @@ func (m *Messenger) DoAsync(f DoFn) <-chan CallbackFn {
 
 // DoBlocking executes the function in the Queue queue, blocks until a callback
 // is received, then executes the callback and returns any errors.
-func (m *Messenger) DoBlocking(f DoFn) error {
-	cb := <-m.DoAsync(f)
+func (m *Messenger) DoBlocking(ctx context.Context, f DoFn) error {
+	cb := <-m.DoAsync(ctx, f)
 	return cb()
-}
-
-func (m *Messenger) isClosed() bool {
-	select {
-	case _, ok := <-m.done:
-		return !ok
-	default:
-		return false
-	}
 }
 
 // Queue gracefully facilitates fan-in message passing.
@@ -89,15 +89,18 @@ type Queue struct {
 	startOnce sync.Once
 	c         chan message
 	m         []*Messenger
-	done      chan bool
+	ctx       context.Context
+	cfn       context.CancelFunc
 	ackDone   chan bool
 }
 
-func NewQueue() *Queue {
+func NewQueue(ctx context.Context) *Queue {
+	cc, cfn := context.WithCancel(ctx)
 	return &Queue{
 		c:       make(chan message),
 		m:       make([]*Messenger, 0),
-		done:    make(chan bool),
+		ctx:     cc,
+		cfn:     cfn,
 		ackDone: make(chan bool),
 	}
 }
@@ -112,19 +115,14 @@ func (a *Queue) Start() error {
 	}
 	a.startOnce.Do(func() {
 		go func() {
-		GoLoop:
 			for {
 				select {
 				case do := <-a.c:
-					cb := do.Do()
+					cb := do.Do(do.MergedCtx)
 					do.Out <- cb
-				case <-a.done:
-					break GoLoop
+				case <-a.ctx.Done():
+					break
 				}
-			}
-			for do := range a.c {
-				cb := do.Do()
-				do.Out <- cb
 			}
 			close(a.ackDone)
 		}()
@@ -141,7 +139,7 @@ func (a *Queue) Stop() {
 		return
 	}
 	a.stopOnce.Do(func() {
-		close(a.done)
+		a.cfn()
 		<-a.ackDone
 	})
 }
@@ -154,14 +152,14 @@ func (a *Queue) Messenger() *Messenger {
 		return nil
 	}
 	return &Messenger{
-		in:   a.c,
-		done: a.done,
+		in:        a.c,
+		parentCtx: a.ctx,
 	}
 }
 
 func (a *Queue) closed() bool {
 	select {
-	case _, ok := <-a.done:
+	case _, ok := <-a.ctx.Done():
 		return !ok
 	default:
 		return false

@@ -17,6 +17,8 @@
 package services
 
 import (
+	"context"
+
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/db"
 )
@@ -25,22 +27,22 @@ type ESI struct {
 	DB *db.DB
 }
 
-func (e *ESI) SetEvePublicKeys(o *esi.OAuthKeysMetadata) error {
+func (e *ESI) SetEvePublicKeys(c context.Context, o *esi.OAuthKeysMetadata) error {
 	// TODO
-	return e.DB.SetEvePublicKeys(o)
+	return e.DB.SetEvePublicKeys(c, o)
 }
 
-func (e *ESI) GetEvePublicKeys() (*esi.OAuthKeysMetadata, error) {
+func (e *ESI) GetEvePublicKeys(c context.Context) (*esi.OAuthKeysMetadata, error) {
 	// TODO
-	return e.DB.GetEvePublicKeys()
+	return e.DB.GetEvePublicKeys(c)
 }
 
-func (e *ESI) SetEveTokens(t *esi.Tokens) error {
+func (e *ESI) SetEveTokens(c context.Context, t *esi.Tokens) error {
 	// TODO
-	return e.DB.SetEveTokens(t)
+	return e.DB.SetEveTokens(c, t)
 }
 
-func (e *ESI) GetEveTokens() (*esi.Tokens, error) {
+func (e *ESI) GetEveTokens(c context.Context) (*esi.Tokens, error) {
 	// TODO
-	return e.DB.GetEveTokens()
+	return e.DB.GetEveTokens(c)
 }
