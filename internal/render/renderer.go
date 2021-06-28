@@ -17,6 +17,7 @@
 package render
 
 import (
+	"fmt"
 	"html/template"
 	"runtime"
 
@@ -31,12 +32,13 @@ import (
 )
 
 type Renderer struct {
-	b        *i18n.Bundle
-	baseOpts render.Options
-	debug    bool
+	b          *i18n.Bundle
+	baseOpts   render.Options
+	debug      bool
+	staticRoot string
 }
 
-func New(c *config.Config, debug bool) (*Renderer, error) {
+func New(c *config.Config, debug bool, staticRoot string) (*Renderer, error) {
 	b := i18n.NewBundle(language.English)
 	b.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
@@ -45,8 +47,9 @@ func New(c *config.Config, debug bool) (*Renderer, error) {
 	}
 
 	r := &Renderer{
-		b:     b,
-		debug: debug,
+		b:          b,
+		debug:      debug,
+		staticRoot: staticRoot,
 	}
 	r.baseOpts = render.Options{
 		JSONContentType:           "application/json;charset=utf-8",
@@ -96,10 +99,10 @@ func (r *Renderer) newFuncMap(langs ...string) []template.FuncMap {
 				return "" // TODO
 			},
 			"JsDir": func() string {
-				return "" // TODO
+				return fmt.Sprintf("%s/js", r.staticRoot)
 			},
 			"CssDir": func() string {
-				return "" // TODO
+				return fmt.Sprintf("%s/css", r.staticRoot)
 			},
 			// Utility
 			"Escape": func(s string) template.HTML {

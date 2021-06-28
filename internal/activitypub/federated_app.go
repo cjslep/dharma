@@ -136,7 +136,7 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 		Secret:      c.APIKey,
 		Client:      h,
 	}
-	a.r, a.startupErr = render.New(c, debug)
+	a.r, a.startupErr = render.New(c, debug, "/static")
 	a.l = log.Logger(debug || c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
 	return nil
 }

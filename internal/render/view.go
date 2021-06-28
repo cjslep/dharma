@@ -17,6 +17,7 @@
 package render
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -39,6 +40,8 @@ type htmlData struct {
 	Name  string
 	Data  map[string]interface{}
 	Langs []string
+	CSS   string
+	JS    string
 }
 
 type jsonData struct {
@@ -82,6 +85,8 @@ func NewHTMLView(w io.Writer, status int, name string, rc RenderNavDataGetter, d
 			Name:  name,
 			Data:  data,
 			Langs: l,
+			CSS:   fmt.Sprintf("./%s.css", name),
+			JS:    fmt.Sprintf("./%s.js", name),
 		},
 	}
 }
@@ -108,6 +113,7 @@ func (v *View) render(base render.Options, funcMap func(langs ...string) []templ
 	if v.isHTML() {
 		base.Funcs = funcMap(v.htmlData.Langs...)
 		v.maybeAddDebugData(base)
+		v.addResourceData()
 		r := render.New(base)
 		return v.html(r)
 	} else if v.isJSON() {
@@ -137,5 +143,14 @@ func (v *View) maybeAddDebugData(r render.Options) {
 			"renderStatus":  v.status,
 			"html":          v.htmlData,
 			"renderOptions": r,
+		})
+}
+
+func (v *View) addResourceData() {
+	util.SoftMapMergeInto(v.htmlData.Data,
+		"resources",
+		map[string]interface{}{
+			"css": v.htmlData.CSS,
+			"js":  v.htmlData.JS,
 		})
 }

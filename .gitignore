@@ -3,6 +3,7 @@ esi/client
 esi/models
 locales/gen_locales.go
 assets/gen_assets.go
+assets/src/css
 dharma
 config.ini
 cookie_authn.key
