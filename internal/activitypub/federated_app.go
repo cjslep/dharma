@@ -83,7 +83,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		L:                     a.l,
 		ESI:                   &services.ESI{a.db},
 		Tags:                  &services.Tags{a.db},
-		Posts:                 &services.Posts{a.db},
+		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
 		F:                     a.f,
 		Features:              a.features,
 		MustRender:            a.mustRender,
@@ -100,14 +100,12 @@ func (a *FederatedApp) mustRender(v *render.View) {
 func (a *FederatedApp) Start() error {
 	a.apiQueue.Start()
 	a.fedQueue.Start()
-	// TODO
 	return a.startupErr
 }
 
 func (a *FederatedApp) Stop() error {
 	a.fedQueue.Stop()
 	a.apiQueue.Stop()
-	// TODO
 	return nil
 }
 

@@ -63,11 +63,23 @@ func (f *Forum) postNewPost(w http.ResponseWriter, r *http.Request, k app.Sessio
 		return
 	}
 
-	// TODO: Check tags for bad request
+	tmpDeduped := make(map[data.Tag]bool, len(npr.Tags))
+	for _, t := range npr.Tags {
+		tmpDeduped[data.ToTag(t)] = true
+	}
 	var validatedTags []data.Tag
+	for k := range tmpDeduped {
+		validatedTags = append(validatedTags, k)
+	}
 
-	// TODO: Determine the language
 	var lang language.Tag
+	if len(langs) > 0 {
+		lang = langs[0]
+	} else {
+		v := render.NewBadRequestView(w, rc, langs...)
+		f.C.MustRender(v)
+		return
+	}
 
 	user, err := k.UserID()
 	if err != nil {
@@ -86,5 +98,5 @@ func (f *Forum) postNewPost(w http.ResponseWriter, r *http.Request, k app.Sessio
 		}
 	})
 
-	// TODO: Redirect, bad request, internal error, etc
+	http.Redirect(w, r, id.String(), http.StatusFound)
 }

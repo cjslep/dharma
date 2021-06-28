@@ -70,6 +70,39 @@ type Tag struct {
 	ID string // Is also the user-displayable string
 }
 
+func ToTag(s string) Tag {
+	switch s {
+	case "announce":
+		return Announce
+	case "events":
+		return Events
+	case "discuss":
+		return Discuss
+	case "fleet":
+		return Fleet
+	case "industry":
+		return Industry
+	case "market":
+		return Market
+	case "pvp":
+		return PVP
+	case "pve":
+		return PVE
+	case "relations":
+		return Relations
+	case "intel":
+		return Intel
+	case "justice":
+		return Justice
+	case "qna":
+		return QNA
+	case "offtopic":
+		return OffTopic
+	default:
+		return Uncategorized
+	}
+}
+
 type tagable interface {
 	GetActivityStreamsTag() vocab.ActivityStreamsTagProperty
 }
