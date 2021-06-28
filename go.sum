@@ -61,10 +61,8 @@ github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb/go.mod h1:xkRDCp4j0
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a h1:a1eN6o5bSw3oYKql7FDioTjE7zYp7NTq6pf3Vu8HWv4=
 github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a/go.mod h1:v4QoPaAzjWZ8zN2VFVGL5ep9C02mst0hQYHUpQwso4Q=
-github.com/go-fed/apcore v0.0.0-20210626095153-b3f527b786df h1:mFxLVC2nYy0Mbwdf9I7a/xIkCrU1gPQARrlBO3NcMw0=
-github.com/go-fed/apcore v0.0.0-20210626095153-b3f527b786df/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
-github.com/go-fed/apcore v0.0.0-20210628132506-289109fa3973 h1:A5PbzbmuR5ANnncSllhHLWefzGJNtHLSkIcQdgF2C1s=
-github.com/go-fed/apcore v0.0.0-20210628132506-289109fa3973/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
+github.com/go-fed/apcore v0.0.0-20210628152547-93c49abc12c7 h1:RujitW0eN9l5owhQRj6Sh+5r61n0gxVG8HrTAcm/dyE=
+github.com/go-fed/apcore v0.0.0-20210628152547-93c49abc12c7/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
 github.com/go-fed/httpsig v0.1.1-0.20190914113940-c2de3672e5b5/go.mod h1:T56HUNYZUQ1AGUzhAYPugZfp36sKApVnGBgKlIY+aIE=
 github.com/go-fed/httpsig v1.1.1-0.20201221212626-dda7895774cb h1:0TkVxVVllUkoQwsW2ePyZyJD5Sd1wS8fMmMRG2slrOU=
 github.com/go-fed/httpsig v1.1.1-0.20201221212626-dda7895774cb/go.mod h1:RCMrTZvN1bJYtofsG4rd5NaO5obxQ5xBkdiS7xsT7bM=

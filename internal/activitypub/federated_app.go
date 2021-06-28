@@ -291,6 +291,11 @@ func (a *FederatedApp) Paths() app.Paths {
 	}
 }
 
+func (a *FederatedApp) StaticServingEnabled() bool {
+	// We compile assets into our binary
+	return false
+}
+
 func (a *FederatedApp) NewIDPath(c context.Context, t vocab.Type) (path string, err error) {
 	// TODO
 	return "", errors.Errorf("unhandled type name: %s", t.GetTypeName())

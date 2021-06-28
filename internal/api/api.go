@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"path"
 
+	"github.com/cjslep/dharma/assets"
 	"github.com/go-fed/apcore/app"
 	"github.com/gorilla/mux"
 	"golang.org/x/text/language"
@@ -31,6 +32,7 @@ type Router interface {
 
 func BuildRoutes(ar app.Router, rt []Router, ctx *Context) {
 	ar.Use(getSession(ctx))
+	assets.AddAssetHandlers(ar)
 	// Capture the locale in routing HTML rendered web pages
 	ar.NewRoute().WebOnlyHandler("/", redirToEnHomepage())
 	localeRouter := ar.PathPrefix("/{locale}").Subrouter()

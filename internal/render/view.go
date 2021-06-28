@@ -85,8 +85,8 @@ func NewHTMLView(w io.Writer, status int, name string, rc RenderNavDataGetter, d
 			Name:  name,
 			Data:  data,
 			Langs: l,
-			CSS:   fmt.Sprintf("./%s.css", name),
-			JS:    fmt.Sprintf("./%s.js", name),
+			CSS:   fmt.Sprintf("%s.css", name),
+			JS:    fmt.Sprintf("%s.js", name),
 		},
 	}
 }

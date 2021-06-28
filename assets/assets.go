@@ -20,6 +20,9 @@ package assets
 
 import (
 	"io/ioutil"
+	"net/http"
+
+	"github.com/go-fed/apcore/app"
 )
 
 func Asset(name string) ([]byte, error) {
@@ -38,4 +41,10 @@ func AssetNames() []string {
 		s = append(s, k[1:]) // Omit leading '/'
 	}
 	return s
+}
+
+func AddAssetHandlers(r app.Router) {
+	sr := r.NewRoute().PathPrefix("/static/").Subrouter()
+	sr.NewRoute().Path("/css/{rest:[a-zA-Z0-9=\\-\\/\\.]+}").Handler(http.StripPrefix("/static/", http.FileServer(assets)))
+	sr.NewRoute().Path("/js/{rest:[a-zA-Z0-9=\\-\\/\\.]+}").Handler(http.StripPrefix("/static/", http.FileServer(assets)))
 }

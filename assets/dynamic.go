@@ -26,6 +26,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/go-fed/apcore/app"
 	"github.com/pkg/errors"
 )
 
@@ -34,7 +35,7 @@ const (
 	prefix1 = "src"
 )
 
-var assets http.FileSystem = http.Dir(filepath.Join(prefix0, prefix1))
+var assets http.FileSystem = http.Dir(filepath.Join(".", prefix0, prefix1))
 
 func Asset(name string) ([]byte, error) {
 	bs, err := ioutil.ReadFile(filepath.Join(prefix0, prefix1, name))
@@ -67,4 +68,10 @@ func AssetNames() []string {
 		panic(err) // Only permitted with +build dev
 	}
 	return out
+}
+
+func AddAssetHandlers(r app.Router) {
+	sr := r.PathPrefix("/static").Subrouter()
+	sr.Handle("/css/{rest:[a-zA-Z0-9=\\-\\/\\.]+}", http.StripPrefix("/static/", http.FileServer(assets)))
+	sr.Handle("/js/{rest:[a-zA-Z0-9=\\-\\/\\.]+}", http.StripPrefix("/static/", http.FileServer(assets)))
 }

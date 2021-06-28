@@ -17,7 +17,6 @@
 package render
 
 import (
-	"fmt"
 	"html/template"
 	"runtime"
 
@@ -99,10 +98,10 @@ func (r *Renderer) newFuncMap(langs ...string) []template.FuncMap {
 				return "" // TODO
 			},
 			"JsDir": func() string {
-				return fmt.Sprintf("%s/js", r.staticRoot)
+				return "/static/js"
 			},
 			"CssDir": func() string {
-				return fmt.Sprintf("%s/css", r.staticRoot)
+				return "/static/css"
 			},
 			// Utility
 			"Escape": func(s string) template.HTML {
