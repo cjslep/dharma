@@ -329,3 +329,23 @@ func (m *Messages) Languages() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) NoPostsYet() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "noPostsYet",
+			Description: "Describes the lack of posts yet in a forum category",
+			Other:       "No posts yet.",
+		},
+	})
+}
+
+func (m *Messages) BeTheFirstToPost() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "beTheFirstToPost",
+			Description: "Suggestion to the user to be the first one to post in an empty forum category",
+			Other:       "Be the first one to create a post in this category!",
+		},
+	})
+}

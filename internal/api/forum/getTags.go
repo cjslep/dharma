@@ -32,6 +32,7 @@ import (
 
 func (f *Forum) getTags(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	tag := mux.Vars(r)["tag"]
+	dataTag := data.ToTag(tag)
 	var tp []data.ThreadPreview
 	m := f.C.APIQueue.Messenger()
 	tagcb := m.DoAsync(r.Context(), func(ctx context.Context) async.CallbackFn {
@@ -39,7 +40,7 @@ func (f *Forum) getTags(w http.ResponseWriter, r *http.Request, k app.Session, l
 		if len(langs) > 0 {
 			lang = langs[0]
 		}
-		l, err := f.C.Tags.GetThreadPreviewsForTag(ctx, data.ToTag(tag), f.NListThreads, f.MaxHTMLDepth /*TODO: page=*/, 0, lang)
+		l, err := f.C.Tags.GetThreadPreviewsForTag(ctx, dataTag, f.NListThreads, f.MaxHTMLDepth /*TODO: page=*/, 0, lang)
 		return func() error {
 			tp = l
 			return err
@@ -62,6 +63,7 @@ func (f *Forum) getTags(w http.ResponseWriter, r *http.Request, k app.Session, l
 		"forum/tags",
 		rc,
 		map[string]interface{}{
+			"tag":      dataTag,
 			"previews": tp,
 		},
 		langs...)

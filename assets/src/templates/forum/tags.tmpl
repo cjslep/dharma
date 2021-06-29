@@ -1,0 +1,15 @@
+{{template "base/header" .}}
+<div>
+  <p>{{Locale.TagName .tag.ID}}</p>
+  {{if eq (len .previews) 0}}
+    <p>{{Locale.NoPostsYet}}</p>
+    <p>{{Locale.BeTheFirstToPost}}</p>
+  {{else}}
+    {{range .previews}}
+      <div>
+        <p>{{.}}</p>
+      </div>
+    {{end}}
+  {{end}}
+</div>
+{{template "base/footer" .}}

@@ -44,7 +44,14 @@ func (t *Tags) GetLatestSnippets(ctx context.Context, display []data.Tag, n, len
 	if err != nil {
 		return nil, err
 	}
+
+	// Ensure default data is available
 	lt := make(map[string]*LatestTag, len(display))
+	for _, tag := range display {
+		lt[tag.ID] = &LatestTag{T: tag}
+	}
+
+	// Populate with data
 	for _, lpt := range l {
 		snip := data.ToSnippet(lpt.T, length, maxHtmlDepth, preferLang)
 		tags := data.ToTags(lpt.T)
@@ -57,6 +64,8 @@ func (t *Tags) GetLatestSnippets(ctx context.Context, display []data.Tag, n, len
 			v.S = append(v.S, snip)
 		}
 	}
+
+	// Sort each category
 	for _, v := range lt {
 		v.sort()
 	}
