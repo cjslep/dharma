@@ -18,6 +18,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/go-fed/apcore/app"
@@ -73,8 +74,24 @@ func (r *RequestContext) LanguageTags() ([]language.Tag, error) {
 }
 
 func (r *RequestContext) navData(signedIn bool) map[string]interface{} {
+	ts, err := r.LanguageTags()
+	tag := language.English
+	if err == nil {
+		tag = ts[0]
+	}
 	return map[string]interface{}{
 		"signedIn": signedIn,
+		"paths": map[string]interface{}{
+			"register": fmt.Sprintf("/%s/register", tag),
+			"login":fmt.Sprintf("/%s/login", tag),
+			"logout":fmt.Sprintf("/%s/logout", tag),
+			"changeCharacter":fmt.Sprintf("/%s/characters", tag),
+			"profile":fmt.Sprintf("/%s/account/profile", tag),
+			"settings":fmt.Sprintf("/%s/account/settings", tag),
+			"forum":fmt.Sprintf("/%s/forum", tag),
+			"killboard":fmt.Sprintf("/%s/killboard", tag),
+			"calendar":fmt.Sprintf("/%s/calendar", tag),
+		},
 	}
 }
 

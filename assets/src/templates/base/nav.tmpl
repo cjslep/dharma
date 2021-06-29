@@ -2,21 +2,21 @@
   <nav>
     {{if .nav.signedIn}}
     <div> <!-- Avatar Dropdown -->
-      <div><a>Change Character</a></div>
-      <div><a>Account Profile</a></div>
-      <div><a>Account Settings</a></div>
-      <div><a>Logout</a></div>
+      <div><a href="{{.nav.paths.changeCharacter}}">Change Character</a></div>
+      <div><a href="{{.nav.paths.profile}}">Account Profile</a></div>
+      <div><a href="{{.nav.paths.settings}}">Account Settings</a></div>
+      <div><a href="{{.nav.paths.logout}}">Logout</a></div>
     </div> <!-- End Avatar Dropdown -->
     <div> <!-- Navigation Dropdown -->
-      <div><a>Forum</a></div>
-      <div><a>Calendar</a></div>
-      <div><a>Killboard</a></div>
+      <div><a href="{{.nav.paths.forum}}">Forum</a></div>
+      <div><a href="{{.nav.paths.calendar}}">Calendar</a></div>
+      <div><a href="{{.nav.paths.killboard}}">Killboard</a></div>
     </div> <!-- End Navigation Dropdown -->
     <div> <!-- Notifications Dropdown -->
     </div> <!-- End Notifications Dropdown -->
     {{else}}
-    <div><a>Register</a></div>
-    <div><a>Login</a></div>
+    <div><a href="{{.nav.paths.register}}">Register</a></div>
+    <div><a href="{{.nav.paths.login}}">Login</a></div>
     {{end}}
   </nav>
 </div>

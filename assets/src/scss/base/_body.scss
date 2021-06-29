@@ -1,0 +1,7 @@
+@use 'base';
+
+body {
+  font: 100% base.$fonts;
+  color: base.$font-color;
+  background: base.$background-color;
+}
