@@ -110,6 +110,9 @@ func (r *Renderer) newFuncMap(langs ...string) []template.FuncMap {
 			"Locale": func() *d_i18n.Messages {
 				return m
 			},
+			"Languages": func() []language.Tag {
+				return r.LanguageTags()
+			},
 			// Debug
 			"Debug": func() bool {
 				return r.debug

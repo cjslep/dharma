@@ -73,34 +73,38 @@ func (r *RequestContext) LanguageTags() ([]language.Tag, error) {
 	}
 }
 
-func (r *RequestContext) navData(signedIn bool) map[string]interface{} {
-	ts, err := r.LanguageTags()
-	tag := language.English
-	if err == nil {
-		tag = ts[0]
-	}
+func (r *RequestContext) navData(signedIn bool, tag language.Tag) map[string]interface{} {
 	return map[string]interface{}{
 		"signedIn": signedIn,
 		"paths": map[string]interface{}{
-			"register": fmt.Sprintf("/%s/register", tag),
-			"login":fmt.Sprintf("/%s/login", tag),
-			"logout":fmt.Sprintf("/%s/logout", tag),
-			"changeCharacter":fmt.Sprintf("/%s/characters", tag),
-			"profile":fmt.Sprintf("/%s/account/profile", tag),
-			"settings":fmt.Sprintf("/%s/account/settings", tag),
-			"forum":fmt.Sprintf("/%s/forum", tag),
-			"killboard":fmt.Sprintf("/%s/killboard", tag),
-			"calendar":fmt.Sprintf("/%s/calendar", tag),
+			"register":        fmt.Sprintf("/%s/register", tag),
+			"login":           fmt.Sprintf("/%s/login", tag),
+			"logout":          fmt.Sprintf("/%s/logout", tag),
+			"changeCharacter": fmt.Sprintf("/%s/characters", tag),
+			"profile":         fmt.Sprintf("/%s/account/profile", tag),
+			"settings":        fmt.Sprintf("/%s/account/settings", tag),
+			"forum":           fmt.Sprintf("/%s/forum", tag),
+			"killboard":       fmt.Sprintf("/%s/killboard", tag),
+			"calendar":        fmt.Sprintf("/%s/calendar", tag),
 		},
 	}
 }
 
 func (r *RequestContext) RenderNavData() map[string]interface{} {
+	// Determine signed-in state
 	k, err := r.Session()
 	signedIn := false
 	if err == nil {
 		_, isSignedInErr := k.UserID()
 		signedIn = isSignedInErr == nil
 	}
-	return r.navData(signedIn)
+
+	// Obtain a language
+	ts, err := r.LanguageTags()
+	tag := language.English
+	if err == nil {
+		tag = ts[0]
+	}
+
+	return r.navData(signedIn, tag)
 }

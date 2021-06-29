@@ -319,3 +319,13 @@ func (m *Messages) TagName(id string) (string, error) {
 		})
 	}
 }
+
+func (m *Messages) Languages() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "languages",
+			Description: "The word for multiple languages",
+			Other:       "Languages",
+		},
+	})
+}
