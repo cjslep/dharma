@@ -62,3 +62,17 @@ func (t *Tags) GetLatestSnippets(ctx context.Context, display []data.Tag, n, len
 	}
 	return lt, nil
 }
+
+// GetThreadsPreviewsForTag obtains the latest threads for a given tag
+func (t *Tags) GetThreadPreviewsForTag(ctx context.Context, g data.Tag, n, maxDepth, page int, preferLang language.Tag) ([]data.ThreadPreview, error) {
+	h, err := t.DB.FetchMostRecentlyUpdatedThreads(ctx, g, n, page)
+	if err != nil {
+		return nil, err
+	}
+	tps := make([]data.ThreadPreview, 0, len(h))
+	for _, r := range h {
+		tps = append(tps, data.ToThreadPreview(r.First, r.MostRecent, n, maxDepth, preferLang))
+	}
+	sort.Sort(data.RecentPreviews(tps))
+	return tps, nil
+}

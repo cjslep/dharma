@@ -65,3 +65,13 @@ func (d *DB) FetchLatestPublicTags(c context.Context, display []data.Tag, n int)
 	// TODO
 	return nil, nil
 }
+
+type RecentlyUpdatedThreadResult struct {
+	First      vocab.Type
+	MostRecent vocab.Type
+}
+
+func (d *DB) FetchMostRecentlyUpdatedThreads(c context.Context, t data.Tag, n, page int) ([]RecentlyUpdatedThreadResult, error) {
+	// TODO
+	return nil, nil
+}

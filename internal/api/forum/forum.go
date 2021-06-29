@@ -28,13 +28,14 @@ type Forum struct {
 	NPreview     int
 	SizePreview  int
 	MaxHTMLDepth int
+	NListThreads int
 }
 
 func (f *Forum) Route(r app.Router) {
 	// TODO
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum", api.MustHaveSessionAndLanguageCode(f.C, f.getForum))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/tags", api.MustHaveSessionAndLanguageCode(f.C, f.getTags))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/threads", api.MustHaveSessionAndLanguageCode(f.C, f.getThreads))
+	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/tags/{tag}", api.MustHaveSessionAndLanguageCode(f.C, f.getTags))
+	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/threads/{thread}", api.MustHaveSessionAndLanguageCode(f.C, f.getThreads))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/post/new", api.MustHaveSessionAndLanguageCode(f.C, f.getNewPost))
 	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/forum/post/new", api.MustHaveSessionAndLanguageCode(f.C, f.postNewPost))
 }

@@ -25,7 +25,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-type Snippet struct {
+type ThreadPreviewMessage struct {
 	ID             *url.URL
 	Authors        []*url.URL
 	PreviewContent string
@@ -33,7 +33,13 @@ type Snippet struct {
 	Type           string
 }
 
-type snippetable interface {
+type ThreadPreview struct {
+	Title string
+	First *ThreadPreviewMessage
+	Last  *ThreadPreviewMessage
+}
+
+type threadPreviewable interface {
 	extract.IDable
 	extract.Authorable
 	extract.Contentable
@@ -41,20 +47,29 @@ type snippetable interface {
 	GetTypeName() string
 }
 
-func ToSnippet(t vocab.Type, n, maxDepth int, preferLang language.Tag) Snippet {
-	s, ok := t.(snippetable)
-	if !ok {
-		return Snippet{}
+func ToThreadPreview(first, last vocab.Type, n, maxDepth int, lang language.Tag) ThreadPreview {
+	tp := ThreadPreview{}
+	// TODO: Title
+	ftp, ok := first.(threadPreviewable)
+	if ok {
+		tp.First = &ThreadPreviewMessage{}
+		toThreadPreviewMessage(tp.First, ftp, n, maxDepth, lang)
 	}
+	ltp, ok := last.(threadPreviewable)
+	if ok {
+		tp.Last = &ThreadPreviewMessage{}
+		toThreadPreviewMessage(tp.Last, ltp, n, maxDepth, lang)
+	}
+	return tp
+}
 
-	var p Snippet
-	p.ID = extract.ToID(s)
-	if p.ID == nil {
-		return p
+func toThreadPreviewMessage(tpm *ThreadPreviewMessage, t threadPreviewable, n, maxDepth int, lang language.Tag) {
+	tpm.ID = extract.ToID(t)
+	if tpm.ID == nil {
+		return
 	}
-	p.Authors = extract.ToAuthors(s)
-	p.PreviewContent = extract.ToPreviewContent(s, n, maxDepth, preferLang)
-	p.Created = extract.ToCreated(s)
-	p.Type = s.GetTypeName()
-	return p
+	tpm.Authors = extract.ToAuthors(t)
+	tpm.PreviewContent = extract.ToPreviewContent(t, n, maxDepth, lang)
+	tpm.Created = extract.ToCreated(t)
+	tpm.Type = t.GetTypeName()
 }

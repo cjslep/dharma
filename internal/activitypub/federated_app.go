@@ -120,6 +120,7 @@ func (a *FederatedApp) NewConfiguration() interface{} {
 		NPreview:             3,
 		LenPreview:           80,
 		MaxHTMLDepth:         255,
+		NListThreads:         25,
 	}
 }
 
@@ -268,7 +269,7 @@ func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framewor
 	a.f = f
 	ctx := a.apiContext()
 	r := []api.Router{
-		&forum.Forum{ctx, data.AllTags, a.config.NPreview, a.config.LenPreview, a.config.MaxHTMLDepth},
+		&forum.Forum{ctx, data.AllTags, a.config.NPreview, a.config.LenPreview, a.config.MaxHTMLDepth, a.config.NListThreads},
 		&site.Site{ctx},
 		&esiauth.ESIAuth{ctx},
 	}

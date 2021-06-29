@@ -17,12 +17,53 @@
 package forum
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/async"
+	"github.com/cjslep/dharma/internal/data"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
 func (f *Forum) getTags(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
-	// TODO
+	tag := mux.Vars(r)["tag"]
+	var tp []data.ThreadPreview
+	m := f.C.APIQueue.Messenger()
+	tagcb := m.DoAsync(r.Context(), func(ctx context.Context) async.CallbackFn {
+		lang := language.English
+		if len(langs) > 0 {
+			lang = langs[0]
+		}
+		l, err := f.C.Tags.GetThreadPreviewsForTag(ctx, data.ToTag(tag), f.NListThreads, f.MaxHTMLDepth /*TODO: page=*/, 0, lang)
+		return func() error {
+			tp = l
+			return err
+		}
+	})
+
+	// TODO: Obtain avatar information for each participant
+
+	tagdone := <-tagcb
+	err := tagdone()
+	if err != nil {
+		f.C.MustRenderError(w, r, errors.Wrap(err, "could not obtain thread previews to render"), langs...)
+		return
+	}
+
+	rc := api.From(r.Context())
+	v := render.NewHTMLView(
+		w,
+		http.StatusOK,
+		"forum/tags",
+		rc,
+		map[string]interface{}{
+			"previews": tp,
+		},
+		langs...)
+	f.C.MustRender(v)
 }

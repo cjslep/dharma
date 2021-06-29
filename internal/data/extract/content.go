@@ -14,47 +14,34 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package data
+package extract
 
 import (
-	"net/url"
-	"time"
-
-	"github.com/cjslep/dharma/internal/data/extract"
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/go-fed/activity/streams/vocab"
 	"golang.org/x/text/language"
 )
 
-type Snippet struct {
-	ID             *url.URL
-	Authors        []*url.URL
-	PreviewContent string
-	Created        time.Time
-	Type           string
+type Contentable interface {
+	GetActivityStreamsContent() vocab.ActivityStreamsContentProperty
 }
 
-type snippetable interface {
-	extract.IDable
-	extract.Authorable
-	extract.Contentable
-	extract.Publishable
-	GetTypeName() string
-}
-
-func ToSnippet(t vocab.Type, n, maxDepth int, preferLang language.Tag) Snippet {
-	s, ok := t.(snippetable)
-	if !ok {
-		return Snippet{}
+func ToPreviewContent(c Contentable, n, maxDepth int, preferLang language.Tag) string {
+	cp := c.GetActivityStreamsContent()
+	if cp == nil {
+		return ""
 	}
-
-	var p Snippet
-	p.ID = extract.ToID(s)
-	if p.ID == nil {
-		return p
+	for iter := cp.Begin(); iter != cp.End(); iter = iter.Next() {
+		// TODO: mime type HTML and Markdown
+		if iter.IsXMLSchemaString() {
+			return util.FirstNHTML(iter.GetXMLSchemaString(), n, maxDepth)
+		} else if iter.IsRDFLangString() {
+			if iter.HasLanguage(preferLang.String()) {
+				return util.FirstNHTML(iter.GetLanguage(preferLang.String()), n, maxDepth)
+			} else if iter.HasLanguage("en") {
+				return util.FirstNHTML(iter.GetLanguage("en"), n, maxDepth)
+			}
+		}
 	}
-	p.Authors = extract.ToAuthors(s)
-	p.PreviewContent = extract.ToPreviewContent(s, n, maxDepth, preferLang)
-	p.Created = extract.ToCreated(s)
-	p.Type = s.GetTypeName()
-	return p
+	return ""
 }

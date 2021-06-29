@@ -29,3 +29,17 @@ func (l LatestSnippets) Less(i, j int) bool {
 func (l LatestSnippets) Swap(i, j int) {
 	l[i], l[j] = l[j], l[i]
 }
+
+type RecentPreviews []ThreadPreview
+
+func (r RecentPreviews) Len() int {
+	return len(r)
+}
+
+func (r RecentPreviews) Less(i, j int) bool {
+	return r[i].Last.Created.After(r[j].Last.Created)
+}
+
+func (r RecentPreviews) Swap(i, j int) {
+	r[i], r[j] = r[j], r[i]
+}

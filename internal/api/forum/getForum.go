@@ -44,6 +44,8 @@ func (f *Forum) getForum(w http.ResponseWriter, r *http.Request, k app.Session, 
 		}
 	})
 
+	// TODO: Obtain avatar information for each participant
+
 	tagdone := <-tagcb
 	err := tagdone()
 	if err != nil {

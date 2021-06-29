@@ -29,4 +29,5 @@ type Config struct {
 	NPreview     int `ini:"dharma_length_post_preview" comment:"Number of preview texts to display per tag (default: 3)"`
 	LenPreview   int `ini:"dharma_length_post_preview" comment:"The length of preview text to display (default: 80)"`
 	MaxHTMLDepth int `ini:"dharma_max_html_parsing_depth" comment:"The deepest HTML parsing allowed before abandoning (default: 255)"`
+	NListThreads int `ini:"dharma_n_threads_in_category_pages" comment:"The number of threads to show per page in a forum category (default: 25)"`
 }
