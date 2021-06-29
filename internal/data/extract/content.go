@@ -45,3 +45,23 @@ func ToPreviewContent(c Contentable, n, maxDepth int, preferLang language.Tag) s
 	}
 	return ""
 }
+
+func ToContent(c Contentable, preferLang language.Tag) string {
+	cp := c.GetActivityStreamsContent()
+	if cp == nil {
+		return ""
+	}
+	for iter := cp.Begin(); iter != cp.End(); iter = iter.Next() {
+		// TODO: mime type HTML and Markdown
+		if iter.IsXMLSchemaString() {
+			return iter.GetXMLSchemaString()
+		} else if iter.IsRDFLangString() {
+			if iter.HasLanguage(preferLang.String()) {
+				return iter.GetLanguage(preferLang.String())
+			} else if iter.HasLanguage("en") {
+				return iter.GetLanguage("en")
+			}
+		}
+	}
+	return ""
+}

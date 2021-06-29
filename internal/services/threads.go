@@ -14,46 +14,30 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package data
+package services
 
-type LatestSnippets []Snippet
+import (
+	"context"
+	"sort"
 
-func (l LatestSnippets) Len() int {
-	return len(l)
+	"github.com/cjslep/dharma/internal/data"
+	"github.com/cjslep/dharma/internal/db"
+	"golang.org/x/text/language"
+)
+
+type Threads struct {
+	DB *db.DB
 }
 
-func (l LatestSnippets) Less(i, j int) bool {
-	return l[i].Created.After(l[j].Created)
-}
-
-func (l LatestSnippets) Swap(i, j int) {
-	l[i], l[j] = l[j], l[i]
-}
-
-type RecentPreviews []ThreadPreview
-
-func (r RecentPreviews) Len() int {
-	return len(r)
-}
-
-func (r RecentPreviews) Less(i, j int) bool {
-	return r[i].Last.Created.After(r[j].Last.Created)
-}
-
-func (r RecentPreviews) Swap(i, j int) {
-	r[i], r[j] = r[j], r[i]
-}
-
-type ChronologicalPosts []Post
-
-func (c ChronologicalPosts) Len() int {
-	return len(c)
-}
-
-func (c ChronologicalPosts) Less(i, j int) bool {
-	return c[i].Created.Before(c[j].Created)
-}
-
-func (c ChronologicalPosts) Swap(i, j int) {
-	c[i], c[j] = c[j], c[i]
+func (t *Threads) GetPosts(ctx context.Context, id string, n, page int, preferLang language.Tag) ([]data.Post, error) {
+	m, err := t.DB.FetchPaginatedMessagesInThread(ctx, id, n, page)
+	if err != nil {
+		return nil, err
+	}
+	ts := make([]data.Post, 0, len(m.Messages))
+	for _, r := range m.Messages {
+		ts = append(ts, data.ToPost(r, preferLang))
+	}
+	sort.Sort(data.ChronologicalPosts(ts))
+	return ts, nil
 }

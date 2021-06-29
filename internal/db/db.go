@@ -75,3 +75,12 @@ func (d *DB) FetchMostRecentlyUpdatedThreads(c context.Context, t data.Tag, n, p
 	// TODO
 	return nil, nil
 }
+
+type ThreadMessages struct {
+	Messages []vocab.Type
+}
+
+func (d *DB) FetchPaginatedMessagesInThread(c context.Context, id string, n, page int) (ThreadMessages, error) {
+	// TODO
+	return ThreadMessages{}, nil
+}

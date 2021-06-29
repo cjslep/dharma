@@ -84,6 +84,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		ESI:                   &services.ESI{a.db},
 		Tags:                  &services.Tags{a.db},
 		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
+		Threads:               &services.Threads{a.db},
 		F:                     a.f,
 		Features:              a.features,
 		MustRender:            a.mustRender,

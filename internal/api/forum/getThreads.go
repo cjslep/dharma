@@ -17,12 +17,53 @@
 package forum
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/async"
+	"github.com/cjslep/dharma/internal/data"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
 func (f *Forum) getThreads(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
-	// TODO
+	tid := mux.Vars(r)["thread"]
+	var ps []data.Post
+	m := f.C.APIQueue.Messenger()
+	threadcb := m.DoAsync(r.Context(), func(ctx context.Context) async.CallbackFn {
+		lang := language.English
+		if len(langs) > 0 {
+			lang = langs[0]
+		}
+		t, err := f.C.Threads.GetPosts(ctx, tid /*TODO: n=*/, 25 /*TODO: page=*/, 0, lang)
+		return func() error {
+			ps = t
+			return err
+		}
+	})
+
+	// TODO: Obtain avatar information for each participant, here or in services
+
+	done := <-threadcb
+	err := done()
+	if err != nil {
+		f.C.MustRenderError(w, r, errors.Wrap(err, "could not obtain thread to render"), langs...)
+		return
+	}
+
+	rc := api.From(r.Context())
+	v := render.NewHTMLView(
+		w,
+		http.StatusOK,
+		"forum/threads",
+		rc,
+		map[string]interface{}{
+			"posts": ps,
+		},
+		langs...)
+	f.C.MustRender(v)
 }

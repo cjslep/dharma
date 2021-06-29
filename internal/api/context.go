@@ -38,6 +38,7 @@ type Context struct {
 	ESI                   *services.ESI
 	Tags                  *services.Tags
 	Posts                 *services.Posts
+	Threads               *services.Threads
 	F                     app.Framework
 	Features              *features.Engine
 	MustRender            func(*render.View)

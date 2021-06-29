@@ -14,46 +14,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package data
+package extract
 
-type LatestSnippets []Snippet
+import (
+	"net/url"
 
-func (l LatestSnippets) Len() int {
-	return len(l)
+	"github.com/go-fed/activity/streams/vocab"
+)
+
+type InReplyToable interface {
+	GetActivityStreamsInReplyTo() vocab.ActivityStreamsInReplyToProperty
 }
 
-func (l LatestSnippets) Less(i, j int) bool {
-	return l[i].Created.After(l[j].Created)
-}
-
-func (l LatestSnippets) Swap(i, j int) {
-	l[i], l[j] = l[j], l[i]
-}
-
-type RecentPreviews []ThreadPreview
-
-func (r RecentPreviews) Len() int {
-	return len(r)
-}
-
-func (r RecentPreviews) Less(i, j int) bool {
-	return r[i].Last.Created.After(r[j].Last.Created)
-}
-
-func (r RecentPreviews) Swap(i, j int) {
-	r[i], r[j] = r[j], r[i]
-}
-
-type ChronologicalPosts []Post
-
-func (c ChronologicalPosts) Len() int {
-	return len(c)
-}
-
-func (c ChronologicalPosts) Less(i, j int) bool {
-	return c[i].Created.Before(c[j].Created)
-}
-
-func (c ChronologicalPosts) Swap(i, j int) {
-	c[i], c[j] = c[j], c[i]
+func ToInReplyTo(i InReplyToable) []*url.URL {
+	irtp := i.GetActivityStreamsInReplyTo()
+	if irtp == nil {
+		return nil
+	}
+	irt := make([]*url.URL, 0, irtp.Len())
+	for iter := irtp.Begin(); iter != irtp.End(); iter = iter.Next() {
+		if iter.IsIRI() {
+			irt = append(irt, iter.GetIRI())
+		}
+	}
+	return irt
 }
