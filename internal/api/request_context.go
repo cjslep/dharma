@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-fed/apcore/app"
 	"github.com/pkg/errors"
@@ -27,6 +28,7 @@ import (
 )
 
 const (
+	pathContextValue         = "pcv"
 	sessionContextValue      = "scv"
 	languageTagsContextValue = "ltcv"
 )
@@ -73,6 +75,21 @@ func (r *RequestContext) LanguageTags() ([]language.Tag, error) {
 	}
 }
 
+func (r *RequestContext) WithPath(p string) {
+	r.Context = context.WithValue(r.Context, pathContextValue, p)
+}
+
+func (r *RequestContext) Path() (string, error) {
+	v := r.Context.Value(pathContextValue)
+	if v == nil {
+		return "", errors.New("no path in request context")
+	} else if k, ok := v.(string); !ok {
+		return "", errors.Errorf("request context path is not string: %T", v)
+	} else {
+		return k, nil
+	}
+}
+
 func (r *RequestContext) navData(signedIn bool, tag language.Tag) map[string]interface{} {
 	return map[string]interface{}{
 		"signedIn": signedIn,
@@ -86,6 +103,18 @@ func (r *RequestContext) navData(signedIn bool, tag language.Tag) map[string]int
 			"forum":           fmt.Sprintf("/%s/forum", tag),
 			"killboard":       fmt.Sprintf("/%s/killboard", tag),
 			"calendar":        fmt.Sprintf("/%s/calendar", tag),
+		},
+		"localizePath": func(s string) (string, error) {
+			p, err := r.Path()
+			if err != nil {
+				return "", err
+			}
+			k := strings.Split(p, "/")
+			if len(k) < 2 {
+				return s, nil
+			}
+			k[1] = s
+			return strings.Join(k, "/"), nil
 		},
 	}
 }

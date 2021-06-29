@@ -28,6 +28,12 @@ type StatefulRenderHandler func(w http.ResponseWriter, r *http.Request, k app.Se
 type LocalizedRenderHandler func(w http.ResponseWriter, r *http.Request, langs []language.Tag)
 type LocalizedStatefulRenderHandler func(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag)
 
+func ApplyMiddleware(next http.Handler) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		getPath()(next).ServeHTTP(w, r)
+	})
+}
+
 func MustHaveSession(ctx *Context, r StatefulRenderHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		rc := From(req.Context())

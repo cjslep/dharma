@@ -31,6 +31,7 @@ type Router interface {
 }
 
 func BuildRoutes(ar app.Router, rt []Router, ctx *Context) {
+	ar.Use(getPath())
 	ar.Use(getSession(ctx))
 	assets.AddAssetHandlers(ar)
 	// Capture the locale in routing HTML rendered web pages
@@ -39,6 +40,18 @@ func BuildRoutes(ar app.Router, rt []Router, ctx *Context) {
 	localeRouter.Use(getLanguageTags(ctx))
 	for _, r := range rt {
 		r.Route(localeRouter)
+	}
+}
+
+// Sets the current request path in the request context.
+func getPath() mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rc := From(r.Context())
+			rc.WithPath(r.URL.Path)
+			r = rc.Update(r)
+			next.ServeHTTP(w, r)
+		})
 	}
 }
 

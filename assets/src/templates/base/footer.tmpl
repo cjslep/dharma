@@ -1,9 +1,10 @@
+{{$root := .}}
   <div>
     <p>{{Locale.ConsiderFileABug}}</p>
     <p>{{Locale.Languages}}</p>
     <ul>
     {{range Languages}}
-      <li>{{.String}}</li>
+      <li><a href="{{call $root.nav.localizePath .String}}">{{.String}}</a></li>
     {{end}}
     </ul>
   </div>
