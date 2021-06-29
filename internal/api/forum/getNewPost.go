@@ -19,10 +19,20 @@ package forum
 import (
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
 func (f *Forum) getNewPost(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
-	// TODO
+	rc := api.From(r.Context())
+	v := render.NewHTMLView(
+		w,
+		http.StatusOK,
+		"forum/newPost",
+		rc,
+		map[string]interface{}{},
+		langs...)
+	f.C.MustRender(v)
 }
