@@ -30,7 +30,7 @@ func (f *Forum) getNewPost(w http.ResponseWriter, r *http.Request, k app.Session
 	v := render.NewHTMLView(
 		w,
 		http.StatusOK,
-		"forum/newPost",
+		"forum/new_post",
 		rc,
 		map[string]interface{}{},
 		langs...)
