@@ -9,11 +9,12 @@
     </ul>
   </div>
   </div> <!-- dharma-app -->
+  {{template "base/feature_detection" .}}
   {{if Debug}}
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
   {{else}}
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
   {{end}}
-  <script src="{{JsDir}}/{{.resources.js}}"></script>
+  <script type="module" src="{{JsDir}}/{{.resources.js}}"></script>
   </body>
 </html>

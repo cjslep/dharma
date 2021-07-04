@@ -1,6 +1,1 @@
-// TODO: Modularize this
-
-new Vue({
-	el: '#dharma-app',
-	delimiters: ['${', '}']
-});
+import {VApp} from '../base/vue.js';

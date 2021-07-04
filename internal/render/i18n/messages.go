@@ -349,3 +349,13 @@ func (m *Messages) BeTheFirstToPost() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) CreateNewPost() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "createNewPost",
+			Description: "Button text prompting user to create a new forum post",
+			Other:       "Create New Post",
+		},
+	})
+}

@@ -113,6 +113,13 @@ func (r *Renderer) newFuncMap(langs ...string) []template.FuncMap {
 			"Languages": func() []language.Tag {
 				return r.LanguageTags()
 			},
+			"Language": func() language.Tag {
+				t := language.English
+				if f := r.LanguageTags(); len(f) > 0 {
+					t = f[0]
+				}
+				return t
+			},
 			// Debug
 			"Debug": func() bool {
 				return r.debug

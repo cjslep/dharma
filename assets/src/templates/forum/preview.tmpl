@@ -1,6 +1,11 @@
 <div>
-  <p>{{Locale.TagName .T.ID}}</p>
-  {{range .S}}
-    <p>{{.PreviewContent}}</p>
+  <p><a href="/{{Language.String}}/forum/tags/{{.T.ID}}">{{Locale.TagName .T.ID}}</a></p>
+  {{if gt (len .S) 0}}
+    {{range .S}}
+      <p><a href="">{{.PreviewContent}}</a></p>
+    {{end}}
+  {{else}}
+      <p>{{Locale.NoPostsYet}}</p>
+      <p>{{Locale.BeTheFirstToPost}}</p>
   {{end}}
 </div>
