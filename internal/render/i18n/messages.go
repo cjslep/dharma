@@ -359,3 +359,33 @@ func (m *Messages) CreateNewPost() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) ContentLabel() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "contentLabel",
+			Description: "Label for the text box for entering the content of a new post",
+			Other:       "Content",
+		},
+	})
+}
+
+func (m *Messages) TitleLabel() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "titleLabel",
+			Description: "Label for the text box for entering the title of a new post",
+			Other:       "Title",
+		},
+	})
+}
+
+func (m *Messages) TagLabel() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "tagLabel",
+			Description: "Label for the select box for selecting a tag for a new post",
+			Other:       "Tag",
+		},
+	})
+}

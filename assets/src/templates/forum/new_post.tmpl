@@ -1,6 +1,16 @@
 {{template "base/header" .}}
 <form method="post" action="">
-  <textarea></textarea>
+  <label for="title">{{Locale.TitleLabel}}</label>
+  <input type="text" id="title" name="title"></input>
+  <label for="tags">{{Locale.TagLabel}}</label>
+  <select id="tags" name="tags">
+    {{$ct := .currentTag}}
+    {{range .tags}}
+    <option value="{{.ID}}" {{if eq .ID $ct.ID}}selected{{end}}>{{Locale.TagName .ID}}</option>
+    {{end}}
+  </select>
+  <label for="content">{{Locale.ContentLabel}}</label>
+  <textarea id="content" name="body"></textarea>
   <button>{{Locale.CreateNewPost}}</button>
 </form>
 {{template "base/footer" .}}
