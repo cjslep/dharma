@@ -63,6 +63,11 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request, k app.Sess
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not validate jwt"))
 		return
 	}
+	err = esi.ValidateEveClaims(claims)
+	if err != nil {
+		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not validate jwt issuer"))
+		return
+	}
 
 	// Construct our internal representation of a validated token, and
 	// store it.

@@ -54,6 +54,7 @@ type FederatedApp struct {
 	features *features.Engine
 
 	// At config-setting time
+	schema string
 	config *config.Config
 	l      *zerolog.Logger
 	oac    *esi.OAuth2Client
@@ -82,7 +83,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		FedQueue:              a.fedQueue,
 		OAC:                   a.oac,
 		L:                     a.l,
-		ESI:                   &services.ESI{a.db},
+		ESI:                   &services.ESI{a.db, a.oac},
 		Tags:                  &services.Tags{a.db},
 		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
 		Threads:               &services.Threads{a.db},
@@ -131,6 +132,7 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 	if !ok {
 		return errors.New("configuration is not of type *config.Config")
 	}
+	a.schema = apc.Schema()
 	a.config = c
 	h := &http.Client{} // TODO
 	a.oac = &esi.OAuth2Client{
@@ -267,7 +269,7 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 }
 
 func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
-	a.db = db.New(d)
+	a.db = db.New(d, a.schema)
 	a.f = f
 	ctx := a.apiContext()
 	r := []api.Router{

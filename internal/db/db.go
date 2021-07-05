@@ -27,12 +27,14 @@ import (
 )
 
 type DB struct {
-	db app.Database
+	db     app.Database
+	schema string
 }
 
-func New(db app.Database) *DB {
+func New(db app.Database, schema string) *DB {
 	return &DB{
-		db: db,
+		db:     db,
+		schema: schema,
 	}
 }
 
