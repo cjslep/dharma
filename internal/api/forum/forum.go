@@ -32,10 +32,10 @@ type Forum struct {
 }
 
 func (f *Forum) Route(r app.Router) {
-	// TODO
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum", api.MustHaveSessionAndLanguageCode(f.C, f.getForum))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/tags/{tag}", api.MustHaveSessionAndLanguageCode(f.C, f.getTags))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/threads/{thread}", api.MustHaveSessionAndLanguageCode(f.C, f.getThreads))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/forum/posts/new", api.MustHaveSessionAndLanguageCode(f.C, f.getNewPost))
 	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/forum/posts/new", api.MustHaveSessionAndLanguageCode(f.C, f.postNewPost))
+	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/forum/posts/preview/markdown", api.MustHaveSessionAndLanguageCode(f.C, f.postPreviewMarkdown))
 }
