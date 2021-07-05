@@ -23,6 +23,7 @@ import (
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/account"
 	"github.com/cjslep/dharma/internal/api/esiauth"
 	"github.com/cjslep/dharma/internal/api/forum"
 	"github.com/cjslep/dharma/internal/api/site"
@@ -272,6 +273,7 @@ func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framewor
 	r := []api.Router{
 		&forum.Forum{ctx, data.AllTags, a.config.NPreview, a.config.LenPreview, a.config.MaxHTMLDepth, a.config.NListThreads},
 		&site.Site{ctx},
+		&account.Account{ctx},
 		&esiauth.ESIAuth{ctx},
 	}
 	api.BuildRoutes(ar, r, ctx)
@@ -320,18 +322,15 @@ func (a *FederatedApp) ScopePermitsPrivateGetOutbox(scope string) (permitted boo
 }
 
 func (a *FederatedApp) DefaultUserPreferences() interface{} {
-	// TODO
-	return nil
+	return data.DefaultPreferences()
 }
 
 func (a *FederatedApp) DefaultUserPrivileges() interface{} {
-	// TODO
-	return nil
+	return data.DefaultPrivileges()
 }
 
 func (a *FederatedApp) DefaultAdminPrivileges() interface{} {
-	// TODO
-	return nil
+	return data.DefaultAdminPrivileges()
 }
 
 func (a *FederatedApp) Software() app.Software {
