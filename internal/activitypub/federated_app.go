@@ -83,7 +83,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		FedQueue:              a.fedQueue,
 		OAC:                   a.oac,
 		L:                     a.l,
-		ESI:                   &services.ESI{a.db, a.oac},
+		ESI:                   &services.ESI{a.db, a.oac, a.l},
 		Tags:                  &services.Tags{a.db},
 		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
 		Threads:               &services.Threads{a.db},
@@ -103,6 +103,8 @@ func (a *FederatedApp) mustRender(v *render.View) {
 func (a *FederatedApp) Start() error {
 	a.apiQueue.Start()
 	a.fedQueue.Start()
+	ctx := a.apiContext()
+	ctx.ESI.GoPeriodicallyRefreshAllTokens(a.apiQueue.Messenger())
 	return a.startupErr
 }
 

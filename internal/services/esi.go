@@ -18,14 +18,18 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/rs/zerolog"
 )
 
 type ESI struct {
 	DB  *db.DB
 	OAC *esi.OAuth2Client
+	L   *zerolog.Logger
 }
 
 func (e *ESI) SetEvePublicKeys(c context.Context, o *esi.OAuthKeysMetadata) error {
@@ -48,7 +52,11 @@ func (e *ESI) GetEveTokens(c context.Context) (*esi.Tokens, error) {
 	return e.DB.GetEveTokens(c)
 }
 
-func (e *ESI) RefreshAllTokens() error {
+func (e *ESI) GoPeriodicallyRefreshAllTokens(m *async.Messenger) {
+	m.Periodically(time.Hour, e.refreshAllTokens, e.L) // TODO: Configurable time
+}
+
+func (e *ESI) refreshAllTokens(c context.Context) error {
 	// TODO
 	return nil
 }
