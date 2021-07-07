@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a
-	github.com/go-fed/apcore v0.0.0-20210705191225-987534fccf3a // indirect
+	github.com/go-fed/apcore v0.0.0-20210707114426-2bf06c39206a // indirect
 	github.com/go-openapi/errors v0.20.0
 	github.com/go-openapi/runtime v0.19.29
 	github.com/go-openapi/strfmt v0.20.1

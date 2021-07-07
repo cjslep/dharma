@@ -27,6 +27,7 @@ import (
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
 	"github.com/mholt/binding"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
@@ -97,6 +98,11 @@ func (f *Forum) postNewPost(w http.ResponseWriter, r *http.Request, k app.Sessio
 			return err
 		}
 	})
+
+	if err != nil {
+		f.C.MustRenderError(w, r, errors.Wrap(err, "could not create new post"), langs...)
+		return
+	}
 
 	http.Redirect(w, r, id.String(), http.StatusFound)
 }

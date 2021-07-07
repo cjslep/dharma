@@ -121,6 +121,16 @@ func (m *Messages) Password() (string, error) {
 	})
 }
 
+func (m *Messages) ConfirmPassword() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "confirmPassword",
+			Description: "Label for the box that the user must type a matching password on the register page",
+			Other:       "Confirm Password",
+		},
+	})
+}
+
 func (m *Messages) Authorize() (string, error) {
 	return m.l.Localize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -386,6 +396,76 @@ func (m *Messages) TagLabel() (string, error) {
 			ID:          "tagLabel",
 			Description: "Label for the select box for selecting a tag for a new post",
 			Other:       "Tag",
+		},
+	})
+}
+
+func (m *Messages) RegisterNewAccount() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "registerNewAccount",
+			Description: "Label for page registering new account",
+			Other:       "Register New Account",
+		},
+	})
+}
+
+func (m *Messages) Register() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "register",
+			Description: "Button for registering a new account",
+			Other:       "Register",
+		},
+	})
+}
+
+func (m *Messages) Username() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "username",
+			Description: "A user account's name",
+			Other:       "Username",
+		},
+	})
+}
+
+func (m *Messages) PasswordsDoNotMatch() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "passwordsDoNotMatch",
+			Description: "Error message shown when, upon registration, the password and confirm-password fields did not match",
+			Other:       "Passwords do not match",
+		},
+	})
+}
+
+func (m *Messages) UsernameNotUnique() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "usernameNotUnique",
+			Description: "Error message shown when, upon registration, the user's requested username is not unique",
+			Other:       "Username is already taken",
+		},
+	})
+}
+
+func (m *Messages) EmailNotUnique() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "EmailNotUnique",
+			Description: "Error message shown when, upon registration, the user's requested email is not unique",
+			Other:       "Email is already taken",
+		},
+	})
+}
+
+func (m *Messages) UnknownRegistrationError() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "unknownRegistrationError",
+			Description: "Error message shown when, upon registration, an error occurred but a programming error means it isn't being displayed properly. Should include a call to contact the site administrator and/or file a bug",
+			Other:       "A registration error occurred, please contact the site administrator and/or file a bug against the software",
 		},
 	})
 }

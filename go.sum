@@ -65,6 +65,10 @@ github.com/go-fed/apcore v0.0.0-20210628152547-93c49abc12c7 h1:RujitW0eN9l5owhQR
 github.com/go-fed/apcore v0.0.0-20210628152547-93c49abc12c7/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
 github.com/go-fed/apcore v0.0.0-20210705191225-987534fccf3a h1:KgSCD6AjmMlNn+FEtjjmEAnJICae3DhqqaFSdtVXm6I=
 github.com/go-fed/apcore v0.0.0-20210705191225-987534fccf3a/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
+github.com/go-fed/apcore v0.0.0-20210706135326-1e7366628df0 h1:5I0o3LtfF5NADiEFQGwRebm+eMrZmPxwrBUioR3aN38=
+github.com/go-fed/apcore v0.0.0-20210706135326-1e7366628df0/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
+github.com/go-fed/apcore v0.0.0-20210707114426-2bf06c39206a h1:THZGzvKRr5pw24hGeZFKYizVYHt0ueDrwJtYiiTEz4E=
+github.com/go-fed/apcore v0.0.0-20210707114426-2bf06c39206a/go.mod h1:LddBJ7xz/4NcQ5XsnWNNNMTBY0sU4sEB6tm51rEI/iY=
 github.com/go-fed/httpsig v0.1.1-0.20190914113940-c2de3672e5b5/go.mod h1:T56HUNYZUQ1AGUzhAYPugZfp36sKApVnGBgKlIY+aIE=
 github.com/go-fed/httpsig v1.1.1-0.20201221212626-dda7895774cb h1:0TkVxVVllUkoQwsW2ePyZyJD5Sd1wS8fMmMRG2slrOU=
 github.com/go-fed/httpsig v1.1.1-0.20201221212626-dda7895774cb/go.mod h1:RCMrTZvN1bJYtofsG4rd5NaO5obxQ5xBkdiS7xsT7bM=

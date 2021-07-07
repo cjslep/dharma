@@ -1,0 +1,25 @@
+{{template "base/header" .}}
+<p>{{Locale.RegisterNewAccount}}</p>
+<form method="post">
+  {{if gt (len .err) 0}}
+    <div>{{if eq .err "passwordsDoNotMatch"}}"
+      {{Locale.PasswordsDoNotMatch}}
+    {{else if eq .err "usernameNotUnique"}}
+      {{Locale.UsernameNotUnique}}
+    {{else if eq .err "emailNotUnique"}}
+      {{Locale.EmailNotUnique}}
+    {{else}}
+      {{Locale.UnknownRegistrationError}}
+    {{end}}</div>
+  {{end}}
+  <label for="username">{{Locale.Username}}</label>
+  <input type="text" id="username" name="username" value="{{.username}}"></input>
+  <label for="email">{{Locale.Email}}</label>
+  <input type="email" id="email" name="email" value="{{.email}}"></input>
+  <label for="password">{{Locale.Password}}</label>
+  <input type="password" id="password" name="password"></input>
+  <label for="confirm_password">{{Locale.ConfirmPassword}}</label>
+  <input type="password" id="confirm_password" name="confirm_password"></input>
+  <button>{{Locale.Register}}</button>
+</form>
+{{template "base/footer" .}}
