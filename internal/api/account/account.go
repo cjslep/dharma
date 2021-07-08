@@ -26,6 +26,7 @@ type Account struct {
 }
 
 func (a *Account) Route(r app.Router) {
+	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/verify", api.MustHaveSessionAndLanguageCode(a.C, a.getVerify))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/register", api.MustHaveSessionAndLanguageCode(a.C, a.getRegister))
 	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/account/register", api.MustHaveSessionAndLanguageCode(a.C, a.postRegister))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/profile", api.MustHaveSessionAndLanguageCode(a.C, a.getProfile))

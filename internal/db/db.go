@@ -86,3 +86,24 @@ func (d *DB) FetchPaginatedMessagesInThread(c context.Context, id string, n, pag
 	// TODO
 	return ThreadMessages{}, nil
 }
+
+func (d *DB) AddUserEmailValidationTask(c context.Context, userID string) error {
+	// TODO
+	return nil
+}
+
+func (d *DB) MarkUserValidationEmailSent(c context.Context, userID string) error {
+	// TODO
+	return nil
+}
+
+func (d *DB) MarkUserValidated(c context.Context, userID string) error {
+	// TODO
+	return nil
+}
+
+func (d *DB) IsUserValidated(c context.Context, userID string) (bool, error) {
+	// TODO: Implement
+	// TODO: See if in-memory cache is needed for per-request latency
+	return false, nil
+}

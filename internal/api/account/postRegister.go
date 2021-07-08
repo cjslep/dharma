@@ -73,7 +73,7 @@ func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, k app.Ses
 		return
 	}
 
-	_, err := a.C.F.CreateUser(a.C.F.Context(r), rr.Username, rr.Email, rr.Password)
+	err := a.C.Users.CreateUser(a.C.F.Context(r), rr.Username, rr.Email, rr.Password)
 	if err != nil {
 		if a.C.F.IsNotUniqueEmail(err) {
 			u := getRegisterURLEmailNotUnique(r, rr.Username, rr.Email)
@@ -89,5 +89,6 @@ func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, k app.Ses
 		}
 	}
 
-	// TODO: Implement using userID returned above
+	u := getVerifyURL(langs[0], true)
+	http.Redirect(w, r, u.String(), http.StatusFound)
 }

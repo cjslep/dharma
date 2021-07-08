@@ -469,3 +469,43 @@ func (m *Messages) UnknownRegistrationError() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) VerifyEmail() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "verifyEmail",
+			Description: "Request to the user to verify their email",
+			Other:       "Please verify your email address.",
+		},
+	})
+}
+
+func (m *Messages) ThanksForRegistering() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "thanksForRegistering",
+			Description: "A title to tell the user \"thank-you for registering\" which is shown on the verify email page",
+			Other:       "Thank You For Registering",
+		},
+	})
+}
+
+func (m *Messages) NotVerifiedEmailYet() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "notVerifiedEmailYet",
+			Description: "A title to tell the user their email is not yet verified, which is shown on the verify email page when they get redirected",
+			Other:       "Your Email Is Not Yet Verified",
+		},
+	})
+}
+
+func (m *Messages) CheckEmailForVerification() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "checkEmailForVerification",
+			Description: "Instructions on how to verify the email, warning the user to check their spam folder",
+			Other:       "Please check your email and its spam folder for a message containing a verification link. Clicking this link will verify your account.",
+		},
+	})
+}

@@ -1,0 +1,6 @@
+{{template "base/header" .}}
+{{if .showty}}<p>{{Locale.ThanksForRegistering}}</p>
+{{else}}<p>{{Locale.NotVerifiedEmailYet}}</p>{{end}}
+<p>{{Locale.VerifyEmail}}</p>
+<p>{{Locale.CheckEmailForVerification}}</p>
+{{template "base/footer" .}}

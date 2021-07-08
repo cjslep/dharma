@@ -33,6 +33,7 @@ import (
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/log"
+	"github.com/cjslep/dharma/internal/mail"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/activity/pub"
@@ -63,6 +64,7 @@ type FederatedApp struct {
 	// At build routes time
 	db *db.DB
 	f  app.Framework
+	m  *mail.Mailer
 
 	// At start time
 	startupErr error
@@ -87,6 +89,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		Tags:                  &services.Tags{a.db},
 		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
 		Threads:               &services.Threads{a.db},
+		Users:                 &services.Users{a.f, a.m, a.db},
 		F:                     a.f,
 		Features:              a.features,
 		MustRender:            a.mustRender,
@@ -272,6 +275,7 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 
 func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
 	a.db = db.New(d, a.schema)
+	a.m = mail.New(a.db)
 	a.f = f
 	ctx := a.apiContext()
 	r := []api.Router{

@@ -39,6 +39,7 @@ type Context struct {
 	Tags                  *services.Tags
 	Posts                 *services.Posts
 	Threads               *services.Threads
+	Users                 *services.Users
 	F                     app.Framework
 	Features              *features.Engine
 	MustRender            func(*render.View)

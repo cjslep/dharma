@@ -17,7 +17,9 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"path"
 
 	"github.com/cjslep/dharma/assets"
@@ -33,6 +35,7 @@ type Router interface {
 func BuildRoutes(ar app.Router, rt []Router, ctx *Context) {
 	ar.Use(getPath())
 	ar.Use(getSession(ctx))
+	ar.Use(enforceEmailValidation(ctx))
 	assets.AddAssetHandlers(ar)
 	// Capture the locale in routing HTML rendered web pages
 	ar.NewRoute().WebOnlyHandler("/", redirToEnHomepage())
@@ -115,4 +118,46 @@ func redirToEnHomepage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/en/", http.StatusFound)
 	})
+}
+
+// If a user is signed in but has not verified their email, redirect
+// to a placeholder page.
+func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rc := From(r.Context())
+			k, err := rc.Session()
+			if err != nil {
+				// No session: abort check
+				next.ServeHTTP(w, r)
+				return
+			}
+			userID, err := k.UserID()
+			if err != nil {
+				// No user ID: success
+				next.ServeHTTP(w, r)
+				return
+			}
+			valid, err := ctx.Users.IsUserValidated(r.Context(), userID)
+			if err != nil {
+				// Error
+				ctx.MustRenderError(w, r, err)
+				return
+			} else if !valid {
+				// Not yet validated: redirect
+				lts, err := rc.LanguageTags()
+				if err != nil {
+					ctx.MustRenderError(w, r, err)
+					return
+				}
+				// TODO: Unify this logic with getVerify
+				u := &url.URL{}
+				u.Path = fmt.Sprintf("/%s/verify", lts[0])
+				http.Redirect(w, r, u.String(), http.StatusFound)
+				return
+			}
+			// Valid & no error
+			next.ServeHTTP(w, r)
+		})
+	}
 }
