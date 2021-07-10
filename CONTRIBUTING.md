@@ -1,5 +1,35 @@
 # Contributing
 
+There are several ways you can help improve `dharma`:
+
+* By searching bug reports to say "I hit this bug too", or creating new bug
+  reports
+* By searching feature requests to say "I want this too", or creating a new
+  feature request
+* By making technical contributions as a developer
+* Encourage those that make technical contributions by (see CONTRIBUTORS):
+  * Sending ISK -- the EVE Online in-game currency -- to a contributors'
+    character
+  * Using a technical contributors' referral link when signing up with a new
+    character
+
+## Filing Bug Reports
+
+*At this time, no bug reports are being accepted, as the software is under
+pre-alpha development. Everything is buggy.*
+
+## Filing Feature Requests
+
+Feel free to open an issue here on GitHub.
+
+If you are an EvE player and don't have a GitHub account, feedback and
+conversations are welcome. please reach out to `Io Koval`. Eve Mail or a convo
+are both fine. If you see him in space, do a `o/`. If you try to roleplay with
+him, he is a long-retired `Valklear General` looking to figure out how to
+scratch out a poor man's life out in the Great Wildlands.
+
+## Contributing As A Developer
+
 Dharma is built with this technological world-salad:
 
 * Golang, the overworked server workhorse
@@ -23,9 +53,9 @@ This application relies on `github.com/go-fed/apcore` as a server framework for
 an ActivityPub federating application. That library always is in need of further
 improvements, based on the real-world needs of this application.
 
-## File Layout
+### File Layout
 
-### Frontend Development
+#### Frontend Development
 
 For any new webpage, the following are needed:
 
@@ -44,7 +74,7 @@ logistics.
 The web-service side of these pages is under `internal/api/<domain>/<foo.go>`,
 which then is responsible for serving the page appropriately.
 
-### Backend Development
+#### Backend Development
 
 At a high level:
 
@@ -55,7 +85,7 @@ At a high level:
 * `locales/` contains tools for managing translations, as well as the files
   containing translations for dharma.
 
-## Locales & Translations
+### Locales & Translations
 
 Messages that need to be localized are in `internal/render/i18n/messages.go`.
 One can generate the files needed for translation by running the commands:
@@ -77,9 +107,13 @@ $ ./publish.sh
 Which will turn the `translate.*.toml` files into `active.*.toml` files. These
 files are then used in `go generate` commands.
 
-## Assets
+### Assets
 
 Assets are packed into the binary, for ease of deployment. If the `dev` build
 tag is used, they are not packed so that local file changes take immediate
 effect. Note for SCSS files, they will need to be re-processed manually by the
 `sass` command or invoked via `go generate ./...`.
+
+## Rewarding Contributors
+
+*At this time, please do not reward contributors. Nothing has been delivered.*
