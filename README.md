@@ -3,20 +3,23 @@
 > Ode To Eve, circa Scarcity-Era, Sovicou
 >
 > Use Dharma and then go undock,
+>
 > wreck ships, mine some ore, make small talk
+>
 > at the end of the day
+>
 > see how much you've been paid
+>
 > still less than male Dancers' stock
 
-Dharma is the premier community-focused software for independent EvE Online
+Dharma is the premier community-buildingsoftware for independent EvE Online
 corporations, integrating with ESI for additional functionality. It aims to
 be a first-class tool around community building, event-planning, asset
-management, intel-sharing, KoS coordination, and industry/logistics planning
-platform.
+management, intel-sharing, KoS coordination, and industry/logistics planning.
 
-**Dharma is pre-alpha software still under development, not yet ready for use.
-Due to its ambitious nature, it will take some time. This is a garden being
-tended to, not a quarry being excavated.**
+**Dharma is pre-alpha software still under heavy development, and it is not
+yet ready for use. Due to its ambitious nature, it will take some time. This is
+a garden being tended to, not a quarry being excavated.**
 
 ## Federation In A Nutshell
 
@@ -60,17 +63,17 @@ a release is available, these instructions will be updated.
 
 ## Features
 
-None, this is still under development. The goal is to support:
+This is still under development. The goal is to support:
 
 | Feature                   | Status |
 | ------------------------- | ------ |
 | Core Account Management   | 🔨     |
 | Local Forum               | 🔨     |
 | Federating Forum Messages | 🔨     |
+| Federation Controls       | 🕖     |
 | Corporation Standings     | 🕖     |
 | KoS & Justice Management  | 🕖     |
 | Federating KoS & Justice  | 🕖     |
-| Federation Controls       | 🕖     |
 | Federation Audit Log      | 🕖     |
 | Calendar Integration      | 🕖     |
 | Federating Calendar       | 🕖     |
@@ -84,8 +87,8 @@ None, this is still under development. The goal is to support:
 
 For some of these, I would like to look into interfacing with well-established
 tools for integration (ex: for fitting and intel-sharing). This software will
-also include focusing on tooling for NRDS RoE and lore/roleplay communities, but
-more research is needed to understand feature requirements.
+also include tooling for NRDS RoE and lore/roleplay communities, but more
+research is needed to understand feature requirements.
 
 ## Feature Requests, Reporting Bugs, Contributing Code
 
