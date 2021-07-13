@@ -7,7 +7,8 @@ There are several ways you can help improve `dharma`:
 * By searching feature requests to say "I want this too", or creating a new
   feature request
 * By making technical contributions as a developer
-* Encourage those that make technical contributions by (see CONTRIBUTORS):
+* Encourage those that make technical contributions by
+  (see [`CONTRIBUTORS.csv`](./CONTRIBUTORS.csv)):
   * Sending ISK -- the EVE Online in-game currency -- to a contributors'
     character
   * Using a technical contributors' referral link when signing up with a new
@@ -23,7 +24,7 @@ pre-alpha development. Everything is buggy.*
 Feel free to open an issue here on GitHub.
 
 If you are an EvE player and don't have a GitHub account, feedback and
-conversations are welcome. please reach out to `Io Koval`. Eve Mail or a convo
+conversations are welcome. Please reach out to `Io Koval`. Eve Mail or a convo
 are both fine. If you see him in space, do a `o/`. If you try to roleplay with
 him, he is a long-retired `Valklear General` looking to figure out how to
 scratch out a poor man's life out in the Great Wildlands.
