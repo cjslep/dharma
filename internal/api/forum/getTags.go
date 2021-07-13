@@ -25,6 +25,7 @@ import (
 	"github.com/cjslep/dharma/internal/data"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
+	"github.com/go-fed/apcore/util"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -35,12 +36,12 @@ func (f *Forum) getTags(w http.ResponseWriter, r *http.Request, k app.Session, l
 	dataTag := data.ToTag(tag)
 	var tp []data.ThreadPreview
 	m := f.C.APIQueue.Messenger()
-	tagcb := m.DoAsync(r.Context(), func(ctx context.Context) async.CallbackFn {
+	tagcb := m.DoAsync(f.C.F.Context(r), func(ctx context.Context) async.CallbackFn {
 		lang := language.English
 		if len(langs) > 0 {
 			lang = langs[0]
 		}
-		l, err := f.C.Tags.GetThreadPreviewsForTag(ctx, dataTag, f.NListThreads, f.MaxHTMLDepth /*TODO: page=*/, 0, lang)
+		l, err := f.C.Tags.GetThreadPreviewsForTag(util.Context{ctx}, dataTag, f.NListThreads, f.MaxHTMLDepth /*TODO: page=*/, 0, lang)
 		return func() error {
 			tp = l
 			return err

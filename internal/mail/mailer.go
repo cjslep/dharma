@@ -17,9 +17,8 @@
 package mail
 
 import (
-	"context"
-
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/go-fed/apcore/util"
 )
 
 type Mailer struct {
@@ -32,7 +31,7 @@ func New(db *db.DB) *Mailer {
 	}
 }
 
-func (m *Mailer) SendValidationEmail(c context.Context, userID string) error {
+func (m *Mailer) SendValidationEmail(c util.Context, userID string) error {
 	// TODO: Make this more robust to partial failures
 	err := m.DB.AddUserEmailValidationTask(c, userID)
 	if err != nil {

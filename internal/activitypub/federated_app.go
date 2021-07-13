@@ -274,7 +274,7 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 }
 
 func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
-	a.db = db.New(d, a.schema)
+	a.db = db.New(d, f, a.schema)
 	a.m = mail.New(a.db)
 	a.f = f
 	ctx := a.apiContext()

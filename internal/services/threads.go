@@ -17,11 +17,11 @@
 package services
 
 import (
-	"context"
 	"sort"
 
 	"github.com/cjslep/dharma/internal/data"
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/go-fed/apcore/util"
 	"golang.org/x/text/language"
 )
 
@@ -29,7 +29,7 @@ type Threads struct {
 	DB *db.DB
 }
 
-func (t *Threads) GetPosts(ctx context.Context, id string, n, page int, preferLang language.Tag) ([]data.Post, error) {
+func (t *Threads) GetPosts(ctx util.Context, id string, n, page int, preferLang language.Tag) ([]data.Post, error) {
 	m, err := t.DB.FetchPaginatedMessagesInThread(ctx, id, n, page)
 	if err != nil {
 		return nil, err

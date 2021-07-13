@@ -17,11 +17,11 @@
 package services
 
 import (
-	"context"
 	"sort"
 
 	"github.com/cjslep/dharma/internal/data"
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/go-fed/apcore/util"
 	"golang.org/x/text/language"
 )
 
@@ -39,7 +39,7 @@ func (l *LatestTag) sort() {
 }
 
 // GetLatestSnippets obtains the latest snippets
-func (t *Tags) GetLatestSnippets(ctx context.Context, display []data.Tag, n, length, maxHtmlDepth int, preferLang language.Tag) (map[string]*LatestTag, error) {
+func (t *Tags) GetLatestSnippets(ctx util.Context, display []data.Tag, n, length, maxHtmlDepth int, preferLang language.Tag) (map[string]*LatestTag, error) {
 	l, err := t.DB.FetchLatestPublicTags(ctx, display, n)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (t *Tags) GetLatestSnippets(ctx context.Context, display []data.Tag, n, len
 }
 
 // GetThreadsPreviewsForTag obtains the latest threads for a given tag
-func (t *Tags) GetThreadPreviewsForTag(ctx context.Context, g data.Tag, n, maxDepth, page int, preferLang language.Tag) ([]data.ThreadPreview, error) {
+func (t *Tags) GetThreadPreviewsForTag(ctx util.Context, g data.Tag, n, maxDepth, page int, preferLang language.Tag) ([]data.ThreadPreview, error) {
 	h, err := t.DB.FetchMostRecentlyUpdatedThreads(ctx, g, n, page)
 	if err != nil {
 		return nil, err

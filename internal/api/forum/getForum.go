@@ -25,6 +25,7 @@ import (
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/app"
+	"github.com/go-fed/apcore/util"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
@@ -32,12 +33,12 @@ import (
 func (f *Forum) getForum(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	m := f.C.APIQueue.Messenger()
 	var lt map[string]*services.LatestTag
-	tagcb := m.DoAsync(r.Context(), func(ctx context.Context) async.CallbackFn {
+	tagcb := m.DoAsync(f.C.F.Context(r), func(ctx context.Context) async.CallbackFn {
 		lang := language.English
 		if len(langs) > 0 {
 			lang = langs[0]
 		}
-		l, err := f.C.Tags.GetLatestSnippets(ctx, f.Display, f.NPreview, f.SizePreview, f.MaxHTMLDepth, lang)
+		l, err := f.C.Tags.GetLatestSnippets(util.Context{ctx}, f.Display, f.NPreview, f.SizePreview, f.MaxHTMLDepth, lang)
 		return func() error {
 			lt = l
 			return err

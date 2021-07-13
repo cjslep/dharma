@@ -17,45 +17,65 @@
 package db
 
 import (
-	"context"
 	"time"
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/data"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
+	"github.com/go-fed/apcore/util"
+)
+
+const (
+	kUnvalidatedState             = "not_validated"
+	kSentValidationChallengeState = "challenge_sent"
+	kValidatedState               = "validated"
 )
 
 type DB struct {
-	db     app.Database
-	schema string
+	db app.Database
+	f  app.Framework
+	pg postgres
 }
 
-func New(db app.Database, schema string) *DB {
+func New(db app.Database, f app.Framework, schema string) *DB {
 	return &DB{
-		db:     db,
-		schema: schema,
+		db: db,
+		f:  f,
+		pg: newPostgres(schema),
 	}
 }
 
-func (d *DB) SetEvePublicKeys(c context.Context, o *esi.OAuthKeysMetadata) error {
-	// TODO
-	return nil
+func (d *DB) SetEvePublicKeys(c util.Context, o *esi.OAuthKeysMetadata) error {
+	txb := d.db.Begin()
+	txb.Exec(d.pg.AddEvePublicKey(), o)
+	return txb.Do(c)
 }
 
-func (d *DB) GetEvePublicKeys(c context.Context) (*esi.OAuthKeysMetadata, error) {
-	// TODO
-	return nil, nil
+func (d *DB) GetEvePublicKeys(c util.Context) (*esi.OAuthKeysMetadata, error) {
+	// TODO: See if in-memory cache is needed for per-request latency
+	o := &esi.OAuthKeysMetadata{}
+	txb := d.db.Begin()
+	txb.QueryOneRow(d.pg.GetLatestEvePublicKey(), func(r app.SingleRow) error {
+		return r.Scan(o)
+	})
+	return o, txb.Do(c)
 }
 
-func (d *DB) SetEveTokens(c context.Context, t *esi.Tokens) error {
-	// TODO
-	return nil
+func (d *DB) SetEveTokens(c util.Context, t *esi.Tokens) error {
+	txb := d.db.Begin()
+	txb.ExecOneRow(d.pg.SetEveToken(), t.CID, t)
+	return txb.Do(c)
 }
 
-func (d *DB) GetEveTokens(c context.Context) (*esi.Tokens, error) {
-	// TODO
-	return nil, nil
+func (d *DB) GetEveTokens(c util.Context) (*esi.Tokens, error) {
+	// TODO: Be more intelligent about refreshing keys and detecting cacheability
+	t := &esi.Tokens{}
+	txb := d.db.Begin()
+	txb.QueryOneRow(d.pg.GetEveToken(), func(r app.SingleRow) error {
+		return r.Scan(t)
+	})
+	return t, txb.Do(c)
 }
 
 type LatestPublicTagsResult struct {
@@ -63,7 +83,7 @@ type LatestPublicTagsResult struct {
 	Received time.Time
 }
 
-func (d *DB) FetchLatestPublicTags(c context.Context, display []data.Tag, n int) ([]LatestPublicTagsResult, error) {
+func (d *DB) FetchLatestPublicTags(c util.Context, display []data.Tag, n int) ([]LatestPublicTagsResult, error) {
 	// TODO
 	return nil, nil
 }
@@ -73,7 +93,7 @@ type RecentlyUpdatedThreadResult struct {
 	MostRecent vocab.Type
 }
 
-func (d *DB) FetchMostRecentlyUpdatedThreads(c context.Context, t data.Tag, n, page int) ([]RecentlyUpdatedThreadResult, error) {
+func (d *DB) FetchMostRecentlyUpdatedThreads(c util.Context, t data.Tag, n, page int) ([]RecentlyUpdatedThreadResult, error) {
 	// TODO
 	return nil, nil
 }
@@ -82,28 +102,35 @@ type ThreadMessages struct {
 	Messages []vocab.Type
 }
 
-func (d *DB) FetchPaginatedMessagesInThread(c context.Context, id string, n, page int) (ThreadMessages, error) {
+func (d *DB) FetchPaginatedMessagesInThread(c util.Context, id string, n, page int) (ThreadMessages, error) {
 	// TODO
 	return ThreadMessages{}, nil
 }
 
-func (d *DB) AddUserEmailValidationTask(c context.Context, userID string) error {
-	// TODO
-	return nil
+func (d *DB) AddUserEmailValidationTask(c util.Context, userID string) error {
+	txb := d.db.Begin()
+	txb.ExecOneRow(d.pg.CreateUserSupplement(), userID, kUnvalidatedState)
+	return txb.Do(c)
 }
 
-func (d *DB) MarkUserValidationEmailSent(c context.Context, userID string) error {
-	// TODO
-	return nil
+func (d *DB) MarkUserValidationEmailSent(c util.Context, userID string) error {
+	txb := d.db.Begin()
+	txb.ExecOneRow(d.pg.UpdateUserSupplement(), userID, kSentValidationChallengeState)
+	return txb.Do(c)
 }
 
-func (d *DB) MarkUserValidated(c context.Context, userID string) error {
-	// TODO
-	return nil
+func (d *DB) MarkUserValidated(c util.Context, userID string) error {
+	txb := d.db.Begin()
+	txb.ExecOneRow(d.pg.UpdateUserSupplement(), userID, kValidatedState)
+	return txb.Do(c)
 }
 
-func (d *DB) IsUserValidated(c context.Context, userID string) (bool, error) {
-	// TODO: Implement
+func (d *DB) IsUserValidated(c util.Context, userID string) (bool, error) {
 	// TODO: See if in-memory cache is needed for per-request latency
-	return false, nil
+	var valid string
+	txb := d.db.Begin()
+	txb.QueryOneRow(d.pg.GetUserSupplement(), func(r app.SingleRow) error {
+		return r.Scan(&valid)
+	}, userID)
+	return valid == kValidatedState, txb.Do(c)
 }

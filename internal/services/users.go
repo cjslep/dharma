@@ -17,8 +17,6 @@
 package services
 
 import (
-	"context"
-
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/mail"
 	"github.com/go-fed/apcore/app"
@@ -41,11 +39,11 @@ func (u *Users) CreateUser(ctx util.Context, username, email, password string) e
 	return err
 }
 
-func (u *Users) MarkUserValidated(c context.Context, userID string) error {
+func (u *Users) MarkUserValidated(c util.Context, userID string) error {
 	return u.DB.MarkUserValidated(c, userID)
 }
 
-func (u *Users) IsUserValidated(c context.Context, userID string) (bool, error) {
+func (u *Users) IsUserValidated(c util.Context, userID string) (bool, error) {
 	return u.DB.IsUserValidated(c, userID)
 }
 

@@ -138,7 +138,7 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 				next.ServeHTTP(w, r)
 				return
 			}
-			valid, err := ctx.Users.IsUserValidated(r.Context(), userID)
+			valid, err := ctx.Users.IsUserValidated(ctx.F.Context(r), userID)
 			if err != nil {
 				// Error
 				ctx.MustRenderError(w, r, err)

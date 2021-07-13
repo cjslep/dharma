@@ -17,12 +17,16 @@
 package esi
 
 import (
+	"database/sql"
+	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/pascaldekloe/jwt"
+	"github.com/pkg/errors"
 )
 
 type Tokens struct {
@@ -32,6 +36,9 @@ type Tokens struct {
 	CID           int
 	CName         string
 }
+
+var _ driver.Valuer = Tokens{}
+var _ sql.Scanner = &Tokens{}
 
 func NewTokens(jwt *JWTResponse, c *jwt.Claims) (*Tokens, error) {
 	subs := strings.Split(c.Subject, ":")
@@ -54,4 +61,16 @@ func NewTokens(jwt *JWTResponse, c *jwt.Claims) (*Tokens, error) {
 		CID:           cid,
 		CName:         name,
 	}, nil
+}
+
+func (t Tokens) Value() (driver.Value, error) {
+	return json.Marshal(t)
+}
+
+func (t *Tokens) Scan(src interface{}) error {
+	b, ok := src.([]byte)
+	if !ok {
+		return errors.New("failed to assert scan src to []byte type")
+	}
+	return json.Unmarshal(b, t)
 }

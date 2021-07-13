@@ -23,6 +23,7 @@ import (
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
+	"github.com/go-fed/apcore/util"
 	"github.com/rs/zerolog"
 )
 
@@ -32,23 +33,19 @@ type ESI struct {
 	L   *zerolog.Logger
 }
 
-func (e *ESI) SetEvePublicKeys(c context.Context, o *esi.OAuthKeysMetadata) error {
-	// TODO
+func (e *ESI) SetEvePublicKeys(c util.Context, o *esi.OAuthKeysMetadata) error {
 	return e.DB.SetEvePublicKeys(c, o)
 }
 
-func (e *ESI) GetEvePublicKeys(c context.Context) (*esi.OAuthKeysMetadata, error) {
-	// TODO
+func (e *ESI) GetEvePublicKeys(c util.Context) (*esi.OAuthKeysMetadata, error) {
 	return e.DB.GetEvePublicKeys(c)
 }
 
-func (e *ESI) SetEveTokens(c context.Context, t *esi.Tokens) error {
-	// TODO
+func (e *ESI) SetEveTokens(c util.Context, t *esi.Tokens) error {
 	return e.DB.SetEveTokens(c, t)
 }
 
-func (e *ESI) GetEveTokens(c context.Context) (*esi.Tokens, error) {
-	// TODO
+func (e *ESI) GetEveTokens(c util.Context) (*esi.Tokens, error) {
 	return e.DB.GetEveTokens(c)
 }
 

@@ -20,6 +20,8 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rsa"
+	"database/sql"
+	"database/sql/driver"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -28,6 +30,7 @@ import (
 	"net/http"
 
 	"github.com/pascaldekloe/jwt"
+	"github.com/pkg/errors"
 )
 
 func FetchEveOnlineKeys() (*OAuthKeysMetadata, error) {
@@ -55,6 +58,9 @@ type OAuthKeysMetadata struct {
 	Keys []*KeysMetadata `json:"keys"`
 }
 
+var _ driver.Valuer = OAuthKeysMetadata{}
+var _ sql.Scanner = &OAuthKeysMetadata{}
+
 func (o *OAuthKeysMetadata) JWTKey() *KeysMetadata {
 	for _, v := range o.Keys {
 		if v.Id == "JWT-Signature-Key" {
@@ -62,6 +68,18 @@ func (o *OAuthKeysMetadata) JWTKey() *KeysMetadata {
 		}
 	}
 	return nil
+}
+
+func (o OAuthKeysMetadata) Value() (driver.Value, error) {
+	return json.Marshal(o)
+}
+
+func (o *OAuthKeysMetadata) Scan(src interface{}) error {
+	b, ok := src.([]byte)
+	if !ok {
+		return errors.New("failed to assert scan src to []byte type")
+	}
+	return json.Unmarshal(b, o)
 }
 
 type KeysMetadata struct {
