@@ -19,10 +19,9 @@ package account
 import (
 	"net/http"
 
-	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
-func (a *Account) postProfile(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (a *Account) postProfile(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	// TODO
 }

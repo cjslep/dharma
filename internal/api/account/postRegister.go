@@ -22,7 +22,6 @@ import (
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/go-fed/apcore/app"
 	"github.com/mholt/binding"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -58,7 +57,7 @@ func (r *registerRequest) FieldMap(req *http.Request) binding.FieldMap {
 
 // TODO: Rate limit, due to username/email taken errors
 
-func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	rc := api.From(r.Context())
 	rr := &registerRequest{}
 	errs := binding.Bind(r, rr)

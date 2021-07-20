@@ -26,7 +26,12 @@ type Site struct {
 }
 
 func (s *Site) Route(r app.Router) {
-	// TODO
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/", api.MustHaveSessionAndLanguageCode(s.C, s.getHome))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/about", api.MustHaveSessionAndLanguageCode(s.C, s.getAbout))
+	r.NewRoute().Methods("GET").WebOnlyHandler(
+		"/",
+		api.CorpMustBeManaged(s.C,
+			api.MustHaveLanguageCode(s.C, s.getHome)))
+	r.NewRoute().Methods("GET").WebOnlyHandler(
+		"/about",
+		api.CorpMustBeManaged(s.C,
+			api.MustHaveLanguageCode(s.C, s.getAbout)))
 }

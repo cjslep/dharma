@@ -27,13 +27,35 @@ type Account struct {
 }
 
 func (a *Account) Route(r app.Router) {
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc(paths.VerifyPath, api.MustHaveLanguageCode(a.C, a.getVerify))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/register", api.MustHaveSessionAndLanguageCode(a.C, a.getRegister))
-	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/account/register", api.MustHaveSessionAndLanguageCode(a.C, a.postRegister))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/profile", api.MustHaveSessionAndLanguageCode(a.C, a.getProfile))
-	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/account/profile", api.MustHaveSessionAndLanguageCode(a.C, a.postProfile))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/settings", api.MustHaveSessionAndLanguageCode(a.C, a.getSettings))
-	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/account/settings", api.MustHaveSessionAndLanguageCode(a.C, a.postSettings))
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/characters", api.MustHaveSessionAndLanguageCode(a.C, a.getCharacters))
-	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/account/characters", api.MustHaveSessionAndLanguageCode(a.C, a.postCharacters))
+	r.NewRoute().Methods("GET").WebOnlyHandler(
+		paths.VerifyPath,
+		api.MustHaveLanguageCode(a.C, a.getVerify))
+	r.NewRoute().Methods("GET").WebOnlyHandler(
+		"/account/register",
+		api.MustHaveLanguageCode(a.C, a.getRegister))
+	r.NewRoute().Methods("POST").WebOnlyHandler(
+		"/account/register",
+		api.MustHaveLanguageCode(a.C, a.postRegister))
+	r.NewRoute().Methods("GET").WebOnlyHandler(
+		"/account/profile",
+		api.CorpMustBeManaged(a.C,
+			api.MustHaveLanguageCode(a.C, a.getProfile)))
+	r.NewRoute().Methods("POST").WebOnlyHandler(
+		"/account/profile",
+		api.CorpMustBeManaged(a.C,
+			api.MustHaveLanguageCode(a.C, a.postProfile)))
+	r.NewRoute().Methods("GET").WebOnlyHandler(
+		"/account/settings",
+		api.CorpMustBeManaged(a.C,
+			api.MustHaveLanguageCode(a.C, a.getSettings)))
+	r.NewRoute().Methods("POST").WebOnlyHandler(
+		"/account/settings",
+		api.CorpMustBeManaged(a.C,
+			api.MustHaveLanguageCode(a.C, a.postSettings)))
+	r.NewRoute().Methods("GET").WebOnlyHandler(
+		"/account/characters",
+		api.MustHaveLanguageCode(a.C, a.getCharacters))
+	r.NewRoute().Methods("POST").WebOnlyHandler(
+		"/account/characters",
+		api.MustHaveLanguageCode(a.C, a.postCharacters))
 }

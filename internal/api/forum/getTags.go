@@ -24,14 +24,13 @@ import (
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/data"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/go-fed/apcore/app"
 	"github.com/go-fed/apcore/util"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
-func (f *Forum) getTags(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (f *Forum) getTags(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	tag := mux.Vars(r)["tag"]
 	dataTag := data.ToTag(tag)
 	var tp []data.ThreadPreview

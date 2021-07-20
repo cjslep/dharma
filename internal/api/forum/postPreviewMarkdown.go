@@ -21,7 +21,6 @@ import (
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/go-fed/apcore/app"
 	"github.com/mholt/binding"
 	"golang.org/x/text/language"
 )
@@ -43,7 +42,7 @@ type newMarkdownPreviewResponse struct {
 	Markdown string `json:"markdown"`
 }
 
-func (f *Forum) postPreviewMarkdown(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (f *Forum) postPreviewMarkdown(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	rc := api.From(r.Context())
 	npr := &newMarkdownPreviewRequest{}
 	errs := binding.Bind(r, npr)

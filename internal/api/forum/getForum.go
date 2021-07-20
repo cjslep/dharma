@@ -24,13 +24,12 @@ import (
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
-	"github.com/go-fed/apcore/app"
 	"github.com/go-fed/apcore/util"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
-func (f *Forum) getForum(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (f *Forum) getForum(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	m := f.C.APIQueue.Messenger()
 	var lt map[string]*services.LatestTag
 	tagcb := m.DoAsync(f.C.F.Context(r), func(ctx context.Context) async.CallbackFn {

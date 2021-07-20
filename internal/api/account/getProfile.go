@@ -21,11 +21,10 @@ import (
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
-func (a *Account) getProfile(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (a *Account) getProfile(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	rc := api.From(r.Context())
 	v := render.NewHTMLView(
 		w,

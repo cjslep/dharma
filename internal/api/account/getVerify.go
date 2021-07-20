@@ -20,7 +20,9 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
@@ -46,7 +48,7 @@ func (a *Account) getVerify(w http.ResponseWriter, r *http.Request, langs []lang
 	}
 
 	// If token is present, instead attempt to verify.
-	err := a.C.users.MarkUserVerified(a.C.F.Context(r), token)
+	err := a.C.Users.MarkUserVerified(a.C.F.Context(r), token)
 	if err != nil {
 		a.C.MustRenderError(w, r, errors.Wrap(err, "could not verify user"), langs...)
 		return
@@ -55,10 +57,10 @@ func (a *Account) getVerify(w http.ResponseWriter, r *http.Request, langs []lang
 		w,
 		http.StatusOK,
 		"account/verify",
-		rc,
+		api.From(r.Context()),
 		map[string]interface{}{
 			"verified": true,
-			"showty":   showTY,
+			"showty":   false,
 		},
 		langs...)
 	a.C.MustRender(v)

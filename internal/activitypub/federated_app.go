@@ -184,7 +184,7 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 
 func (a *FederatedApp) NotFoundHandler(f app.Framework) http.Handler {
 	ctx := a.apiContext()
-	return http.HandlerFunc(api.ApplyMiddleware(
+	return api.ApplyMiddleware(
 		api.MustHaveLanguageCode(
 			ctx,
 			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
@@ -197,12 +197,12 @@ func (a *FederatedApp) NotFoundHandler(f app.Framework) http.Handler {
 					nil,
 					langs...)
 				ctx.MustRender(v)
-			})))
+			}))
 }
 
 func (a *FederatedApp) MethodNotAllowedHandler(f app.Framework) http.Handler {
 	ctx := a.apiContext()
-	return http.HandlerFunc(api.ApplyMiddleware(
+	return api.ApplyMiddleware(
 		api.MustHaveLanguageCode(
 			ctx,
 			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
@@ -215,68 +215,72 @@ func (a *FederatedApp) MethodNotAllowedHandler(f app.Framework) http.Handler {
 					nil,
 					langs...)
 				ctx.MustRender(v)
-			})))
+			}))
 }
 
 func (a *FederatedApp) InternalServerErrorHandler(f app.Framework) http.Handler {
 	ctx := a.apiContext()
-	return http.HandlerFunc(api.ApplyMiddleware(
+	return api.ApplyMiddleware(
 		api.MustHaveLanguageCode(
 			ctx,
 			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 				ctx.MustRenderError(w, r, errors.New("an internal error occured"), langs...)
-			})))
+			}))
 }
 
 func (a *FederatedApp) BadRequestHandler(f app.Framework) http.Handler {
 	ctx := a.apiContext()
-	return http.HandlerFunc(api.ApplyMiddleware(
+	return api.ApplyMiddleware(
 		api.MustHaveLanguageCode(
 			ctx,
 			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 				rc := api.From(r.Context())
 				v := render.NewBadRequestView(w, rc, langs...)
 				ctx.MustRender(v)
-			})))
+			}))
 }
 
 func (a *FederatedApp) GetLoginWebHandlerFunc(f app.Framework) http.HandlerFunc {
 	ctx := a.apiContext()
-	return http.HandlerFunc(api.ApplyMiddleware(
-		api.MustHaveLanguageCode(
-			ctx,
-			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-				rc := api.From(r.Context())
-				lerr := r.URL.Query().Get("login_error")
-				v := render.NewHTMLView(
-					w,
-					http.StatusOK,
-					"auth/login",
-					rc,
-					map[string]interface{}{
-						"loginError": lerr,
-					},
-					langs...)
-				ctx.MustRender(v)
-			})))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		api.ApplyMiddleware(
+			api.MustHaveLanguageCode(
+				ctx,
+				func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+					rc := api.From(r.Context())
+					lerr := r.URL.Query().Get("login_error")
+					v := render.NewHTMLView(
+						w,
+						http.StatusOK,
+						"auth/login",
+						rc,
+						map[string]interface{}{
+							"loginError": lerr,
+						},
+						langs...)
+					ctx.MustRender(v)
+				}))
+	})
 }
 
 func (a *FederatedApp) GetAuthWebHandlerFunc(f app.Framework) http.HandlerFunc {
 	ctx := a.apiContext()
-	return http.HandlerFunc(api.ApplyMiddleware(
-		api.MustHaveLanguageCode(
-			ctx,
-			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-				rc := api.From(r.Context())
-				v := render.NewHTMLView(
-					w,
-					http.StatusOK,
-					"auth/auth",
-					rc,
-					nil,
-					langs...)
-				ctx.MustRender(v)
-			})))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		api.ApplyMiddleware(
+			api.MustHaveLanguageCode(
+				ctx,
+				func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+					rc := api.From(r.Context())
+					v := render.NewHTMLView(
+						w,
+						http.StatusOK,
+						"auth/auth",
+						rc,
+						nil,
+						langs...)
+					ctx.MustRender(v)
+				}))
+	})
 }
 
 func (a *FederatedApp) GetOutboxWebHandlerFunc(f app.Framework) func(w http.ResponseWriter, r *http.Request, outbox vocab.ActivityStreamsOrderedCollectionPage) {

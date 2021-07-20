@@ -22,7 +22,6 @@ import (
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
@@ -49,7 +48,7 @@ func getRegisterURL(r *http.Request, username, email, err string) *url.URL {
 	return u
 }
 
-func (a *Account) getRegister(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (a *Account) getRegister(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	username := r.URL.Query().Get("u")
 	email := r.URL.Query().Get("e")
 	err := r.URL.Query().Get("err")

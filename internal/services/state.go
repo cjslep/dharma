@@ -14,24 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package site
+package services
 
-import (
-	"net/http"
-
-	"github.com/cjslep/dharma/internal/api"
-	"github.com/cjslep/dharma/internal/render"
-	"golang.org/x/text/language"
-)
-
-func (s *Site) getHome(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-	rc := api.From(r.Context())
-	v := render.NewHTMLView(
-		w,
-		http.StatusOK,
-		"site/home",
-		rc,
-		map[string]interface{}{},
-		langs...)
-	s.C.MustRender(v)
+type StateReader interface {
+	RequiresCorpToBeManaged() bool
+	ShouldCorpReceiveAllianceData() bool
+	ShouldCorpSendAllianceData() bool
 }
+
+type StateWriter interface{}

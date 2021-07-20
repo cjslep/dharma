@@ -19,10 +19,9 @@ package site
 import (
 	"net/http"
 
-	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
-func (s *Site) getAbout(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+func (s *Site) getAbout(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	// TODO
 }
