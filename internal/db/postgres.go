@@ -88,21 +88,27 @@ CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_user_supplement
 (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid REFERENCES ` + p.schema + `users(id) ON DELETE CASCADE NOT NULL,
-  validation_state text NOT NULL
+  validation_state text NOT NULL,
+  verification_token text NOT NULL
 );`
 }
 
 func (p postgres) CreateUserSupplement() string {
 	return `
 INSERT INTO ` + p.schema + `dharma_user_supplement
-(user_id, validation_state)
+(user_id, verification_token, validation_state)
 VALUES
-($1, $2);`
+($1, $2, $3);`
 }
 
 func (p postgres) UpdateUserSupplement() string {
 	return `UPDATE ` + p.schema + `dharma_user_supplement
 SET validation_state = $2 WHERE user_id = $1;`
+}
+
+func (p postgres) UpdateUserVerified() string {
+	return `UPDATE ` + p.schema + `dharma_user_supplement
+SET validation_state = $2 WHERE verification_token = $1;`
 }
 
 func (p postgres) GetUserSupplement() string {

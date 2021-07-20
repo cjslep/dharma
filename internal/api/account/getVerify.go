@@ -17,37 +17,48 @@
 package account
 
 import (
-	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
 
-func getVerifyURL(lang language.Tag, showThanksForRegistering bool) *url.URL {
-	u := &url.URL{}
-	u.Path = fmt.Sprintf("/%s/verify", lang)
-	v := url.Values{}
-	if showThanksForRegistering {
-		v.Add("ty", "true")
+func (a *Account) getVerify(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+	token := r.URL.Query().Get(paths.TokenQueryParam)
+	if token == "" {
+		// If no token, then display page directing user to verify
+		// their email.
+		showTY := r.URL.Query().Get("ty")
+		rc := api.From(r.Context())
+		v := render.NewHTMLView(
+			w,
+			http.StatusOK,
+			"account/verify",
+			rc,
+			map[string]interface{}{
+				"verified": false,
+				"showty":   showTY,
+			},
+			langs...)
+		a.C.MustRender(v)
+		return
 	}
-	u.RawQuery = v.Encode()
-	return u
-}
 
-func (a *Account) getVerify(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
-	showTY := r.URL.Query().Get("ty")
-	rc := api.From(r.Context())
+	// If token is present, instead attempt to verify.
+	err := a.C.users.MarkUserVerified(a.C.F.Context(r), token)
+	if err != nil {
+		a.C.MustRenderError(w, r, errors.Wrap(err, "could not verify user"), langs...)
+		return
+	}
 	v := render.NewHTMLView(
 		w,
 		http.StatusOK,
 		"account/verify",
 		rc,
 		map[string]interface{}{
-			"showty": showTY,
+			"verified": true,
+			"showty":   showTY,
 		},
 		langs...)
 	a.C.MustRender(v)

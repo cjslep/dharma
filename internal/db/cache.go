@@ -14,27 +14,44 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package main
+package db
 
 import (
-	"context"
-
-	"github.com/cjslep/dharma/internal/activitypub"
-	"github.com/cjslep/dharma/internal/features"
-	"github.com/go-fed/apcore"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/pkgerrors"
+	"sync"
 )
 
-func main() {
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+type stringCache struct {
+	v  string
+	mu sync.RWMutex
+}
 
-	var f []features.Feature
-	e := features.New(f)
-	a, err := activitypub.New(context.Background(), e, software)
-	if err != nil {
-		// TODO
-		return
+func (c *stringCache) Get() string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.v
+}
+
+func (c *stringCache) Set(v string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.v = v
+}
+
+type cache struct {
+	corpName *stringCache
+}
+
+func newCache() *cache {
+	return &cache{
+		corpName: &stringCache{},
 	}
-	apcore.Run(a)
+}
+
+func (d *DB) GetCorpName() string {
+	return d.cache.corpName.Get()
+}
+
+// TODO: Set corp name, at init and on the fly
+func (d *DB) setCorpName(v string) {
+	d.cache.corpName.Set(v)
 }

@@ -36,9 +36,12 @@ import (
 	"github.com/cjslep/dharma/internal/mail"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
+	"github.com/cjslep/dharma/locales"
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"golang.org/x/text/language"
@@ -49,13 +52,17 @@ var _ app.S2SApplication = new(FederatedApp)
 
 type FederatedApp struct {
 	// At constructor time
+	b        *i18n.Bundle
+	bg       context.Context
 	software app.Software
 	apiQueue *async.Queue
 	fedQueue *async.Queue
 	features *features.Engine
 
 	// At config-setting time
+	debug  bool
 	schema string
+	apc    app.APCoreConfig
 	config *config.Config
 	l      *zerolog.Logger
 	oac    *esi.OAuth2Client
@@ -70,13 +77,22 @@ type FederatedApp struct {
 	startupErr error
 }
 
-func New(bg context.Context, f *features.Engine, software app.Software) *FederatedApp {
+func New(bg context.Context, f *features.Engine, software app.Software) (*FederatedApp, error) {
+	b := i18n.NewBundle(language.English)
+	b.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+
+	if err := locales.AddMessageFiles(b); err != nil {
+		return nil, err
+	}
+
 	return &FederatedApp{
+		b:        b,
 		software: software,
+		bg:       bg,
 		apiQueue: async.NewQueue(bg),
 		fedQueue: async.NewQueue(bg),
 		features: f,
-	}
+	}, nil
 }
 
 func (a *FederatedApp) apiContext() *api.Context {
@@ -104,14 +120,22 @@ func (a *FederatedApp) mustRender(v *render.View) {
 }
 
 func (a *FederatedApp) Start() error {
-	a.apiQueue.Start()
-	a.fedQueue.Start()
+	if err := a.apiQueue.Start(); err != nil {
+		return err
+	}
+	if err := a.fedQueue.Start(); err != nil {
+		return err
+	}
+	if err := a.m.Start(); err != nil {
+		return err
+	}
 	ctx := a.apiContext()
 	ctx.ESI.GoPeriodicallyRefreshAllTokens(a.apiQueue.Messenger())
 	return a.startupErr
 }
 
 func (a *FederatedApp) Stop() error {
+	a.m.Stop()
 	a.fedQueue.Stop()
 	a.apiQueue.Stop()
 	return nil
@@ -129,14 +153,21 @@ func (a *FederatedApp) NewConfiguration() interface{} {
 		LenPreview:           80,
 		MaxHTMLDepth:         255,
 		NListThreads:         25,
+		MailerEncryption:     "starttls",
+		MailerAuthentication: "none",
+		MailerKeepAlive:      false,
+		MailerConnectTimeout: 60,
+		MailerSendTimeout:    60,
 	}
 }
 
 func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, debug bool) error {
+	a.debug = debug
 	c, ok := i.(*config.Config)
 	if !ok {
 		return errors.New("configuration is not of type *config.Config")
 	}
+	a.apc = apc
 	a.schema = apc.Schema()
 	a.config = c
 	h := &http.Client{} // TODO
@@ -146,7 +177,7 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 		Secret:      c.APIKey,
 		Client:      h,
 	}
-	a.r, a.startupErr = render.New(c, debug, "/static")
+	a.r, a.startupErr = render.New(c, debug, "/static", a.b)
 	a.l = log.Logger(debug || c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
 	return nil
 }
@@ -275,7 +306,7 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 
 func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
 	a.db = db.New(d, f, a.schema)
-	a.m = mail.New(a.db)
+	a.m = mail.New(a.bg, a.l, a.b, a.apc, a.config, a.db, a.debug)
 	a.f = f
 	ctx := a.apiContext()
 	r := []api.Router{

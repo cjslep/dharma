@@ -18,6 +18,7 @@ package account
 
 import (
 	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/go-fed/apcore/app"
 )
 
@@ -26,7 +27,7 @@ type Account struct {
 }
 
 func (a *Account) Route(r app.Router) {
-	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/verify", api.MustHaveSessionAndLanguageCode(a.C, a.getVerify))
+	r.NewRoute().Methods("GET").WebOnlyHandlerFunc(paths.VerifyPath, api.MustHaveLanguageCode(a.C, a.getVerify))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/register", api.MustHaveSessionAndLanguageCode(a.C, a.getRegister))
 	r.NewRoute().Methods("POST").WebOnlyHandlerFunc("/account/register", api.MustHaveSessionAndLanguageCode(a.C, a.postRegister))
 	r.NewRoute().Methods("GET").WebOnlyHandlerFunc("/account/profile", api.MustHaveSessionAndLanguageCode(a.C, a.getProfile))

@@ -17,12 +17,11 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
-	"net/url"
 	"path"
 
 	"github.com/cjslep/dharma/assets"
+	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/go-fed/apcore/app"
 	"github.com/gorilla/mux"
 	"golang.org/x/text/language"
@@ -138,7 +137,7 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 				next.ServeHTTP(w, r)
 				return
 			}
-			valid, err := ctx.Users.IsUserValidated(ctx.F.Context(r), userID)
+			valid, err := ctx.Users.IsUserVerified(ctx.F.Context(r), userID)
 			if err != nil {
 				// Error
 				ctx.MustRenderError(w, r, err)
@@ -150,9 +149,7 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 					ctx.MustRenderError(w, r, err)
 					return
 				}
-				// TODO: Unify this logic with getVerify
-				u := &url.URL{}
-				u.Path = fmt.Sprintf("/%s/verify", lts[0])
+				u := paths.GetPleaseVerifyURL(lts[0], false)
 				http.Redirect(w, r, u.String(), http.StatusFound)
 				return
 			}

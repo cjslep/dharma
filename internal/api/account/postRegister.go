@@ -20,6 +20,7 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
 	"github.com/mholt/binding"
@@ -73,7 +74,7 @@ func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, k app.Ses
 		return
 	}
 
-	err := a.C.Users.CreateUser(a.C.F.Context(r), rr.Username, rr.Email, rr.Password)
+	err := a.C.Users.CreateUser(a.C.F.Context(r), rr.Username, rr.Email, rr.Password, langs[0])
 	if err != nil {
 		if a.C.F.IsNotUniqueEmail(err) {
 			u := getRegisterURLEmailNotUnique(r, rr.Username, rr.Email)
@@ -89,6 +90,6 @@ func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, k app.Ses
 		}
 	}
 
-	u := getVerifyURL(langs[0], true)
+	u := paths.GetPleaseVerifyURL(langs[0], true)
 	http.Redirect(w, r, u.String(), http.StatusFound)
 }

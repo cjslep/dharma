@@ -23,9 +23,7 @@ import (
 	"github.com/cjslep/dharma/assets"
 	"github.com/cjslep/dharma/internal/config"
 	d_i18n "github.com/cjslep/dharma/internal/render/i18n"
-	"github.com/cjslep/dharma/locales"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"github.com/pelletier/go-toml/v2"
 	"github.com/unrolled/render"
 	"golang.org/x/text/language"
 )
@@ -37,14 +35,7 @@ type Renderer struct {
 	staticRoot string
 }
 
-func New(c *config.Config, debug bool, staticRoot string) (*Renderer, error) {
-	b := i18n.NewBundle(language.English)
-	b.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-
-	if err := locales.AddMessageFiles(b); err != nil {
-		return nil, err
-	}
-
+func New(c *config.Config, debug bool, staticRoot string, b *i18n.Bundle) (*Renderer, error) {
 	r := &Renderer{
 		b:          b,
 		debug:      debug,

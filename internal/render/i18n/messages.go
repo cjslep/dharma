@@ -509,3 +509,33 @@ func (m *Messages) CheckEmailForVerification() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) PleaseValidateEmailSubject() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "pleaseValidateEmailSubject",
+			Description: "Email subject for the email sent for new registrants to verify their account",
+			Other:       "Please Verify Your Account",
+		},
+	})
+}
+
+func (m *Messages) PleaseValidateEmailBodyText() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "pleaseValidateEmailSubject",
+			Description: "Text email body for the email sent for new registrants to verify their account, must have a %s for the URL",
+			Other:       "Please go to the following link to verify your account: %s",
+		},
+	})
+}
+
+func (m *Messages) VerifySuccess() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "verifySuccess",
+			Description: "Message displayed to a user after they have verified their email address by clicking a link in the email",
+			Other:       "Your email has been successfully verified! You may now log in.",
+		},
+	})
+}

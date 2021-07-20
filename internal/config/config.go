@@ -30,4 +30,14 @@ type Config struct {
 	LenPreview   int `ini:"dharma_length_post_preview" comment:"The length of preview text to display (default: 80)"`
 	MaxHTMLDepth int `ini:"dharma_max_html_parsing_depth" comment:"The deepest HTML parsing allowed before abandoning (default: 255)"`
 	NListThreads int `ini:"dharma_n_threads_in_category_pages" comment:"The number of threads to show per page in a forum category (default: 25)"`
+
+	MailerHost           string `ini:"dharma_mailer_host" comment:"Host name of the SMTP mailer service"`
+	MailerPort           int    `ini:"dharma_mailer_port" comment:"Port of the SMTP mailer service"`
+	MailerUsername       string `ini:"dharma_mailer_username" comment:"Username for the SMTP mailer service"`
+	MailerPassword       string `ini:"dharma_mailer_password" comment:"Password for the SMTP mailer service"`
+	MailerEncryption     string `ini:"dharma_mailer_encryption" comment:"Kind of encryption to use for the mailer service: \"starttls\", \"ssltls\", \"none\" (default: \"starttls\")"`
+	MailerAuthentication string `ini:"dharma_mailer_authentication" comment:"Kind of authentication to use for the mailer service: \"plain\", \"login\", \"crammd5\", \"none\" (default: \"none\")"`
+	MailerKeepAlive      bool   `ini:"dharma_mailer_keepalive" comment:"Whether to use keep-alive on the mail connections (default: false)"`
+	MailerConnectTimeout int    `ini:"dharma_mailer_connect_timeout_sec" comment:"Duration in seconds of the time dharma will wait to connect to the mail service before giving up (default: 60)"`
+	MailerSendTimeout    int    `ini:"dharma_mailer_connect_timeout_sec" comment:"Duration in seconds of the time dharma will wait to send a mail through the mail service before giving up (default: 60)"`
 }

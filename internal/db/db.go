@@ -33,16 +33,18 @@ const (
 )
 
 type DB struct {
-	db app.Database
-	f  app.Framework
-	pg postgres
+	db    app.Database
+	f     app.Framework
+	pg    postgres
+	cache *cache
 }
 
 func New(db app.Database, f app.Framework, schema string) *DB {
 	return &DB{
-		db: db,
-		f:  f,
-		pg: newPostgres(schema),
+		db:    db,
+		f:     f,
+		pg:    newPostgres(schema),
+		cache: newCache(),
 	}
 }
 
@@ -107,9 +109,9 @@ func (d *DB) FetchPaginatedMessagesInThread(c util.Context, id string, n, page i
 	return ThreadMessages{}, nil
 }
 
-func (d *DB) AddUserEmailValidationTask(c util.Context, userID string) error {
+func (d *DB) AddUserEmailValidationTask(c util.Context, userID, token string) error {
 	txb := d.db.Begin()
-	txb.ExecOneRow(d.pg.CreateUserSupplement(), userID, kUnvalidatedState)
+	txb.ExecOneRow(d.pg.CreateUserSupplement(), userID, token, kUnvalidatedState)
 	return txb.Do(c)
 }
 
@@ -119,13 +121,13 @@ func (d *DB) MarkUserValidationEmailSent(c util.Context, userID string) error {
 	return txb.Do(c)
 }
 
-func (d *DB) MarkUserValidated(c util.Context, userID string) error {
+func (d *DB) MarkUserVerified(c util.Context, token string) error {
 	txb := d.db.Begin()
-	txb.ExecOneRow(d.pg.UpdateUserSupplement(), userID, kValidatedState)
+	txb.ExecOneRow(d.pg.UpdateUserVerified(), token, kValidatedState)
 	return txb.Do(c)
 }
 
-func (d *DB) IsUserValidated(c util.Context, userID string) (bool, error) {
+func (d *DB) IsUserVerified(c util.Context, userID string) (bool, error) {
 	// TODO: See if in-memory cache is needed for per-request latency
 	var valid string
 	txb := d.db.Begin()
