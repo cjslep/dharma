@@ -80,6 +80,32 @@ func (p postgres) GetEveToken() string {
 WHERE character_id = $1;`
 }
 
+// Application State Table
+
+func (p postgres) CreateApplicationStateTableV0() string {
+	return `
+CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_application_state
+(
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  kind text UNIQUE NOT NULL,
+  value text NOT NULL
+);`
+}
+
+func (p postgres) SetApplicationStateKV() string {
+	return `INSERT INTO ` + p.schema + `dharma_application_state
+(kind, value)
+VALUES
+($1, $2)
+ON CONFLICT (kind) DO UPDATE
+SET value = EXCLUDED.value;`
+}
+
+func (p postgres) GetApplicationStateKV() string {
+	return `SELECT value FROM ` + p.schema + `dharma_application_state
+WHERE kind = $1;`
+}
+
 // User Supplementary Data Table
 
 func (p postgres) CreateUserSupplementTableV0() string {

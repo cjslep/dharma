@@ -27,9 +27,18 @@ import (
 )
 
 const (
+	// Email validation states
 	kUnvalidatedState             = "not_validated"
 	kSentValidationChallengeState = "challenge_sent"
 	kValidatedState               = "validated"
+)
+
+const (
+	// Application state Key-Val keys
+	kAuthoritativeCharacterKey = "authoritative_character"
+	kCorporationManagedKey     = "corporation_managed"
+	kAllianceAssociationKey    = "alliance_association"
+	kExecutorCorporationKey    = "executor_corporation"
 )
 
 type DB struct {
@@ -135,4 +144,55 @@ func (d *DB) IsUserVerified(c util.Context, userID string) (bool, error) {
 		return r.Scan(&valid)
 	}, userID)
 	return valid == kValidatedState, txb.Do(c)
+}
+
+func (d *DB) setApplicationState(c util.Context, k, v string) error {
+	txb := d.db.Begin()
+	txb.ExecOneRow(d.pg.SetApplicationStateKV(), k, v)
+	return txb.Do(c)
+}
+
+func (d *DB) getApplicationState(c util.Context, k string) (string, error) {
+	var value string
+	txb := d.db.Begin()
+	txb.QueryOneRow(d.pg.GetApplicationStateKV(), func(r app.SingleRow) error {
+		return r.Scan(&value)
+	}, k)
+	return value, txb.Do(c)
+}
+
+func (d *DB) GetAuthoritativeCharacter(c util.Context) (string, error) {
+	return d.getApplicationState(c, kAuthoritativeCharacterKey)
+}
+
+// TODO: Use
+func (d *DB) SetAuthoritativeCharacter(c util.Context, v string) error {
+	return d.setApplicationState(c, kAuthoritativeCharacterKey, v)
+}
+
+func (d *DB) GetCorporationManaged(c util.Context) (string, error) {
+	return d.getApplicationState(c, kCorporationManagedKey)
+}
+
+// TODO: Use
+func (d *DB) SetCorporationManaged(c util.Context, v string) error {
+	return d.setApplicationState(c, kCorporationManagedKey, v)
+}
+
+func (d *DB) GetAlliance(c util.Context) (string, error) {
+	return d.getApplicationState(c, kAllianceAssociationKey)
+}
+
+// TODO: Use
+func (d *DB) SetAlliance(c util.Context, v string) error {
+	return d.setApplicationState(c, kAllianceAssociationKey, v)
+}
+
+func (d *DB) GetExecutor(c util.Context) (string, error) {
+	return d.getApplicationState(c, kExecutorCorporationKey)
+}
+
+// TODO: Use
+func (d *DB) SetExecutor(c util.Context, v string) error {
+	return d.setApplicationState(c, kExecutorCorporationKey, v)
 }

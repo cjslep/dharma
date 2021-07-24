@@ -20,6 +20,7 @@ import (
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/util"
+	"github.com/pkg/errors"
 )
 
 var _ services.StateWriter = &state{}
@@ -80,7 +81,19 @@ const (
 )
 
 func (s *state) initialize(c util.Context, db *db.DB) error {
-	// TODO
+	if h, err := db.GetAuthoritativeCharacter(c); err != nil || len(h) == 0 {
+		s.state = unmanagedState
+	} else if r, err := db.GetCorporationManaged(c); err != nil || len(r) == 0 {
+		s.state = unmanagedState
+	} else if a, err := db.GetAlliance(c); err != nil || len(a) == 0 {
+		s.state = managedIndyCorpState
+	} else if x, err := db.GetExecutor(c); err != nil || len(x) == 0 || x != r {
+		s.state = managedAllianceCorpState
+	} else if x == r {
+		s.state = managedExecutorCorpState
+	} else {
+		return errors.Errorf("cannot initialize application state: char=%s, corp=%s, alli=%s, exec=%s", h, r, a, x)
+	}
 	return nil
 }
 
