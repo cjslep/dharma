@@ -17,7 +17,9 @@
 package activitypub
 
 import (
+	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/services"
+	"github.com/go-fed/apcore/util"
 )
 
 var _ services.StateWriter = &state{}
@@ -76,6 +78,11 @@ const (
 	// corp being managed by dharma that is leading an alliance.
 	managedExecutorCorpState = "managed_executor_corp"
 )
+
+func (s *state) initialize(c util.Context, db *db.DB) error {
+	// TODO
+	return nil
+}
 
 // RequiresCorpToBeManaged determines if the current state requires an admin
 // account to log in with a CEO character to manage that corporation.

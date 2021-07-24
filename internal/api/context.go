@@ -42,6 +42,7 @@ type Context struct {
 	Users                 *services.Users
 	F                     app.Framework
 	Features              *features.Engine
+	S                     services.StateReader
 	MustRender            func(*render.View)
 	SupportedLanguageTags func() []language.Tag
 }

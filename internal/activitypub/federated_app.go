@@ -40,6 +40,7 @@ import (
 	"github.com/go-fed/activity/pub"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
+	"github.com/go-fed/apcore/util"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
@@ -69,6 +70,7 @@ type FederatedApp struct {
 	r      *render.Renderer
 
 	// At build routes time
+	s  *state
 	db *db.DB
 	f  app.Framework
 	m  *mail.Mailer
@@ -108,6 +110,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		Users:                 &services.Users{a.f, a.m, a.db},
 		F:                     a.f,
 		Features:              a.features,
+		S:                     a.s,
 		MustRender:            a.mustRender,
 		SupportedLanguageTags: a.r.LanguageTags,
 	}
@@ -310,6 +313,10 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 
 func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
 	a.db = db.New(d, f, a.schema)
+	a.s = &state{}
+	if err := a.s.initialize(util.Context{a.bg}, a.db); err != nil {
+		return err
+	}
 	a.m = mail.New(a.bg, a.l, a.b, a.apc, a.config, a.db, a.debug)
 	a.f = f
 	ctx := a.apiContext()

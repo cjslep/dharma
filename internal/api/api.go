@@ -22,6 +22,7 @@ import (
 
 	"github.com/cjslep/dharma/assets"
 	"github.com/cjslep/dharma/internal/api/paths"
+	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
 	"github.com/gorilla/mux"
 	"golang.org/x/text/language"
@@ -159,10 +160,28 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 	}
 }
 
+// enforceCorpIsManaged ensures that the current state of the application is
+// managing a corporation before allowing HTTP requests to proceed.
 func enforceCorpIsManaged(ctx *Context) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// TODO
+			if ctx.S.RequiresCorpToBeManaged() {
+				rc := From(r.Context())
+				langs, err := rc.LanguageTags()
+				if err != nil {
+					langs = []language.Tag{language.English}
+				}
+				v := render.NewHTMLView(
+					w,
+					http.StatusOK,
+					"state/manage_corp",
+					rc,
+					map[string]interface{}{},
+					langs...)
+				ctx.MustRender(v)
+				return
+			}
+			next.ServeHTTP(w, r)
 		})
 	}
 }
