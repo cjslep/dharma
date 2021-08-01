@@ -24,6 +24,8 @@ import (
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/go-fed/apcore/app"
+	ap_paths "github.com/go-fed/apcore/paths"
+	"github.com/go-fed/apcore/util"
 	"github.com/gorilla/mux"
 	"golang.org/x/text/language"
 )
@@ -180,6 +182,39 @@ func enforceCorpIsManaged(ctx *Context) mux.MiddlewareFunc {
 					langs...)
 				ctx.MustRender(v)
 				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// enforceLoggedInAsAdmin ensures that the request is for a logged-in
+// user with administrative privileges.
+func enforceLoggedInAsAdmin(ctx *Context) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rc := From(r.Context())
+			k, err := rc.Session()
+			if err != nil {
+				ctx.MustRenderError(w, r, err)
+				return
+			}
+			uid, err := k.UserID()
+			if err != nil {
+				ctx.MustRenderError(w, r, err)
+				return
+			}
+			admin, err := ctx.F.GetPrivileges(util.Context{rc}, ap_paths.UUID(uid), nil)
+			if err != nil {
+				ctx.MustRenderError(w, r, err)
+				return
+			}
+			if !admin {
+				langs, err := rc.LanguageTags()
+				if err != nil {
+					langs = []language.Tag{language.English}
+				}
+				ctx.MustRender(render.NewNotFoundView(w, rc, langs...))
 			}
 			next.ServeHTTP(w, r)
 		})

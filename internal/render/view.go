@@ -69,6 +69,16 @@ func NewBadRequestView(w io.Writer, rc RenderNavDataGetter, langs ...language.Ta
 		langs...)
 }
 
+func NewNotFoundView(w io.Writer, rc RenderNavDataGetter, langs ...language.Tag) *View {
+	return NewHTMLView(
+		w,
+		http.StatusNotFound,
+		"status/not_found",
+		rc,
+		nil,
+		langs...)
+}
+
 func NewHTMLView(w io.Writer, status int, name string, rc RenderNavDataGetter, data map[string]interface{}, langs ...language.Tag) *View {
 	l := make([]string, len(langs))
 	for i := range langs {

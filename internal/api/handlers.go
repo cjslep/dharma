@@ -80,3 +80,7 @@ func MustHaveSessionAndLanguageCode(ctx *Context, r LocalizedStatefulRenderHandl
 func CorpMustBeManaged(ctx *Context, next http.Handler) http.Handler {
 	return enforceCorpIsManaged(ctx)(next)
 }
+
+func MustBeAdmin(ctx *Context, next http.Handler) http.Handler {
+	return enforceLoggedInAsAdmin(ctx)(next)
+}

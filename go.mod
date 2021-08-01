@@ -4,13 +4,14 @@ go 1.15
 
 require (
 	github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a
-	github.com/go-fed/apcore v0.0.0-20210707114426-2bf06c39206a // indirect
+	github.com/go-fed/apcore v0.0.0-20210728213741-525bd218bf56 // indirect
 	github.com/go-openapi/errors v0.20.0
 	github.com/go-openapi/runtime v0.19.29
 	github.com/go-openapi/strfmt v0.20.1
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-openapi/validate v0.20.2
 	github.com/gorilla/mux v1.8.0
+	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/mholt/binding v0.3.0
 	github.com/nicksnyder/go-i18n/v2 v2.1.2
 	github.com/pascaldekloe/jwt v1.10.0

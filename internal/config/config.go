@@ -19,6 +19,7 @@ package config
 type Config struct {
 	ClientID             string `ini:"dharma_client_id" comment:"The client identifier CCP Games gives your application when registering on the ESI site, to identify your particular software instance."`
 	APIKey               string `ini:"dharma_api_key" comment:"The secret CCP Games gives your application to verify the authenticity of your software instance."`
+	ESITimeout           int    `ini:"dharma_esi_timeout" comment:"The timeout in seconds for issuing ESI API requests (default: 60)"`
 	EnableConsoleLogging bool   `ini:"dharma_debug_console_log" comment:"When true, logs directly to console, which is best used during software development."`
 	LogDir               string `ini:"dharma_log_directory" comment:"Directory location to write log files to, which can be useful when filing bug reports. (default: ./)"`
 	LogFile              string `ini:"dharma_log_file" comment:"Name of the log files, which can rotate and use this as a base naming convention. (default: dharma.log)"`

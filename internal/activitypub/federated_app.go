@@ -20,8 +20,10 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/esi/client"
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/api/account"
 	"github.com/cjslep/dharma/internal/api/esiauth"
@@ -41,6 +43,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
 	"github.com/go-fed/apcore/util"
+	"github.com/gregjones/httpcache"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
@@ -68,6 +71,7 @@ type FederatedApp struct {
 	l      *zerolog.Logger
 	oac    *esi.OAuth2Client
 	r      *render.Renderer
+	esi    *esi.Client
 
 	// At build routes time
 	s  *state
@@ -103,7 +107,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		FedQueue:              a.fedQueue,
 		OAC:                   a.oac,
 		L:                     a.l,
-		ESI:                   &services.ESI{a.db, a.oac, a.l},
+		ESI:                   &services.ESI{a.db, a.oac, a.l, a.esi},
 		Tags:                  &services.Tags{a.db},
 		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
 		Threads:               &services.Threads{a.db},
@@ -146,6 +150,7 @@ func (a *FederatedApp) Stop() error {
 
 func (a *FederatedApp) NewConfiguration() interface{} {
 	return &config.Config{
+		ESITimeout:           60,
 		EnableConsoleLogging: false,
 		LogDir:               "./",
 		LogFile:              "dharma.log",
@@ -173,13 +178,19 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 	a.apc = apc
 	a.schema = apc.Schema()
 	a.config = c
-	h := &http.Client{} // TODO
+	tp := httpcache.NewMemoryCacheTransport()
+	h := tp.Client()
 	a.oac = &esi.OAuth2Client{
 		RedirectURI: "https://" + apc.Host() + esiauth.Callback,
 		ClientID:    c.ClientID,
 		Secret:      c.APIKey,
 		Client:      h,
 	}
+	a.esi = esi.New(&esi.ThinClient{
+		ESIClient: client.Default,
+		Timeout:   time.Second * time.Duration(a.config.ESITimeout),
+		Client:    h,
+	})
 	a.r, a.startupErr = render.New(c, debug, "/static", a.b)
 	a.l = log.Logger(debug || c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
 	return nil
@@ -192,13 +203,7 @@ func (a *FederatedApp) NotFoundHandler(f app.Framework) http.Handler {
 			ctx,
 			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 				rc := api.From(r.Context())
-				v := render.NewHTMLView(
-					w,
-					http.StatusNotFound,
-					"status/not_found",
-					rc,
-					nil,
-					langs...)
+				v := render.NewNotFoundView(w, rc, langs...)
 				ctx.MustRender(v)
 			}))
 }

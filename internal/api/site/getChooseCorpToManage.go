@@ -17,33 +17,21 @@
 package site
 
 import (
+	"net/http"
+
 	"github.com/cjslep/dharma/internal/api"
-	"github.com/go-fed/apcore/app"
+	"github.com/cjslep/dharma/internal/render"
+	"golang.org/x/text/language"
 )
 
-type Site struct {
-	C *api.Context
-}
-
-func (s *Site) Route(r app.Router) {
-	r.NewRoute().Methods("GET").WebOnlyHandler(
-		"/",
-		api.CorpMustBeManaged(s.C,
-			api.MustHaveLanguageCode(s.C, s.getHome)))
-	r.NewRoute().Methods("GET").WebOnlyHandler(
-		"/about",
-		api.CorpMustBeManaged(s.C,
-			api.MustHaveLanguageCode(s.C, s.getAbout)))
-	r.NewRoute().Methods("GET").WebOnlyHandler(
-		"/site/setup/corp",
-		api.MustBeAdmin(s.C,
-			api.MustHaveLanguageCode(s.C, s.getChooseCorpToManage)))
-	r.NewRoute().Methods("POST").WebOnlyHandler(
-		"/site/setup/corp",
-		api.MustBeAdmin(s.C,
-			api.MustHaveLanguageCode(s.C, s.postChooseCorpToManage)))
-	r.NewRoute().Methods("POST").WebOnlyHandler(
-		"/site/setup/corp/search",
-		api.MustBeAdmin(s.C,
-			api.MustHaveLanguageCode(s.C, s.postCorpSetupSearch)))
+func (s *Site) getChooseCorpToManage(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+	rc := api.From(r.Context())
+	v := render.NewHTMLView(
+		w,
+		http.StatusOK,
+		"site/choose_corp_to_manage",
+		rc,
+		map[string]interface{}{},
+		langs...)
+	s.C.MustRender(v)
 }

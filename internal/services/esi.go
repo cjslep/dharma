@@ -18,19 +18,23 @@ package services
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/go-fed/apcore/util"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
+	"golang.org/x/text/language"
 )
 
 type ESI struct {
-	DB  *db.DB
-	OAC *esi.OAuth2Client
-	L   *zerolog.Logger
+	DB        *db.DB
+	OAC       *esi.OAuth2Client
+	L         *zerolog.Logger
+	ESIClient *esi.Client
 }
 
 func (e *ESI) SetEvePublicKeys(c util.Context, o *esi.OAuthKeysMetadata) error {
@@ -56,4 +60,12 @@ func (e *ESI) GoPeriodicallyRefreshAllTokens(m *async.Messenger) {
 func (e *ESI) refreshAllTokens(c context.Context) error {
 	// TODO
 	return nil
+}
+
+func (e *ESI) SearchCorporations(c context.Context, query string, lang language.Tag) ([]*esi.Corporation, error) {
+	s := strings.TrimSpace(query)
+	if len(s) <= 3 {
+		return nil, errors.New("query is too short to search")
+	}
+	return e.ESIClient.SearchCorp(c, s, lang)
 }
