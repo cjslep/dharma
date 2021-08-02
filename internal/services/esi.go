@@ -71,9 +71,13 @@ func (e *ESI) SearchCorporations(c context.Context, query string, lang language.
 }
 
 func (e *ESI) GetCharactersForUser(c util.Context, userID string) ([]*esi.Character, error) {
-	ids, err := e.DB.GetEveCharactersForUser(c)
+	ids, err := e.DB.GetEveCharactersForUser(c, userID)
 	if err != nil {
 		return nil, err
 	}
 	return e.ESIClient.Characters(c, ids)
+}
+
+func (e *ESI) HasCharacterForUser(c util.Context, userID string, charID int32) (bool, error) {
+	return e.DB.HasCharacterForUser(c, userID, charID)
 }

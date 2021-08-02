@@ -89,7 +89,7 @@ func (d *DB) GetEveTokens(c util.Context) (*esi.Tokens, error) {
 	return t, txb.Do(c)
 }
 
-func (d *DB) GetEveCharactersForUser(c util.Context) ([]int32, error) {
+func (d *DB) GetEveCharactersForUser(c util.Context, userID string) ([]int32, error) {
 	var ids []int32
 	txb := d.db.Begin()
 	txb.Query(d.pg.GetEveCharactersForUser(), func(r app.SingleRow) error {
@@ -100,8 +100,18 @@ func (d *DB) GetEveCharactersForUser(c util.Context) ([]int32, error) {
 		}
 		ids = append(ids, i)
 		return nil
-	})
+	}, userID)
 	return ids, txb.Do(c)
+}
+
+func (d *DB) HasCharacterForUser(c util.Context, userID string, charID int32) (bool, error) {
+	txb := d.db.Begin()
+	var ok bool
+	txb.QueryOneRow(d.pg.HasCharacterForUser(), func(r app.SingleRow) error {
+		err := r.Scan(&ok)
+		return err
+	}, userID, charID)
+	return ok, txb.Do(c)
 }
 
 type LatestPublicTagsResult struct {

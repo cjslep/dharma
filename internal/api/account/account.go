@@ -57,5 +57,5 @@ func (a *Account) Route(r app.Router) {
 		api.MustHaveSessionAndLanguageCode(a.C, a.getCharacters))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/account/characters",
-		api.MustHaveLanguageCode(a.C, a.postCharacters))
+		api.MustHaveSessionAndLanguageCode(a.C, a.postCharacters))
 }

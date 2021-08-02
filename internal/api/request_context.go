@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/cjslep/dharma/internal/sessions"
 	"github.com/go-fed/apcore/app"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -90,8 +91,8 @@ func (r *RequestContext) Path() (string, error) {
 	}
 }
 
-func (r *RequestContext) navData(signedIn bool, tag language.Tag) map[string]interface{} {
-	return map[string]interface{}{
+func (r *RequestContext) navData(signedIn bool, tag language.Tag, charID int32) map[string]interface{} {
+	m := map[string]interface{}{
 		"signedIn": signedIn,
 		"paths": map[string]interface{}{
 			"register":        fmt.Sprintf("/%s/account/register", tag),
@@ -117,6 +118,10 @@ func (r *RequestContext) navData(signedIn bool, tag language.Tag) map[string]int
 			return strings.Join(k, "/"), nil
 		},
 	}
+	if charID != 0 {
+		m["characterID"] = charID
+	}
+	return m
 }
 
 func (r *RequestContext) RenderNavData() map[string]interface{} {
@@ -128,6 +133,9 @@ func (r *RequestContext) RenderNavData() map[string]interface{} {
 		signedIn = isSignedInErr == nil
 	}
 
+	// Determine current character
+	charID := sessions.GetCharacterSelected(k)
+
 	// Obtain a language
 	ts, err := r.LanguageTags()
 	tag := language.English
@@ -135,5 +143,5 @@ func (r *RequestContext) RenderNavData() map[string]interface{} {
 		tag = ts[0]
 	}
 
-	return r.navData(signedIn, tag)
+	return r.navData(signedIn, tag, charID)
 }

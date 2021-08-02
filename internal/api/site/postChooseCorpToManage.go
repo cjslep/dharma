@@ -20,11 +20,12 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/api"
-	"golang.org/x/text/language"
-	"github.com/mholt/binding"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/go-fed/apcore/util"
 	"github.com/go-fed/apcore/app"
+	"github.com/go-fed/apcore/util"
+	"github.com/mholt/binding"
+	"github.com/pkg/errors"
+	"golang.org/x/text/language"
 )
 
 type chooseCorpRequest struct {

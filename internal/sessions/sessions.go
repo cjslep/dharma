@@ -21,7 +21,8 @@ import (
 )
 
 const (
-	esiOAuth2State = "dharma-esi-oauth2-state"
+	esiOAuth2State          = "dharma-esi-oauth2-state"
+	dharmaCharacterSelected = "dharma-character-selected"
 )
 
 func SetESIOAuth2State(k app.Session, state string) {
@@ -39,4 +40,17 @@ func GetESIOAuth2State(k app.Session) string {
 
 func ClearESIOAuth2State(k app.Session) {
 	k.Delete(esiOAuth2State)
+}
+
+func SetCharacterSelected(k app.Session, cID int32) {
+	k.Set(dharmaCharacterSelected, cID)
+}
+
+func GetCharacterSelected(k app.Session) int32 {
+	v, _ := k.Get(dharmaCharacterSelected)
+	if c, ok := v.(int32); !ok {
+		return 0
+	} else {
+		return c
+	}
 }

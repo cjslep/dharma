@@ -86,6 +86,11 @@ func (p postgres) GetEveCharactersForUser() string {
 WHERE user_id = $1;`
 }
 
+func (p postgres) HasCharacterForUser() string {
+	return `EXISTS(SELECT id FROM ` + p.schema + `dharma_eve_tokens
+WHERE user_id = $1 AND character_id = $2);`
+}
+
 // Application State Table
 
 func (p postgres) CreateApplicationStateTableV0() string {
