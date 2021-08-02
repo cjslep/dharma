@@ -61,6 +61,7 @@ func (p postgres) CreateEveTokensTableV0() string {
 CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_eve_tokens
 (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES ` + p.schema + `users(id) ON DELETE CASCADE NOT NULL,
   character_id integer UNIQUE NOT NULL,
   tokens bytea NOT NULL
 );`
@@ -68,9 +69,9 @@ CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_eve_tokens
 
 func (p postgres) SetEveToken() string {
 	return `INSERT INTO ` + p.schema + `dharma_eve_tokens
-(character_id, tokens)
+(user_id, character_id, tokens)
 VALUES
-($1, $2)
+($1, $2, $3)
 ON CONFLICT (character_id) DO UPDATE
 SET tokens = EXCLUDED.tokens;`
 }
@@ -78,6 +79,11 @@ SET tokens = EXCLUDED.tokens;`
 func (p postgres) GetEveToken() string {
 	return `SELECT tokens FROM ` + p.schema + `dharma_eve_tokens
 WHERE character_id = $1;`
+}
+
+func (p postgres) GetEveCharactersForUser() string {
+	return `SELECT character_id FROM ` + p.schema + `dharma_eve_tokens
+WHERE user_id = $1;`
 }
 
 // Application State Table

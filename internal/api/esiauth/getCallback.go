@@ -26,6 +26,13 @@ import (
 )
 
 func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request, k app.Session) {
+	// Ensure a user is associated with the session
+	userID, err := k.UserID()
+	if err != nil {
+		e.C.MustRenderErrorEnglish(w, r, errors.New("no user associated with session"))
+		return
+	}
+
 	// Enforce state integrity
 	state := r.URL.Query().Get("state")
 	myState := sessions.GetESIOAuth2State(k)
@@ -76,7 +83,7 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request, k app.Sess
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not construct tokens"))
 		return
 	}
-	err = e.C.ESI.SetEveTokens(e.C.F.Context(r), tokens)
+	err = e.C.ESI.SetEveTokens(e.C.F.Context(r), userID, tokens)
 	if err != nil {
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not store tokens"))
 		return

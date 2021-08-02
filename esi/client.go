@@ -127,14 +127,14 @@ func (x *Client) SearchCorp(ctx context.Context, q string, l language.Tag) ([]*C
 	for idx, c := range p.Corporation {
 		go func(idx int, corpID int32) {
 			defer wg.Done()
-			corp, err := x.Corporation(ctx, corpID)
+			corp, err := x.hydrateCorporation(ctx, corpID)
 			if err != nil {
 				errs[idx] = errors.Wrapf(err, "error fetching corporation id: %d", corpID)
 				return
 			}
 			if corp.Alliance != nil {
 				aID := corp.Alliance.ID
-				corp.Alliance, err = x.Alliance(ctx, aID)
+				corp.Alliance, err = x.hydrateAlliance(ctx, aID)
 				if err != nil {
 					errs[idx] = errors.Wrapf(err, "error fetching alliance id: %d", aID)
 					return
@@ -142,7 +142,7 @@ func (x *Client) SearchCorp(ctx context.Context, q string, l language.Tag) ([]*C
 			}
 			if corp.CEO != nil {
 				cID := corp.CEO.ID
-				corp.CEO, err = x.Character(ctx, cID)
+				corp.CEO, err = x.hydrateCharacter(ctx, cID)
 				if err != nil {
 					errs[idx] = errors.Wrapf(err, "error fetching ceo id: %d", cID)
 					return
@@ -150,7 +150,7 @@ func (x *Client) SearchCorp(ctx context.Context, q string, l language.Tag) ([]*C
 			}
 			if corp.Creator != nil {
 				cID := corp.Creator.ID
-				corp.Creator, err = x.Character(ctx, cID)
+				corp.Creator, err = x.hydrateCharacter(ctx, cID)
 				if err != nil {
 					errs[idx] = errors.Wrapf(err, "error fetching creator id: %d", cID)
 					return
@@ -167,7 +167,57 @@ func (x *Client) SearchCorp(ctx context.Context, q string, l language.Tag) ([]*C
 	return corps, nil
 }
 
-func (x *Client) Corporation(ctx context.Context, id int32) (*Corporation, error) {
+// Character obtains information about the character.
+//
+// Hydrates the Corporation, and any associated alliance.
+func (x *Client) Character(ctx context.Context, id int32) (*Character, error) {
+	c, err := x.hydrateCharacter(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if c.Corporation != nil {
+		cID := c.Corporation.ID
+		c.Corporation, err = x.hydrateCorporation(ctx, cID)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error fetching corporation id: %d", cID)
+		}
+	}
+	if c.Alliance != nil {
+		aID := c.Alliance.ID
+		c.Alliance, err = x.hydrateAlliance(ctx, aID)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error fetching alliance id: %d", aID)
+		}
+	}
+	return c, nil
+}
+
+// Characters is the same as Character but in parallel for multiple.
+func (x *Client) Characters(ctx context.Context, ids []int32) ([]*Character, error) {
+	var wg sync.WaitGroup
+	wg.Add(len(ids))
+	chars := make([]*Character, len(ids))
+	errs := make([]error, len(ids))
+	for idx, id := range ids {
+		go func(idx int, id int32) {
+			defer wg.Done()
+			ch, err := x.Character(ctx, id)
+			if err != nil {
+				errs[idx] = err
+			} else {
+				chars[idx] = ch
+			}
+		}(idx, id)
+	}
+	wg.Wait()
+	err := toErrors(errs)
+	if err != nil {
+		return nil, err
+	}
+	return chars, nil
+}
+
+func (x *Client) hydrateCorporation(ctx context.Context, id int32) (*Corporation, error) {
 	p, err := x.t.corporation(ctx, id)
 	if err != nil {
 		return nil, err
@@ -227,7 +277,7 @@ func (x *Client) Corporation(ctx context.Context, id int32) (*Corporation, error
 	return &c, nil
 }
 
-func (x *Client) Alliance(ctx context.Context, id int32) (*Alliance, error) {
+func (x *Client) hydrateAlliance(ctx context.Context, id int32) (*Alliance, error) {
 	p, err := x.t.alliance(ctx, id)
 	if err != nil {
 		return nil, err
@@ -267,7 +317,7 @@ func (x *Client) Alliance(ctx context.Context, id int32) (*Alliance, error) {
 	return &a, nil
 }
 
-func (x *Client) Character(ctx context.Context, id int32) (*Character, error) {
+func (x *Client) hydrateCharacter(ctx context.Context, id int32) (*Character, error) {
 	p, err := x.t.character(ctx, id)
 	if err != nil {
 		return nil, err

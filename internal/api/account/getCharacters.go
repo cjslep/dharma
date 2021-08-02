@@ -21,17 +21,34 @@ import (
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/go-fed/apcore/app"
+	"github.com/go-fed/apcore/util"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
-func (a *Account) getCharacters(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+func (a *Account) getCharacters(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+	userID, err := k.UserID()
+	if err != nil {
+		a.C.MustRenderError(w, r, errors.New("no user associated with session"), langs...)
+		return
+	}
+
+	chars, err := a.C.ESI.GetCharactersForUser(util.Context{r.Context()}, userID)
+	if err != nil {
+		a.C.MustRenderError(w, r, errors.New("no user associated with session"), langs...)
+		return
+	}
+
 	rc := api.From(r.Context())
 	v := render.NewHTMLView(
 		w,
 		http.StatusOK,
 		"account/characters",
 		rc,
-		map[string]interface{}{},
+		map[string]interface{}{
+			"characters": chars,
+		},
 		langs...)
 	a.C.MustRender(v)
 }

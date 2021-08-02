@@ -73,9 +73,9 @@ func (d *DB) GetEvePublicKeys(c util.Context) (*esi.OAuthKeysMetadata, error) {
 	return o, txb.Do(c)
 }
 
-func (d *DB) SetEveTokens(c util.Context, t *esi.Tokens) error {
+func (d *DB) SetEveTokens(c util.Context, userID string, t *esi.Tokens) error {
 	txb := d.db.Begin()
-	txb.ExecOneRow(d.pg.SetEveToken(), t.CID, t)
+	txb.ExecOneRow(d.pg.SetEveToken(), userID, t.CID, t)
 	return txb.Do(c)
 }
 
@@ -87,6 +87,21 @@ func (d *DB) GetEveTokens(c util.Context) (*esi.Tokens, error) {
 		return r.Scan(t)
 	})
 	return t, txb.Do(c)
+}
+
+func (d *DB) GetEveCharactersForUser(c util.Context) ([]int32, error) {
+	var ids []int32
+	txb := d.db.Begin()
+	txb.Query(d.pg.GetEveCharactersForUser(), func(r app.SingleRow) error {
+		var i int32
+		err := r.Scan(&i)
+		if err != nil {
+			return err
+		}
+		ids = append(ids, i)
+		return nil
+	})
+	return ids, txb.Do(c)
 }
 
 type LatestPublicTagsResult struct {

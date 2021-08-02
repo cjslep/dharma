@@ -45,8 +45,8 @@ func (e *ESI) GetEvePublicKeys(c util.Context) (*esi.OAuthKeysMetadata, error) {
 	return e.DB.GetEvePublicKeys(c)
 }
 
-func (e *ESI) SetEveTokens(c util.Context, t *esi.Tokens) error {
-	return e.DB.SetEveTokens(c, t)
+func (e *ESI) SetEveTokens(c util.Context, userID string, t *esi.Tokens) error {
+	return e.DB.SetEveTokens(c, userID, t)
 }
 
 func (e *ESI) GetEveTokens(c util.Context) (*esi.Tokens, error) {
@@ -68,4 +68,12 @@ func (e *ESI) SearchCorporations(c context.Context, query string, lang language.
 		return nil, errors.New("query is too short to search")
 	}
 	return e.ESIClient.SearchCorp(c, s, lang)
+}
+
+func (e *ESI) GetCharactersForUser(c util.Context, userID string) ([]*esi.Character, error) {
+	ids, err := e.DB.GetEveCharactersForUser(c)
+	if err != nil {
+		return nil, err
+	}
+	return e.ESIClient.Characters(c, ids)
 }
