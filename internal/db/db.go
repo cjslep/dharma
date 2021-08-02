@@ -17,6 +17,7 @@
 package db
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/cjslep/dharma/esi"
@@ -186,34 +187,55 @@ func (d *DB) getApplicationState(c util.Context, k string) (string, error) {
 	return value, txb.Do(c)
 }
 
-func (d *DB) GetAuthoritativeCharacter(c util.Context) (string, error) {
-	return d.getApplicationState(c, kAuthoritativeCharacterKey)
+func (d *DB) getApplicationStateAsInt32(c util.Context, k string) (int32, error) {
+	s, err := d.getApplicationState(c, k)
+	if err != nil {
+		return 0, err
+	}
+	return stateValueToInt32(s)
 }
 
-func (d *DB) SetAuthoritativeCharacter(c util.Context, v string) error {
-	return d.setApplicationState(c, kAuthoritativeCharacterKey, v)
+func (d *DB) setApplicationStateAsInt32(c util.Context, k string, v int32) error {
+	return d.setApplicationState(c, k, int32ToStateValue(v))
 }
 
-func (d *DB) GetCorporationManaged(c util.Context) (string, error) {
-	return d.getApplicationState(c, kCorporationManagedKey)
+func (d *DB) GetAuthoritativeCharacter(c util.Context) (int32, error) {
+	return d.getApplicationStateAsInt32(c, kAuthoritativeCharacterKey)
 }
 
-func (d *DB) SetCorporationManaged(c util.Context, v string) error {
-	return d.setApplicationState(c, kCorporationManagedKey, v)
+func (d *DB) SetAuthoritativeCharacter(c util.Context, v int32) error {
+	return d.setApplicationStateAsInt32(c, kAuthoritativeCharacterKey, v)
 }
 
-func (d *DB) GetAlliance(c util.Context) (string, error) {
-	return d.getApplicationState(c, kAllianceAssociationKey)
+func (d *DB) GetCorporationManaged(c util.Context) (int32, error) {
+	return d.getApplicationStateAsInt32(c, kCorporationManagedKey)
 }
 
-func (d *DB) SetAlliance(c util.Context, v string) error {
-	return d.setApplicationState(c, kAllianceAssociationKey, v)
+func (d *DB) SetCorporationManaged(c util.Context, v int32) error {
+	return d.setApplicationStateAsInt32(c, kCorporationManagedKey, v)
 }
 
-func (d *DB) GetExecutor(c util.Context) (string, error) {
-	return d.getApplicationState(c, kExecutorCorporationKey)
+func (d *DB) GetAlliance(c util.Context) (int32, error) {
+	return d.getApplicationStateAsInt32(c, kAllianceAssociationKey)
 }
 
-func (d *DB) SetExecutor(c util.Context, v string) error {
-	return d.setApplicationState(c, kExecutorCorporationKey, v)
+func (d *DB) SetAlliance(c util.Context, v int32) error {
+	return d.setApplicationStateAsInt32(c, kAllianceAssociationKey, v)
+}
+
+func (d *DB) GetExecutor(c util.Context) (int32, error) {
+	return d.getApplicationStateAsInt32(c, kExecutorCorporationKey)
+}
+
+func (d *DB) SetExecutor(c util.Context, v int32) error {
+	return d.setApplicationStateAsInt32(c, kExecutorCorporationKey, v)
+}
+
+func int32ToStateValue(i int32) string {
+	return strconv.FormatInt(int64(i), 10)
+}
+
+func stateValueToInt32(s string) (int32, error) {
+	i, err := strconv.ParseInt(s, 10, 32)
+	return int32(i), err
 }

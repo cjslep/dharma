@@ -319,7 +319,7 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
 	a.db = db.New(d, f, a.schema)
 	var err error
-	if a.s, err = services.NewState(util.Context{a.bg}, a.db); err != nil {
+	if a.s, err = services.NewState(util.Context{a.bg}, a.db, a.esi); err != nil {
 		return err
 	}
 	a.m = mail.New(a.bg, a.l, a.b, a.apc, a.config, a.db, a.debug)

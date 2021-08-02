@@ -17,6 +17,7 @@
 package services
 
 import (
+	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/go-fed/apcore/util"
 	"github.com/pkg/errors"
@@ -58,6 +59,7 @@ import (
 type State struct {
 	state appState
 	db    *db.DB
+	esi   *esi.Client
 }
 
 type appState string
@@ -77,17 +79,18 @@ const (
 	managedExecutorCorpState = "managed_executor_corp"
 )
 
-func NewState(c util.Context, db *db.DB) (*State, error) {
+func NewState(c util.Context, db *db.DB, esi *esi.Client) (*State, error) {
 	s := &State{
-		db: db,
+		db:  db,
+		esi: esi,
 	}
-	if h, err := db.GetAuthoritativeCharacter(c); err != nil || len(h) == 0 {
+	if h, err := db.GetAuthoritativeCharacter(c); err != nil || h == 0 {
 		s.state = unmanagedState
-	} else if r, err := db.GetCorporationManaged(c); err != nil || len(r) == 0 {
+	} else if r, err := db.GetCorporationManaged(c); err != nil || r == 0 {
 		s.state = unmanagedState
-	} else if a, err := db.GetAlliance(c); err != nil || len(a) == 0 {
+	} else if a, err := db.GetAlliance(c); err != nil || a == 0 {
 		s.state = managedIndyCorpState
-	} else if x, err := db.GetExecutor(c); err != nil || len(x) == 0 || x != r {
+	} else if x, err := db.GetExecutor(c); err != nil || x == 0 || x != r {
 		s.state = managedAllianceCorpState
 	} else if x == r {
 		s.state = managedExecutorCorpState
@@ -130,20 +133,47 @@ func (s *State) ShouldCorpSendAllianceData() bool {
 }
 
 func (s *State) ChooseCorporation(c util.Context, userID string, corpID int32) error {
-	// TODO: Check that userID has an ESI character token associated with them
-	// TODO: Check that the character ID of one of the ESI characters is the corp CEO
-	var charStr, corpStr, allianceStr, execStr string
-	if err := s.db.SetAuthoritativeCharacter(c, charStr); err != nil {
+	charIDs, err := s.db.GetEveCharactersForUser(c, userID)
+	if err != nil {
 		return err
 	}
-	if err := s.db.SetCorporationManaged(c, corpStr); err != nil {
+	corp, err := s.esi.Corporation(c, corpID)
+	if err != nil {
 		return err
 	}
-	if err := s.db.SetAlliance(c, allianceStr); err != nil {
+	// Check that the character ID of one of the ESI characters is the corp CEO
+	found := false
+	for _, cID := range charIDs {
+		if cID == corp.CEO.ID {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return errors.New("cannot choose corp: user is not CEO")
+	}
+	// Set the data governing software behavior
+	if err := s.db.SetAuthoritativeCharacter(c, corp.CEO.ID); err != nil {
 		return err
 	}
-	if err := s.db.SetExecutor(c, execStr); err != nil {
+	if err := s.db.SetCorporationManaged(c, corp.ID); err != nil {
+		return err
+	}
+	var aID int32
+	if corp.Alliance != nil {
+		aID = corp.Alliance.ID
+	}
+	if err := s.db.SetAlliance(c, aID); err != nil {
+		return err
+	}
+	var xID int32
+	if corp.Alliance != nil && corp.Alliance.Executor != nil {
+		xID = corp.Alliance.Executor.ID
+	}
+	if err := s.db.SetExecutor(c, xID); err != nil {
 		return err
 	}
 	return nil
 }
+
+// TODO: Periodically check the state of the application.

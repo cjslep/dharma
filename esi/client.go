@@ -127,34 +127,10 @@ func (x *Client) SearchCorp(ctx context.Context, q string, l language.Tag) ([]*C
 	for idx, c := range p.Corporation {
 		go func(idx int, corpID int32) {
 			defer wg.Done()
-			corp, err := x.hydrateCorporation(ctx, corpID)
+			corp, err := x.Corporation(ctx, corpID)
 			if err != nil {
 				errs[idx] = errors.Wrapf(err, "error fetching corporation id: %d", corpID)
 				return
-			}
-			if corp.Alliance != nil {
-				aID := corp.Alliance.ID
-				corp.Alliance, err = x.hydrateAlliance(ctx, aID)
-				if err != nil {
-					errs[idx] = errors.Wrapf(err, "error fetching alliance id: %d", aID)
-					return
-				}
-			}
-			if corp.CEO != nil {
-				cID := corp.CEO.ID
-				corp.CEO, err = x.hydrateCharacter(ctx, cID)
-				if err != nil {
-					errs[idx] = errors.Wrapf(err, "error fetching ceo id: %d", cID)
-					return
-				}
-			}
-			if corp.Creator != nil {
-				cID := corp.Creator.ID
-				corp.Creator, err = x.hydrateCharacter(ctx, cID)
-				if err != nil {
-					errs[idx] = errors.Wrapf(err, "error fetching creator id: %d", cID)
-					return
-				}
 			}
 			corps[idx] = corp
 		}(idx, c)
@@ -215,6 +191,38 @@ func (x *Client) Characters(ctx context.Context, ids []int32) ([]*Character, err
 		return nil, err
 	}
 	return chars, nil
+}
+
+// Corporation obtains information about the Corporation.
+//
+// Hydrates the CEO, Creator, and any associated alliance.
+func (x *Client) Corporation(ctx context.Context, id int32) (*Corporation, error) {
+	corp, err := x.hydrateCorporation(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if corp.Alliance != nil {
+		aID := corp.Alliance.ID
+		corp.Alliance, err = x.hydrateAlliance(ctx, aID)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error fetching alliance id: %d", aID)
+		}
+	}
+	if corp.CEO != nil {
+		cID := corp.CEO.ID
+		corp.CEO, err = x.hydrateCharacter(ctx, cID)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error fetching ceo id: %d", cID)
+		}
+	}
+	if corp.Creator != nil {
+		cID := corp.Creator.ID
+		corp.Creator, err = x.hydrateCharacter(ctx, cID)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error fetching creator id: %d", cID)
+		}
+	}
+	return corp, nil
 }
 
 func (x *Client) hydrateCorporation(ctx context.Context, id int32) (*Corporation, error) {
