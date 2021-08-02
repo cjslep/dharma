@@ -19,9 +19,49 @@ package site
 import (
 	"net/http"
 
+	"github.com/cjslep/dharma/internal/api"
 	"golang.org/x/text/language"
+	"github.com/mholt/binding"
+	"github.com/cjslep/dharma/internal/render"
+	"github.com/go-fed/apcore/util"
+	"github.com/go-fed/apcore/app"
 )
 
-func (s *Site) postChooseCorpToManage(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-	// TODO
+type chooseCorpRequest struct {
+	CorporationID int32
+}
+
+func (c *chooseCorpRequest) FieldMap(req *http.Request) binding.FieldMap {
+	return binding.FieldMap{
+		&c.CorporationID: binding.Field{
+			Form:     "corporation_id",
+			Required: true,
+		},
+	}
+}
+
+func (s *Site) postChooseCorpToManage(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
+	rc := api.From(r.Context())
+	ccr := &chooseCorpRequest{}
+	errs := binding.Bind(r, ccr)
+	if errs.Len() > 0 {
+		v := render.NewBadRequestView(w, rc, langs...)
+		s.C.MustRender(v)
+		return
+	}
+
+	userID, err := k.UserID()
+	if err != nil {
+		v := render.NewBadRequestView(w, rc, langs...)
+		s.C.MustRender(v)
+		return
+	}
+
+	err = s.C.State.ChooseCorporation(util.Context{r.Context()}, userID, ccr.CorporationID)
+	if err != nil {
+		s.C.MustRenderError(w, r, errors.Wrap(err, "could not choose corporation"), langs...)
+		return
+	}
+
+	// TODO: Redirect to success message?
 }

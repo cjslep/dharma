@@ -165,7 +165,6 @@ func (d *DB) GetAuthoritativeCharacter(c util.Context) (string, error) {
 	return d.getApplicationState(c, kAuthoritativeCharacterKey)
 }
 
-// TODO: Use
 func (d *DB) SetAuthoritativeCharacter(c util.Context, v string) error {
 	return d.setApplicationState(c, kAuthoritativeCharacterKey, v)
 }
@@ -174,7 +173,6 @@ func (d *DB) GetCorporationManaged(c util.Context) (string, error) {
 	return d.getApplicationState(c, kCorporationManagedKey)
 }
 
-// TODO: Use
 func (d *DB) SetCorporationManaged(c util.Context, v string) error {
 	return d.setApplicationState(c, kCorporationManagedKey, v)
 }
@@ -183,7 +181,6 @@ func (d *DB) GetAlliance(c util.Context) (string, error) {
 	return d.getApplicationState(c, kAllianceAssociationKey)
 }
 
-// TODO: Use
 func (d *DB) SetAlliance(c util.Context, v string) error {
 	return d.setApplicationState(c, kAllianceAssociationKey, v)
 }
@@ -192,7 +189,6 @@ func (d *DB) GetExecutor(c util.Context) (string, error) {
 	return d.getApplicationState(c, kExecutorCorporationKey)
 }
 
-// TODO: Use
 func (d *DB) SetExecutor(c util.Context, v string) error {
 	return d.setApplicationState(c, kExecutorCorporationKey, v)
 }

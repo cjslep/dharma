@@ -55,11 +55,3 @@ func (u *Users) MarkUserVerified(c util.Context, token string) error {
 func (u *Users) IsUserVerified(c util.Context, userID string) (bool, error) {
 	return u.DB.IsUserVerified(c, userID)
 }
-
-func (u *Users) HasEveAccount() {
-	// TODO
-}
-
-func (u *Users) HasCharacterSelected() {
-	// TODO
-}

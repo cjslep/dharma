@@ -16,10 +16,16 @@
 
 package services
 
+import (
+	"github.com/go-fed/apcore/util"
+)
+
 type StateReader interface {
 	RequiresCorpToBeManaged() bool
 	ShouldCorpReceiveAllianceData() bool
 	ShouldCorpSendAllianceData() bool
 }
 
-type StateWriter interface{}
+type StateWriter interface{
+	ChooseCorporation(util.Context, string, int32) error
+}

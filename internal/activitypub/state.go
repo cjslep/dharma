@@ -61,6 +61,7 @@ var _ services.StateReader = &state{}
 // administrate dharma, yet retains the option to delegate devops to others.
 type state struct {
 	state appState
+	db *db.DB
 }
 
 type appState string
@@ -81,6 +82,7 @@ const (
 )
 
 func (s *state) initialize(c util.Context, db *db.DB) error {
+	s.db = db
 	if h, err := db.GetAuthoritativeCharacter(c); err != nil || len(h) == 0 {
 		s.state = unmanagedState
 	} else if r, err := db.GetCorporationManaged(c); err != nil || len(r) == 0 {
@@ -127,4 +129,22 @@ func (s *state) ShouldCorpSendAllianceData() bool {
 	default:
 		return false
 	}
+}
+
+func (s *state) ChooseCorporation(c util.Context, userID string, corpID int32) error {
+	// TODO: Check that userID has an ESI character token associated with them
+	// TODO: Check that the character ID of one of the ESI characters is the corp CEO
+	if err := s.db.SetAuthoritativeCharacter(c util.Context, charStr); err != nil {
+		return err
+	}
+	if err := s.db.SetCorporationManaged(c util.Context, corpStr); err != nil {
+		return err
+	}
+	if err := s.db.SetAlliance(c util.Context, allianceStr); err != nil {
+		return err
+	}
+	if err := s.db.SetExecutor(c util.Context, execStr); err != nil {
+		return err
+	}
+	return nil
 }

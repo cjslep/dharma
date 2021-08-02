@@ -29,7 +29,7 @@ import (
 func main() {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
-	var f []features.Feature
+	var f []features.Feature // TODO
 	e := features.New(f)
 	a, err := activitypub.New(context.Background(), e, software)
 	if err != nil {
