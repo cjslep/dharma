@@ -24,6 +24,7 @@ import (
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
+	dutil "github.com/cjslep/dharma/internal/util"
 	"github.com/go-fed/apcore/util"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
@@ -31,14 +32,24 @@ import (
 )
 
 type ESI struct {
-	DB        *db.DB
-	OAC       *esi.OAuth2Client
-	L         *zerolog.Logger
-	ESIClient *esi.Client
+	DB               *db.DB
+	OAC              *esi.OAuth2Client
+	L                *zerolog.Logger
+	ESIClient        *esi.Client
+	PeriodicRefresh  time.Duration
+	PeriodicKeyFetch time.Duration
 }
 
-func (e *ESI) SetEvePublicKeys(c util.Context, o *esi.OAuthKeysMetadata) error {
-	return e.DB.SetEvePublicKeys(c, o)
+func (e *ESI) GoPeriodicallyFetchEvePublicKeys(m *async.Messenger) {
+	m.NowAndPeriodically(e.PeriodicKeyFetch, e.fetchEveOnlineKeys, e.L)
+}
+
+func (e *ESI) fetchEveOnlineKeys(c context.Context) error {
+	keys, err := esi.FetchEveOnlineKeys()
+	if err != nil {
+		return err
+	}
+	return e.DB.SetEvePublicKeys(util.Context{c}, keys)
 }
 
 func (e *ESI) GetEvePublicKeys(c util.Context) (*esi.OAuthKeysMetadata, error) {
@@ -49,16 +60,61 @@ func (e *ESI) SetEveTokens(c util.Context, userID string, t *esi.Tokens) error {
 	return e.DB.SetEveTokens(c, userID, t)
 }
 
-func (e *ESI) GetEveTokens(c util.Context) (*esi.Tokens, error) {
-	return e.DB.GetEveTokens(c)
+func (e *ESI) GetEveToken(c util.Context, charID int32) (*esi.Tokens, error) {
+	return e.DB.GetEveToken(c, charID)
 }
 
 func (e *ESI) GoPeriodicallyRefreshAllTokens(m *async.Messenger) {
-	m.Periodically(time.Hour, e.refreshAllTokens, e.L) // TODO: Configurable time
+	m.Periodically(e.PeriodicRefresh, e.refreshAllTokens, e.L)
 }
 
 func (e *ESI) refreshAllTokens(c context.Context) error {
-	// TODO
+	uts, err := e.DB.GetExpiringEveTokensWithin(util.Context{c}, e.PeriodicRefresh)
+	if err != nil {
+		return err
+	}
+	errs := make([]error, 0, len(uts))
+	for i, ut := range uts {
+		errs[i] = e.refreshToken(c, ut.UserID, ut.T.Refresh)
+	}
+	return dutil.ToErrors(errs)
+}
+
+func (e *ESI) refreshToken(c context.Context, userID string, refresh string) error {
+	// Do the refresh
+	jwt, err := e.OAC.GetRefresh(refresh)
+	if err != nil {
+		return err
+	}
+
+	// Verify the authenticity of the new authorization
+	ek, err := e.GetEvePublicKeys(util.Context{c})
+	if err != nil {
+		return err
+	}
+	jwtk := ek.JWTKey()
+	if jwtk == nil {
+		return errors.New("could not find EVE public jwt key")
+	}
+	claims, err := jwtk.ValidateToken([]byte(jwt.AccessToken))
+	if err != nil {
+		return err
+	}
+	err = esi.ValidateEveClaims(claims)
+	if err != nil {
+		return err
+	}
+
+	// Construct our internal representation of a validated token, and
+	// store it.
+	tokens, err := esi.NewTokens(jwt, claims)
+	if err != nil {
+		return err
+	}
+	err = e.SetEveTokens(util.Context{c}, userID, tokens)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

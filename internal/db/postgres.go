@@ -16,6 +16,10 @@
 
 package db
 
+import (
+	"database/sql"
+)
+
 type postgres struct {
 	schema string // with trailing "."
 }
@@ -25,6 +29,28 @@ func newPostgres(schema string) postgres {
 		schema = schema + "."
 	}
 	return postgres{schema}
+}
+
+func CreateTables(db *sql.DB, schema string) error {
+	p := newPostgres(schema)
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if _, err = tx.Exec(p.CreateEvePublicKeysTableV0()); err != nil {
+		return err
+	}
+	if _, err = tx.Exec(p.CreateEveTokensTableV0()); err != nil {
+		return err
+	}
+	if _, err = tx.Exec(p.CreateApplicationStateTableV0()); err != nil {
+		return err
+	}
+	if _, err = tx.Exec(p.CreateUserSupplementTableV0()); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 // EVE Online Public Keys Table
@@ -79,6 +105,11 @@ SET tokens = EXCLUDED.tokens;`
 func (p postgres) GetEveToken() string {
 	return `SELECT tokens FROM ` + p.schema + `dharma_eve_tokens
 WHERE character_id = $1;`
+}
+
+func (p postgres) GetExpiringEveTokensWithin() string {
+	return `SELECT user_id, tokens FROM ` + p.schema + `dharma_eve_tokens
+WHERE (tokens->access_expires)::timestamp < current_timestamp + interval '$1'`
 }
 
 func (p postgres) GetEveCharactersForUser() string {

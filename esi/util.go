@@ -85,3 +85,40 @@ func (o *OAuth2Client) GetAuthorization(code string) (*JWTResponse, error) {
 	}
 	return jwt, nil
 }
+
+func (o *OAuth2Client) GetRefresh(refresh string) (*JWTResponse, error) {
+	// Issue request
+	data := url.Values{}
+	data.Add("grant_type", "refresh_token")
+	data.Add("refresh_token", refresh)
+	req, err := http.NewRequest(
+		"POST",
+		"https://login.eveonline.com/v2/oauth/token",
+		strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.Host = "login.eveonline.com"
+	rawAuth := fmt.Sprintf("%s:%s", o.ClientID, o.Secret)
+	auth := base64.URLEncoding.EncodeToString([]byte(rawAuth))
+	req.Header = map[string][]string{
+		"Content-Type":  {"application/x-www-form-urlencoded"},
+		"Authorization": {fmt.Sprintf("Basic %s", auth)},
+	}
+	resp, err := o.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Process payload body
+	respb, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	jwt := &JWTResponse{}
+	err = json.Unmarshal(respb, jwt)
+	if err != nil {
+		return nil, err
+	}
+	return jwt, nil
+}

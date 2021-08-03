@@ -30,14 +30,14 @@ import (
 )
 
 type Tokens struct {
-	Access        string
-	Refresh       string
-	AccessExpires time.Time
-	CID           int
-	CName         string
+	Access        string    `json:"access"`
+	Refresh       string    `json:"refresh"`
+	AccessExpires time.Time `json:"access_expires"`
+	CID           int       `json:"character_id"`
+	CName         string    `json:"character_name"`
 }
 
-var _ driver.Valuer = Tokens{}
+var _ driver.Valuer = &Tokens{}
 var _ sql.Scanner = &Tokens{}
 
 func NewTokens(jwt *JWTResponse, c *jwt.Claims) (*Tokens, error) {
@@ -63,7 +63,7 @@ func NewTokens(jwt *JWTResponse, c *jwt.Claims) (*Tokens, error) {
 	}, nil
 }
 
-func (t Tokens) Value() (driver.Value, error) {
+func (t *Tokens) Value() (driver.Value, error) {
 	return json.Marshal(t)
 }
 

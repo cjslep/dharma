@@ -14,26 +14,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package main
+package util
 
 import (
-	"context"
-
-	"github.com/cjslep/dharma/internal/activitypub"
-	"github.com/cjslep/dharma/internal/features"
-	"github.com/go-fed/apcore"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/pkgerrors"
+	"fmt"
+	"strings"
 )
 
-func main() {
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+var _ error = &manyErrors{}
 
-	var f []features.Feature // TODO
-	e := features.New(f)
-	a, err := activitypub.New(context.Background(), e, software)
-	if err != nil {
-		panic(err)
+type manyErrors []error
+
+func ToErrors(nilable []error) error {
+	notNilErrs := make([]error, 0, len(nilable))
+	for _, err := range nilable {
+		if err != nil {
+			notNilErrs = append(notNilErrs, err)
+		}
 	}
-	apcore.Run(a)
+	if len(notNilErrs) == 0 {
+		return nil
+	}
+	e := manyErrors(notNilErrs)
+	return &e
+}
+
+func (e *manyErrors) Error() string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "%d errors occurred:", len(*e))
+	for _, err := range *e {
+		fmt.Fprintf(&b, "\n> %s", err)
+	}
+	return b.String()
 }

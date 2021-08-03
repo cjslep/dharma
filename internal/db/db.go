@@ -17,6 +17,8 @@
 package db
 
 import (
+	"fmt"
+	"math"
 	"strconv"
 	"time"
 
@@ -80,14 +82,35 @@ func (d *DB) SetEveTokens(c util.Context, userID string, t *esi.Tokens) error {
 	return txb.Do(c)
 }
 
-func (d *DB) GetEveTokens(c util.Context) (*esi.Tokens, error) {
+func (d *DB) GetEveToken(c util.Context, charID int32) (*esi.Tokens, error) {
 	// TODO: Be more intelligent about refreshing keys and detecting cacheability
 	t := &esi.Tokens{}
 	txb := d.db.Begin()
 	txb.QueryOneRow(d.pg.GetEveToken(), func(r app.SingleRow) error {
 		return r.Scan(t)
-	})
+	}, charID)
 	return t, txb.Do(c)
+}
+
+type UserToken struct {
+	UserID string
+	T      *esi.Tokens
+}
+
+func (d *DB) GetExpiringEveTokensWithin(c util.Context, period time.Duration) ([]*UserToken, error) {
+	nHours := int(math.Ceil(period.Hours()))
+	var ut []*UserToken
+	txb := d.db.Begin()
+	txb.Query(d.pg.GetExpiringEveTokensWithin(), func(r app.SingleRow) error {
+		var u UserToken
+		err := r.Scan(&(u.UserID), u.T)
+		if err != nil {
+			return err
+		}
+		ut = append(ut, &u)
+		return nil
+	}, fmt.Sprintf("%d hours", nHours))
+	return ut, txb.Do(c)
 }
 
 func (d *DB) GetEveCharactersForUser(c util.Context, userID string) ([]int32, error) {

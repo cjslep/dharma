@@ -18,12 +18,11 @@ package esi
 
 import (
 	"context"
-	"fmt"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
@@ -136,7 +135,7 @@ func (x *Client) SearchCorp(ctx context.Context, q string, l language.Tag) ([]*C
 		}(idx, c)
 	}
 	wg.Wait()
-	err = toErrors(errs)
+	err = util.ToErrors(errs)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +185,7 @@ func (x *Client) Characters(ctx context.Context, ids []int32) ([]*Character, err
 		}(idx, id)
 	}
 	wg.Wait()
-	err := toErrors(errs)
+	err := util.ToErrors(errs)
 	if err != nil {
 		return nil, err
 	}
@@ -379,31 +378,4 @@ func (x *Client) hydrateCharacter(ctx context.Context, id int32) (*Character, er
 		}
 	}
 	return &c, nil
-}
-
-var _ error = &manyErrors{}
-
-type manyErrors []error
-
-func toErrors(nilable []error) error {
-	notNilErrs := make([]error, 0, len(nilable))
-	for _, err := range nilable {
-		if err != nil {
-			notNilErrs = append(notNilErrs, err)
-		}
-	}
-	if len(notNilErrs) == 0 {
-		return nil
-	}
-	e := manyErrors(notNilErrs)
-	return &e
-}
-
-func (e *manyErrors) Error() string {
-	var b strings.Builder
-	fmt.Fprintf(&b, "%d errors occurred:", len(*e))
-	for _, err := range *e {
-		fmt.Fprintf(&b, "\n> %s", err)
-	}
-	return b.String()
 }

@@ -58,7 +58,7 @@ type OAuthKeysMetadata struct {
 	Keys []*KeysMetadata `json:"keys"`
 }
 
-var _ driver.Valuer = OAuthKeysMetadata{}
+var _ driver.Valuer = &OAuthKeysMetadata{}
 var _ sql.Scanner = &OAuthKeysMetadata{}
 
 func (o *OAuthKeysMetadata) JWTKey() *KeysMetadata {
@@ -70,7 +70,7 @@ func (o *OAuthKeysMetadata) JWTKey() *KeysMetadata {
 	return nil
 }
 
-func (o OAuthKeysMetadata) Value() (driver.Value, error) {
+func (o *OAuthKeysMetadata) Value() (driver.Value, error) {
 	return json.Marshal(o)
 }
 

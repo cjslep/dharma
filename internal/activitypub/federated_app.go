@@ -18,6 +18,7 @@ package activitypub
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 	"strings"
 	"time"
@@ -107,7 +108,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		FedQueue:              a.fedQueue,
 		OAC:                   a.oac,
 		L:                     a.l,
-		ESI:                   &services.ESI{a.db, a.oac, a.l, a.esi},
+		ESI:                   &services.ESI{a.db, a.oac, a.l, a.esi, time.Hour * time.Duration(a.config.TokenRefreshPeriodicCheck), time.Hour * time.Duration(a.config.EvePublicKeyPeriodicFetch)},
 		Tags:                  &services.Tags{a.db},
 		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
 		Threads:               &services.Threads{a.db},
@@ -126,6 +127,10 @@ func (a *FederatedApp) mustRender(v *render.View) {
 	}
 }
 
+func (a *FederatedApp) CreateTables(d *sql.DB, apc app.APCoreConfig, debug bool) error {
+	return db.CreateTables(d, apc.Schema())
+}
+
 func (a *FederatedApp) Start() error {
 	if err := a.apiQueue.Start(); err != nil {
 		return err
@@ -138,6 +143,7 @@ func (a *FederatedApp) Start() error {
 	}
 	ctx := a.apiContext()
 	ctx.ESI.GoPeriodicallyRefreshAllTokens(a.apiQueue.Messenger())
+	ctx.ESI.GoPeriodicallyFetchEvePublicKeys(a.apiQueue.Messenger())
 	return a.startupErr
 }
 
@@ -150,22 +156,24 @@ func (a *FederatedApp) Stop() error {
 
 func (a *FederatedApp) NewConfiguration() interface{} {
 	return &config.Config{
-		ESITimeout:           60,
-		EnableConsoleLogging: false,
-		LogDir:               "./",
-		LogFile:              "dharma.log",
-		NLogFiles:            5,
-		MaxMBSizeLogFiles:    100,
-		MaxDayAgeLogFiles:    0,
-		NPreview:             3,
-		LenPreview:           80,
-		MaxHTMLDepth:         255,
-		NListThreads:         25,
-		MailerEncryption:     "starttls",
-		MailerAuthentication: "none",
-		MailerKeepAlive:      false,
-		MailerConnectTimeout: 60,
-		MailerSendTimeout:    60,
+		ESITimeout:                60,
+		EnableConsoleLogging:      false,
+		LogDir:                    "./",
+		LogFile:                   "dharma.log",
+		NLogFiles:                 5,
+		MaxMBSizeLogFiles:         100,
+		MaxDayAgeLogFiles:         0,
+		TokenRefreshPeriodicCheck: 1,
+		EvePublicKeyPeriodicFetch: 8,
+		NPreview:                  3,
+		LenPreview:                80,
+		MaxHTMLDepth:              255,
+		NListThreads:              25,
+		MailerEncryption:          "starttls",
+		MailerAuthentication:      "none",
+		MailerKeepAlive:           false,
+		MailerConnectTimeout:      60,
+		MailerSendTimeout:         60,
 	}
 }
 

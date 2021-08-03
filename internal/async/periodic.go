@@ -28,25 +28,45 @@ import (
 type PeriodicFn func(context.Context) error
 
 type periodic struct {
-	D time.Duration
-	F PeriodicFn
-	T *time.Timer
-	M *Messenger
-	L *zerolog.Logger
+	D     time.Duration
+	F     PeriodicFn
+	T     *time.Timer
+	M     *Messenger
+	L     *zerolog.Logger
+	First bool
 }
 
 func (m *Messenger) Periodically(d time.Duration, f PeriodicFn, l *zerolog.Logger) {
 	p := &periodic{
-		D: d,
-		F: f,
-		T: time.NewTimer(d),
-		M: m,
-		L: l,
+		D:     d,
+		F:     f,
+		T:     time.NewTimer(d),
+		M:     m,
+		L:     l,
+		First: false,
+	}
+	go p.run()
+}
+
+func (m *Messenger) NowAndPeriodically(d time.Duration, f PeriodicFn, l *zerolog.Logger) {
+	p := &periodic{
+		D:     d,
+		F:     f,
+		T:     time.NewTimer(d),
+		M:     m,
+		L:     l,
+		First: true,
 	}
 	go p.run()
 }
 
 func (p *periodic) run() {
+	if p.First {
+		err := p.F(p.M.parentCtx)
+		if err != nil {
+			p.L.Error().Stack().Err(err).Msg("")
+		}
+	}
 	for {
 		select {
 		case <-p.T.C:

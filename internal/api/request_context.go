@@ -128,13 +128,14 @@ func (r *RequestContext) RenderNavData() map[string]interface{} {
 	// Determine signed-in state
 	k, err := r.Session()
 	signedIn := false
+	var charID int32
 	if err == nil {
+		// Determine if signed in
 		_, isSignedInErr := k.UserID()
 		signedIn = isSignedInErr == nil
+		// Determine current character
+		charID = sessions.GetCharacterSelected(k)
 	}
-
-	// Determine current character
-	charID := sessions.GetCharacterSelected(k)
 
 	// Obtain a language
 	ts, err := r.LanguageTags()

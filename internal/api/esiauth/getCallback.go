@@ -88,7 +88,6 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request, k app.Sess
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not store tokens"))
 		return
 	}
-	// TODO: Launch periodic jobs to refresh expiring access tokens.
 
 	// Finally, write the response to the awaiting connection.
 	if err := k.Save(r, w); err != nil {
