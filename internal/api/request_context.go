@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/cjslep/dharma/internal/services"
 	"github.com/cjslep/dharma/internal/sessions"
 	"github.com/go-fed/apcore/app"
 	"github.com/pkg/errors"
@@ -32,6 +33,8 @@ const (
 	pathContextValue         = "pcv"
 	sessionContextValue      = "scv"
 	languageTagsContextValue = "ltcv"
+	isAdminContextValue      = "iacv"
+	privilegesContextValue   = "pgcv"
 )
 
 type RequestContext struct {
@@ -91,9 +94,40 @@ func (r *RequestContext) Path() (string, error) {
 	}
 }
 
-func (r *RequestContext) navData(signedIn bool, tag language.Tag, charID int32) map[string]interface{} {
+func (r *RequestContext) WithIsAdmin(isAdmin bool) {
+	r.Context = context.WithValue(r.Context, isAdminContextValue, isAdmin)
+}
+
+func (r *RequestContext) IsAdmin() (bool, error) {
+	v := r.Context.Value(isAdminContextValue)
+	if v == nil {
+		return false, errors.New("no isAdmin in request context")
+	} else if b, ok := v.(bool); !ok {
+		return false, errors.Errorf("request context isAdmin is not bool: %T", v)
+	} else {
+		return b, nil
+	}
+}
+
+func (r *RequestContext) WithPrivileges(priv services.Privileges) {
+	r.Context = context.WithValue(r.Context, privilegesContextValue, priv)
+}
+
+func (r *RequestContext) Privileges() (services.Privileges, error) {
+	v := r.Context.Value(privilegesContextValue)
+	if v == nil {
+		return services.Privileges{}, errors.New("no privileges in request context")
+	} else if p, ok := v.(services.Privileges); !ok {
+		return services.Privileges{}, errors.Errorf("request context privileges is not services.Privileges: %T", v)
+	} else {
+		return p, nil
+	}
+}
+
+func (r *RequestContext) navData(signedIn, isAdmin bool, tag language.Tag, charID int32) map[string]interface{} {
 	m := map[string]interface{}{
 		"signedIn": signedIn,
+		"isAdmin":  isAdmin,
 		"paths": map[string]interface{}{
 			"register":        fmt.Sprintf("/%s/account/register", tag),
 			"login":           fmt.Sprintf("/%s/login", tag),
@@ -128,6 +162,7 @@ func (r *RequestContext) RenderNavData() map[string]interface{} {
 	// Determine signed-in state
 	k, err := r.Session()
 	signedIn := false
+	isAdmin := false
 	var charID int32
 	if err == nil {
 		// Determine if signed in
@@ -135,6 +170,8 @@ func (r *RequestContext) RenderNavData() map[string]interface{} {
 		signedIn = isSignedInErr == nil
 		// Determine current character
 		charID = sessions.GetCharacterSelected(k)
+		// Determine admin status
+		isAdmin, _ = r.IsAdmin()
 	}
 
 	// Obtain a language
@@ -144,5 +181,5 @@ func (r *RequestContext) RenderNavData() map[string]interface{} {
 		tag = ts[0]
 	}
 
-	return r.navData(signedIn, tag, charID)
+	return r.navData(signedIn, isAdmin, tag, charID)
 }

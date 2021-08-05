@@ -539,3 +539,53 @@ func (m *Messages) VerifySuccess() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) ChooseCorporationToManage() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "chooseCorporationToManage",
+			Description: "Title message for prompting user to choose a corporation",
+			Other:       "Select Corporation To Manage",
+		},
+	})
+}
+
+func (m *Messages) DharmaNotManagingACorporationTitle() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "dharmaNotManagingACorporationTitle",
+			Description: "Title message for screen notifying dharma is not yet managing a corporation",
+			Other:       "Not Managing A Corporation",
+		},
+	})
+}
+
+func (m *Messages) DharmaNotManagingACorporation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "dharmaNotManagingACorporation",
+			Description: "Description elaborating that dharma is not yet managing a corporation",
+			Other:       "The software has not yet been configured by an administrator and CEO to manage a corporation.",
+		},
+	})
+}
+
+func (m *Messages) ClickHereToSelectCorporation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "clickHereToSelectCorporation",
+			Description: "Linkified statement prompting an admin to click to choose a corporation to manage",
+			Other:       "Click here to choose a corporation to manage.",
+		},
+	})
+}
+
+func (m *Messages) NotifyAdminToManageCorp() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "notifyAdminToManageCorp",
+			Description: "Statement telling users to notify the admin to choose a corporation to manage",
+			Other:       "Please notify the person who is both site admin and corporation CEO to select a corporation to manage.",
+		},
+	})
+}

@@ -18,7 +18,6 @@ package activitypub
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 	"strings"
 	"time"
@@ -127,8 +126,12 @@ func (a *FederatedApp) mustRender(v *render.View) {
 	}
 }
 
-func (a *FederatedApp) CreateTables(d *sql.DB, apc app.APCoreConfig, debug bool) error {
-	return db.CreateTables(d, apc.Schema())
+func (a *FederatedApp) CreateTables(ctx context.Context, d app.Database, apc app.APCoreConfig, debug bool) error {
+	return db.CreateTables(ctx, d, apc.Schema())
+}
+
+func (a *FederatedApp) OnCreateAdminUser(ctx context.Context, userID string, d app.Database, apc app.APCoreConfig) error {
+	return services.InitAsCommandLineAdminUser(ctx, db.New(d, apc.Schema()), userID)
 }
 
 func (a *FederatedApp) Start() error {
@@ -205,50 +208,56 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 }
 
 func (a *FederatedApp) NotFoundHandler(f app.Framework) http.Handler {
-	ctx := a.apiContext()
-	return api.ApplyMiddleware(
-		api.MustHaveLanguageCode(
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := a.apiContext()
+		api.ApplyMiddleware(
 			ctx,
-			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-				rc := api.From(r.Context())
-				v := render.NewNotFoundView(w, rc, langs...)
-				ctx.MustRender(v)
-			}))
+			api.MustHaveLanguageCode(
+				func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+					rc := api.From(r.Context())
+					v := render.NewNotFoundView(w, rc, langs...)
+					ctx.MustRender(v)
+				}))
+	})
 }
 
 func (a *FederatedApp) MethodNotAllowedHandler(f app.Framework) http.Handler {
-	ctx := a.apiContext()
-	return api.ApplyMiddleware(
-		api.MustHaveLanguageCode(
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := a.apiContext()
+		api.ApplyMiddleware(
 			ctx,
-			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-				rc := api.From(r.Context())
-				v := render.NewHTMLView(
-					w,
-					http.StatusMethodNotAllowed,
-					"status/method_not_allowed",
-					rc,
-					nil,
-					langs...)
-				ctx.MustRender(v)
-			}))
+			api.MustHaveLanguageCode(
+				func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+					rc := api.From(r.Context())
+					v := render.NewHTMLView(
+						w,
+						http.StatusMethodNotAllowed,
+						"status/method_not_allowed",
+						rc,
+						nil,
+						langs...)
+					ctx.MustRender(v)
+				}))
+	})
 }
 
 func (a *FederatedApp) InternalServerErrorHandler(f app.Framework) http.Handler {
-	ctx := a.apiContext()
-	return api.ApplyMiddleware(
-		api.MustHaveLanguageCode(
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := a.apiContext()
+		api.ApplyMiddleware(
 			ctx,
-			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-				ctx.MustRenderError(w, r, errors.New("an internal error occured"), langs...)
-			}))
+			api.MustHaveLanguageCode(
+				func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+					ctx.MustRenderError(w, r, errors.New("an internal error occured"), langs...)
+				}))
+	})
 }
 
 func (a *FederatedApp) BadRequestHandler(f app.Framework) http.Handler {
 	ctx := a.apiContext()
 	return api.ApplyMiddleware(
+		ctx,
 		api.MustHaveLanguageCode(
-			ctx,
 			func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 				rc := api.From(r.Context())
 				v := render.NewBadRequestView(w, rc, langs...)
@@ -257,11 +266,11 @@ func (a *FederatedApp) BadRequestHandler(f app.Framework) http.Handler {
 }
 
 func (a *FederatedApp) GetLoginWebHandlerFunc(f app.Framework) http.HandlerFunc {
-	ctx := a.apiContext()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		api.ApplyMiddleware(
+		ctx := a.apiContext()
+		h := api.ApplyMiddleware(
+			ctx,
 			api.MustHaveLanguageCode(
-				ctx,
 				func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 					rc := api.From(r.Context())
 					lerr := r.URL.Query().Get("login_error")
@@ -276,15 +285,16 @@ func (a *FederatedApp) GetLoginWebHandlerFunc(f app.Framework) http.HandlerFunc 
 						langs...)
 					ctx.MustRender(v)
 				}))
+		h.ServeHTTP(w, r)
 	})
 }
 
 func (a *FederatedApp) GetAuthWebHandlerFunc(f app.Framework) http.HandlerFunc {
-	ctx := a.apiContext()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		api.ApplyMiddleware(
+		ctx := a.apiContext()
+		h := api.ApplyMiddleware(
+			ctx,
 			api.MustHaveLanguageCode(
-				ctx,
 				func(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 					rc := api.From(r.Context())
 					v := render.NewHTMLView(
@@ -296,6 +306,7 @@ func (a *FederatedApp) GetAuthWebHandlerFunc(f app.Framework) http.HandlerFunc {
 						langs...)
 					ctx.MustRender(v)
 				}))
+		h.ServeHTTP(w, r)
 	})
 }
 
@@ -325,7 +336,7 @@ func (a *FederatedApp) GetUserWebHandlerFunc(f app.Framework) (app.VocabHandlerF
 }
 
 func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framework) error {
-	a.db = db.New(d, f, a.schema)
+	a.db = db.New(d, a.schema)
 	var err error
 	if a.s, err = services.NewState(util.Context{a.bg}, a.db, a.esi); err != nil {
 		return err

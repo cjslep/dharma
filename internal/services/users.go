@@ -17,10 +17,11 @@
 package services
 
 import (
+	"context"
+
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/mail"
 	"github.com/go-fed/apcore/app"
-	"github.com/go-fed/apcore/util"
 	"golang.org/x/text/language"
 )
 
@@ -30,7 +31,17 @@ type Users struct {
 	DB *db.DB
 }
 
-func (u *Users) CreateUser(ctx util.Context, username, email, password string, lang language.Tag) error {
+func InitAsCommandLineAdminUser(ctx context.Context, db *db.DB, userID string) error {
+	// TODO: Generate token
+	var token string
+	err := db.AddUserEmailValidationTask(ctx, userID, token)
+	if err != nil {
+		return err
+	}
+	return db.MarkUserVerified(ctx, token)
+}
+
+func (u *Users) CreateUser(ctx context.Context, username, email, password string, lang language.Tag) error {
 	// TODO: Make this more robust to partial failures
 	userID, err := u.F.CreateUser(ctx, username, email, password)
 	if err != nil {
@@ -48,10 +59,10 @@ func (u *Users) CreateUser(ctx util.Context, username, email, password string, l
 	return u.DB.MarkUserValidationEmailSent(ctx, userID)
 }
 
-func (u *Users) MarkUserVerified(c util.Context, token string) error {
+func (u *Users) MarkUserVerified(c context.Context, token string) error {
 	return u.DB.MarkUserVerified(c, token)
 }
 
-func (u *Users) IsUserVerified(c util.Context, userID string) (bool, error) {
+func (u *Users) IsUserVerified(c context.Context, userID string) (bool, error) {
 	return u.DB.IsUserVerified(c, userID)
 }

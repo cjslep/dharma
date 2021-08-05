@@ -35,19 +35,19 @@ func (f *Forum) Route(r app.Router) {
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/forum",
 		api.CorpMustBeManaged(f.C,
-			api.MustHaveLanguageCode(f.C, f.getForum)))
+			api.MustHaveLanguageCode(f.getForum)))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/forum/tags/{tag}",
 		api.CorpMustBeManaged(f.C,
-			api.MustHaveLanguageCode(f.C, f.getTags)))
+			api.MustHaveLanguageCode(f.getTags)))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/forum/threads/{thread}",
 		api.CorpMustBeManaged(f.C,
-			api.MustHaveLanguageCode(f.C, f.getThreads)))
+			api.MustHaveLanguageCode(f.getThreads)))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/forum/posts/new",
 		api.CorpMustBeManaged(f.C,
-			api.MustHaveLanguageCode(f.C, f.getNewPost)))
+			api.MustHaveLanguageCode(f.getNewPost)))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/forum/posts/new",
 		api.CorpMustBeManaged(f.C,
@@ -55,5 +55,5 @@ func (f *Forum) Route(r app.Router) {
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/forum/posts/preview/markdown",
 		api.CorpMustBeManaged(f.C,
-			api.MustHaveLanguageCode(f.C, f.postPreviewMarkdown)))
+			api.MustHaveLanguageCode(f.postPreviewMarkdown)))
 }

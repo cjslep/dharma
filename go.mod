@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/BurntSushi/toml v0.4.0 // indirect
 	github.com/go-fed/activity v1.0.1-0.20201213224552-472d90163f3a
-	github.com/go-fed/apcore v0.0.0-20210803185540-6f48912bfbfe // indirect
+	github.com/go-fed/apcore v0.0.0-20210805064653-46677ce56296 // indirect
 	github.com/go-openapi/errors v0.20.0
 	github.com/go-openapi/runtime v0.19.29
 	github.com/go-openapi/strfmt v0.20.1

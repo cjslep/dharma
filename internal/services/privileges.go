@@ -14,23 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package esiauth
+package services
 
-import (
-	"github.com/cjslep/dharma/internal/api"
-	"github.com/go-fed/apcore/app"
-)
+type Privileges struct{}
 
-const (
-	Callback = "/esi/callback"
-)
-
-type ESIAuth struct {
-	C *api.Context
-}
-
-func (e *ESIAuth) Route(r app.Router) {
-	r.NewRoute().Methods("GET").WebOnlyHandler("/esi/auth", api.MustHaveLanguageCode(e.getAuth))
-	r.NewRoute().Methods("POST").WebOnlyHandler("/esi/auth", api.MustHaveSessionAndLanguageCode(e.C, e.postAuth))
-	r.NewRoute().Methods("GET").WebOnlyHandler(Callback, api.MustHaveSession(e.C, e.getCallback))
+func DefaultPrivileges() Privileges {
+	return Privileges{}
 }

@@ -23,6 +23,7 @@ import (
 	"github.com/cjslep/dharma/assets"
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/app"
 	ap_paths "github.com/go-fed/apcore/paths"
 	"github.com/go-fed/apcore/util"
@@ -37,12 +38,13 @@ type Router interface {
 func BuildRoutes(ar app.Router, rt []Router, ctx *Context) {
 	ar.Use(getPath())
 	ar.Use(getSession(ctx))
-	ar.Use(enforceEmailValidation(ctx))
+	ar.Use(getPrivileges(ctx))
 	assets.AddAssetHandlers(ar)
 	// Capture the locale in routing HTML rendered web pages
 	ar.NewRoute().WebOnlyHandler("/", redirToEnHomepage())
 	localeRouter := ar.PathPrefix("/{locale}").Subrouter()
 	localeRouter.Use(getLanguageTags(ctx))
+	localeRouter.Use(enforceEmailValidation(ctx))
 	for _, r := range rt {
 		r.Route(localeRouter)
 	}
@@ -73,6 +75,34 @@ func getSession(ctx *Context) mux.MiddlewareFunc {
 			rc := From(r.Context())
 			rc.WithSession(k)
 			r = rc.Update(r)
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// Adds the request's privileges and admin status.
+//
+// Requires a session to function.
+func getPrivileges(ctx *Context) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rc := From(r.Context())
+			k, err := rc.Session()
+			if err == nil {
+				var priv services.Privileges
+				userID, err := k.UserID()
+				if err == nil {
+					admin, err := ctx.F.GetPrivileges(util.Context{rc}, ap_paths.UUID(userID), &priv)
+					if err != nil {
+						admin = false
+						priv = services.DefaultPrivileges()
+					}
+					rc.WithIsAdmin(admin)
+					rc.WithPrivileges(priv)
+					r = rc.Update(r)
+				}
+			}
 
 			next.ServeHTTP(w, r)
 		})
@@ -145,8 +175,9 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 				// Error
 				ctx.MustRenderError(w, r, err)
 				return
-			} else if !valid {
-				// Not yet validated: redirect
+			} else if !valid && !paths.IsVerifyPath(r.URL.Path) {
+				// Not yet validated & not already the
+				// verify path: redirect
 				lts, err := rc.LanguageTags()
 				if err != nil {
 					ctx.MustRenderError(w, r, err)
@@ -156,7 +187,7 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 				http.Redirect(w, r, u.String(), http.StatusFound)
 				return
 			}
-			// Valid & no error
+			// Valid & no error, or the verify page
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -194,17 +225,7 @@ func enforceLoggedInAsAdmin(ctx *Context) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			rc := From(r.Context())
-			k, err := rc.Session()
-			if err != nil {
-				ctx.MustRenderError(w, r, err)
-				return
-			}
-			uid, err := k.UserID()
-			if err != nil {
-				ctx.MustRenderError(w, r, err)
-				return
-			}
-			admin, err := ctx.F.GetPrivileges(util.Context{rc}, ap_paths.UUID(uid), nil)
+			admin, err := rc.IsAdmin()
 			if err != nil {
 				ctx.MustRenderError(w, r, err)
 				return

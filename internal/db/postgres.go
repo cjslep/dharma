@@ -17,7 +17,9 @@
 package db
 
 import (
-	"database/sql"
+	"context"
+
+	"github.com/go-fed/apcore/app"
 )
 
 type postgres struct {
@@ -31,26 +33,14 @@ func newPostgres(schema string) postgres {
 	return postgres{schema}
 }
 
-func CreateTables(db *sql.DB, schema string) error {
+func CreateTables(c context.Context, db app.Database, schema string) error {
 	p := newPostgres(schema)
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-	if _, err = tx.Exec(p.CreateEvePublicKeysTableV0()); err != nil {
-		return err
-	}
-	if _, err = tx.Exec(p.CreateEveTokensTableV0()); err != nil {
-		return err
-	}
-	if _, err = tx.Exec(p.CreateApplicationStateTableV0()); err != nil {
-		return err
-	}
-	if _, err = tx.Exec(p.CreateUserSupplementTableV0()); err != nil {
-		return err
-	}
-	return tx.Commit()
+	tx := db.Begin()
+	tx.Exec(p.CreateEvePublicKeysTableV0())
+	tx.Exec(p.CreateEveTokensTableV0())
+	tx.Exec(p.CreateApplicationStateTableV0())
+	tx.Exec(p.CreateUserSupplementTableV0())
+	return tx.Do(c)
 }
 
 // EVE Online Public Keys Table

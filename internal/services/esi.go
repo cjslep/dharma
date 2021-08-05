@@ -25,7 +25,6 @@ import (
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/db"
 	dutil "github.com/cjslep/dharma/internal/util"
-	"github.com/go-fed/apcore/util"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"golang.org/x/text/language"
@@ -49,18 +48,18 @@ func (e *ESI) fetchEveOnlineKeys(c context.Context) error {
 	if err != nil {
 		return err
 	}
-	return e.DB.SetEvePublicKeys(util.Context{c}, keys)
+	return e.DB.SetEvePublicKeys(c, keys)
 }
 
-func (e *ESI) GetEvePublicKeys(c util.Context) (*esi.OAuthKeysMetadata, error) {
+func (e *ESI) GetEvePublicKeys(c context.Context) (*esi.OAuthKeysMetadata, error) {
 	return e.DB.GetEvePublicKeys(c)
 }
 
-func (e *ESI) SetEveTokens(c util.Context, userID string, t *esi.Tokens) error {
+func (e *ESI) SetEveTokens(c context.Context, userID string, t *esi.Tokens) error {
 	return e.DB.SetEveTokens(c, userID, t)
 }
 
-func (e *ESI) GetEveToken(c util.Context, charID int32) (*esi.Tokens, error) {
+func (e *ESI) GetEveToken(c context.Context, charID int32) (*esi.Tokens, error) {
 	return e.DB.GetEveToken(c, charID)
 }
 
@@ -69,7 +68,7 @@ func (e *ESI) GoPeriodicallyRefreshAllTokens(m *async.Messenger) {
 }
 
 func (e *ESI) refreshAllTokens(c context.Context) error {
-	uts, err := e.DB.GetExpiringEveTokensWithin(util.Context{c}, e.PeriodicRefresh)
+	uts, err := e.DB.GetExpiringEveTokensWithin(c, e.PeriodicRefresh)
 	if err != nil {
 		return err
 	}
@@ -88,7 +87,7 @@ func (e *ESI) refreshToken(c context.Context, userID string, refresh string) err
 	}
 
 	// Verify the authenticity of the new authorization
-	ek, err := e.GetEvePublicKeys(util.Context{c})
+	ek, err := e.GetEvePublicKeys(c)
 	if err != nil {
 		return err
 	}
@@ -111,7 +110,7 @@ func (e *ESI) refreshToken(c context.Context, userID string, refresh string) err
 	if err != nil {
 		return err
 	}
-	err = e.SetEveTokens(util.Context{c}, userID, tokens)
+	err = e.SetEveTokens(c, userID, tokens)
 	if err != nil {
 		return err
 	}
@@ -126,7 +125,7 @@ func (e *ESI) SearchCorporations(c context.Context, query string, lang language.
 	return e.ESIClient.SearchCorp(c, s, lang)
 }
 
-func (e *ESI) GetCharactersForUser(c util.Context, userID string) ([]*esi.Character, error) {
+func (e *ESI) GetCharactersForUser(c context.Context, userID string) ([]*esi.Character, error) {
 	ids, err := e.DB.GetEveCharactersForUser(c, userID)
 	if err != nil {
 		return nil, err
@@ -134,6 +133,6 @@ func (e *ESI) GetCharactersForUser(c util.Context, userID string) ([]*esi.Charac
 	return e.ESIClient.Characters(c, ids)
 }
 
-func (e *ESI) HasCharacterForUser(c util.Context, userID string, charID int32) (bool, error) {
+func (e *ESI) HasCharacterForUser(c context.Context, userID string, charID int32) (bool, error) {
 	return e.DB.HasCharacterForUser(c, userID, charID)
 }

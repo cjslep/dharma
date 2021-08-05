@@ -19,6 +19,7 @@ package paths
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"golang.org/x/text/language"
 )
@@ -46,6 +47,10 @@ func TokenizeVerifyPath(host, token string, lang language.Tag) string {
 
 func TokenizeVerifyPathHTTP(host, token string, lang language.Tag) string {
 	return tokenizeVerifyPath("http", host, token, lang)
+}
+
+func IsVerifyPath(path string) bool {
+	return strings.HasSuffix(path, VerifyPath)
 }
 
 func GetPleaseVerifyURL(lang language.Tag, showThanksForRegistering bool) *url.URL {

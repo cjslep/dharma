@@ -29,29 +29,29 @@ type Account struct {
 func (a *Account) Route(r app.Router) {
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		paths.VerifyPath,
-		api.MustHaveLanguageCode(a.C, a.getVerify))
+		api.MustHaveLanguageCode(a.getVerify))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/account/register",
-		api.MustHaveLanguageCode(a.C, a.getRegister))
+		api.MustHaveLanguageCode(a.getRegister))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/account/register",
-		api.MustHaveLanguageCode(a.C, a.postRegister))
+		api.MustHaveLanguageCode(a.postRegister))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/account/profile",
 		api.CorpMustBeManaged(a.C,
-			api.MustHaveLanguageCode(a.C, a.getProfile)))
+			api.MustHaveLanguageCode(a.getProfile)))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/account/profile",
 		api.CorpMustBeManaged(a.C,
-			api.MustHaveLanguageCode(a.C, a.postProfile)))
+			api.MustHaveLanguageCode(a.postProfile)))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/account/settings",
 		api.CorpMustBeManaged(a.C,
-			api.MustHaveLanguageCode(a.C, a.getSettings)))
+			api.MustHaveLanguageCode(a.getSettings)))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/account/settings",
 		api.CorpMustBeManaged(a.C,
-			api.MustHaveLanguageCode(a.C, a.postSettings)))
+			api.MustHaveLanguageCode(a.postSettings)))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/account/characters",
 		api.MustHaveSessionAndLanguageCode(a.C, a.getCharacters))

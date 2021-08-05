@@ -28,9 +28,13 @@ type StatefulRenderHandler func(w http.ResponseWriter, r *http.Request, k app.Se
 type LocalizedRenderHandler func(w http.ResponseWriter, r *http.Request, langs []language.Tag)
 type LocalizedStatefulRenderHandler func(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag)
 
-func ApplyMiddleware(next http.Handler) http.Handler {
+func ApplyMiddleware(ctx *Context, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		getPath()(next).ServeHTTP(w, r)
+		getPath()(
+			getSession(ctx)(
+				getPrivileges(ctx)(
+					getLanguageTags(ctx)(
+						enforceEmailValidation(ctx)(next))))).ServeHTTP(w, r)
 	})
 }
 
@@ -47,7 +51,7 @@ func MustHaveSession(ctx *Context, r StatefulRenderHandler) http.Handler {
 	})
 }
 
-func MustHaveLanguageCode(ctx *Context, r LocalizedRenderHandler) http.Handler {
+func MustHaveLanguageCode(r LocalizedRenderHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		rc := From(req.Context())
 		langs, err := rc.LanguageTags()
