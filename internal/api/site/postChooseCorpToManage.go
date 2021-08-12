@@ -21,6 +21,7 @@ import (
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/app"
 	"github.com/go-fed/apcore/util"
 	"github.com/mholt/binding"
@@ -59,10 +60,15 @@ func (s *Site) postChooseCorpToManage(w http.ResponseWriter, r *http.Request, k 
 	}
 
 	err = s.C.State.ChooseCorporation(util.Context{r.Context()}, userID, ccr.CorporationID)
-	if err != nil {
+	if err != nil && err != services.NotCEOError {
 		s.C.MustRenderError(w, r, errors.Wrap(err, "could not choose corporation"), langs...)
+		return
+	} else if err == services.NotCEOError {
+		u := getChooseCorpToManageURLNotCEO(r)
+		http.Redirect(w, r, u.String(), http.StatusFound)
 		return
 	}
 
-	// TODO: Redirect to success message?
+	// TODO: Redirect with success message
+	http.Redirect(w, r, "/" + langs[0].String(), http.StatusFound)
 }

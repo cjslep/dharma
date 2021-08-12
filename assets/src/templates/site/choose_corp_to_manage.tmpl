@@ -1,5 +1,12 @@
 {{template "base/header" .}}
 <p>{{Locale.ChooseCorporationToManage}}</p>
+{{if gt (len .err) 0}}
+  <div>{{if eq .err "notCEO"}}
+      {{Locale.MustBeCEOError}}
+    {{else}}
+      {{Locale.UnknownCorpSelectionError}}
+  {{end}}</div>
+{{end}}
 <corporation-search search-text="{{Locale.Search}}" submit-text="{{Locale.Submit}}" search-endpoint={{.nav.paths.corpSetupSearch}}>
 </corporation-search>
 {{template "base/footer" .}}

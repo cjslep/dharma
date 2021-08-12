@@ -17,23 +17,38 @@
 package site
 
 import (
-	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
 	"golang.org/x/text/language"
 )
 
+func getChooseCorpToManageURLNotCEO(r *http.Request) *url.URL {
+	return getChooseCorpToManageURL(r, "notCEO")
+}
+
+func getChooseCorpToManageURL(r *http.Request, err string) *url.URL {
+	u := &url.URL{}
+	u.Path = r.URL.Path
+	v := url.Values{}
+	v.Add("err", err)
+	u.RawQuery = v.Encode()
+	return u
+}
+
 func (s *Site) getChooseCorpToManage(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-	fmt.Println("inhandler")
 	rc := api.From(r.Context())
+	err := r.URL.Query().Get("err")
 	v := render.NewHTMLView(
 		w,
 		http.StatusOK,
 		"site/choose_corp_to_manage",
 		rc,
-		map[string]interface{}{},
+		map[string]interface{}{
+			"err": err,
+		},
 		langs...)
 	s.C.MustRender(v)
 }

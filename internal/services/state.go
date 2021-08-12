@@ -132,6 +132,10 @@ func (s *State) ShouldCorpSendAllianceData() bool {
 	}
 }
 
+var (
+	NotCEOError = errors.New("cannot choose corp: user is not CEO")
+)
+
 func (s *State) ChooseCorporation(c util.Context, userID string, corpID int32) error {
 	charIDs, err := s.db.GetEveCharactersForUser(c, userID)
 	if err != nil {
@@ -150,7 +154,7 @@ func (s *State) ChooseCorporation(c util.Context, userID string, corpID int32) e
 		}
 	}
 	if !found {
-		return errors.New("cannot choose corp: user is not CEO")
+		return NotCEOError
 	}
 	// Set the data governing software behavior
 	if err := s.db.SetAuthoritativeCharacter(c, corp.CEO.ID); err != nil {

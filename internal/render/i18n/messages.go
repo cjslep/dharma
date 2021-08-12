@@ -609,3 +609,23 @@ func (m *Messages) Submit() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) MustBeCEOError() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "mustBeCEOError",
+			Description: "Error message shown to an administrator when they have selected to manage a corporation that they are not the CEO of.",
+			Other:       "You do not have the CEO character associated with your account",
+		},
+	})
+}
+
+func (m *Messages) UnknownCorpSelectionError() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "unknownCorpSelectionError",
+			Description: "Error message shown to an administrator when they have selected to manage a corporation and an unknown error has occurred.",
+			Other:       "An unknown error has occurred",
+		},
+	})
+}
