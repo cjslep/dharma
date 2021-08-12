@@ -130,6 +130,10 @@ other = "Password"
 description = "Error message shown when, upon registration, the password and confirm-password fields did not match"
 other = "Passwords do not match"
 
+[pleaseValidateEmailSubject]
+description = "Text email body for the email sent for new registrants to verify their account, must have a %s for the URL"
+other = "Please go to the following link to verify your account: %s"
+
 [pve]
 description = "An acronym or word for player-versus-environment gameplay"
 other = "PVE"
@@ -197,3 +201,7 @@ other = "Username is already taken"
 [verifyEmail]
 description = "Request to the user to verify their email"
 other = "Please verify your email address."
+
+[verifySuccess]
+description = "Message displayed to a user after they have verified their email address by clicking a link in the email"
+other = "Your email has been successfully verified! You may now log in."

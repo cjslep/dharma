@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_eve_public_keys
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   create_time timestamp with time zone DEFAULT current_timestamp,
   hash text UNIQUE NOT NULL,
-  keys bytea NOT NULL
+  keys jsonb NOT NULL
 );`
 }
 
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_eve_tokens
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid REFERENCES ` + p.schema + `users(id) ON DELETE CASCADE NOT NULL,
   character_id integer UNIQUE NOT NULL,
-  tokens bytea NOT NULL
+  tokens jsonb NOT NULL
 );`
 }
 

@@ -138,6 +138,8 @@ func (r *RequestContext) navData(signedIn, isAdmin bool, tag language.Tag, charI
 			"forum":           fmt.Sprintf("/%s/forum", tag),
 			"killboard":       fmt.Sprintf("/%s/killboard", tag),
 			"calendar":        fmt.Sprintf("/%s/calendar", tag),
+			"corpSetup":       fmt.Sprintf("/%s/site/setup/corp", tag),
+			"corpSetupSearch": fmt.Sprintf("/%s/site/setup/corp/search", tag),
 		},
 		"localizePath": func(s string) (string, error) {
 			p, err := r.Path()

@@ -589,3 +589,23 @@ func (m *Messages) NotifyAdminToManageCorp() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) Search() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "search",
+			Description: "Search button text",
+			Other:       "Search",
+		},
+	})
+}
+
+func (m *Messages) Submit() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "submit",
+			Description: "Submit button text",
+			Other:       "Submit",
+		},
+	})
+}

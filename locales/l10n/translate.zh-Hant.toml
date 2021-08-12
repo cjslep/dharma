@@ -1,94 +1,164 @@
-[EmailNotUnique]
-description = "Error message shown when, upon registration, the user's requested email is not unique"
-hash = "sha1-37c9077a721dd05795959997b9abae1918265b10"
-other = "Email is already taken"
+[activities]
+description = "The categorical word for generally doing things in the game"
+hash = "sha1-a0eaf6616cf19baa442cfaa9da15e3d90085ffe0"
+other = "Activities"
 
-[beTheFirstToPost]
-description = "Suggestion to the user to be the first one to post in an empty forum category"
-hash = "sha1-36602ddce5092f4bd18774387574174c1a47c54e"
-other = "Be the first one to create a post in this category!"
+[announce]
+description = "A word for announcements and broadcasts"
+hash = "sha1-a29b9e2b3ec29d06d0470eb63e4da78633f59daa"
+other = "Announcements"
 
-[checkEmailForVerification]
-description = "Instructions on how to verify the email, warning the user to check their spam folder"
-hash = "sha1-795848f34ec1944e735b93cb77c5b477cb40bafe"
-other = "Please check your email and its spam folder for a message containing a verification link. Clicking this link will verify your account."
+[authorize]
+description = "Authorize label for the OAuth2 authorization page"
+hash = "sha1-d920d181114a8d9148f3dfdf395365da8ce41586"
+other = "Authorize"
 
-[confirmPassword]
-description = "Label for the box that the user must type a matching password on the register page"
-hash = "sha1-8bc8a46a068d243f04109adcdc14bbba0f76d544"
-other = "Confirm Password"
+[badRequest]
+description = "Notifies the user that the browser issued a bad request"
+hash = "sha1-838b13767108eeb22f95ab2dd862dfc6e8b95dd0"
+other = "Your browser issued a bad request."
 
-[contentLabel]
-description = "Label for the text box for entering the content of a new post"
-hash = "sha1-a496a89bdb90b8b7b719ab89da1e156e2f2cfe92"
-other = "Content"
+[corporation]
+description = "The \"corporation\" is the smallest guild-equivalent in EvE Online"
+hash = "sha1-003a54987257eeea18ee4735e29016c3bb26e95a"
+other = "Corporation"
 
-[createNewPost]
-description = "Button text prompting user to create a new forum post"
-hash = "sha1-27098b2033e54465fef96732c5113c567917768a"
-other = "Create New Post"
+[discuss]
+description = "A word for general discussions"
+hash = "sha1-ee16b1cbfd5ef8533bf144cd39bb9b63e3bafc71"
+other = "Discuss"
 
-[languages]
-description = "The word for multiple languages"
-hash = "sha1-8080f24d76831c054f31514ac609bfe48d897c52"
-other = "Languages"
+[email]
+description = "E-Mail label for the login & register pages"
+hash = "sha1-564518b6a27f6e6495006780dc17ee3ecebc9f76"
+other = "Email"
 
-[noPostsYet]
-description = "Describes the lack of posts yet in a forum category"
-hash = "sha1-737a52ae39a38ce04d6807fe35ea852162a281fb"
-other = "No posts yet."
+[events]
+description = "A word for occurrences and events"
+hash = "sha1-8d508578031e2cea51e4996e8dff497a161e8fc5"
+other = "Events"
 
-[notVerifiedEmailYet]
-description = "A title to tell the user their email is not yet verified, which is shown on the verify email page when they get redirected"
-hash = "sha1-3ebd50422f85ac5d47462d5892e2710e231cca9d"
-other = "Your Email Is Not Yet Verified"
+[fileABug]
+description = "Prompts the user to click on this text in order to file an issue against the software"
+hash = "sha1-849e0bab1d6a75d9b6a70645705770e0ddfbb911"
+other = "Found a problem? Please consider filing a bug report"
 
-[passwordsDoNotMatch]
-description = "Error message shown when, upon registration, the password and confirm-password fields did not match"
-hash = "sha1-ae754fa74b71da7452097cac40a8978f69d0f460"
-other = "Passwords do not match"
+[fleet]
+description = "A word for a fleet of ships in Eve Online"
+hash = "sha1-ddbd01bb3db4c1ff35488147212875d5a686f34d"
+other = "Fleet"
 
-[register]
-description = "Button for registering a new account"
-hash = "sha1-0db1fd0f58080ee45a0c18303b4dc7f7a2d36a87"
-other = "Register"
+[forum]
+description = "Forum is the name of a bulletin-board like system of long-form posts and replies"
+hash = "sha1-49896f07d4e8a157de4ed68b1919c35c3777c7d8"
+other = "Forum"
 
-[registerNewAccount]
-description = "Label for page registering new account"
-hash = "sha1-3544ea5cafed0b00dcff543ebfb9a019ea983636"
-other = "Register New Account"
+[industry]
+description = "A word for the industry in EvE Online"
+hash = "sha1-f3e4b2163f27d950b8fdd9a1d0bfc82eca098b78"
+other = "Industry"
 
-[tagLabel]
-description = "Label for the select box for selecting a tag for a new post"
-hash = "sha1-fef5ec3d6afd4e6bcb417adcac5b67dcd9bef10a"
-other = "Tag"
+[intel]
+description = "A word for dealing with secret or confidential intelligence"
+hash = "sha1-4c27bbc08319883819e2bfd15df7419e9dad099e"
+other = "Intel"
 
-[thanksForRegistering]
-description = "A title to tell the user \"thank-you for registering\" which is shown on the verify email page"
-hash = "sha1-bd4d50a86e41ef1d5a4ab9873b7b5c522da5914f"
-other = "Thank You For Registering"
+[internalServerError]
+description = "Notifies the user that the server had an internal error"
+hash = "sha1-72dd90c44e522475bc9efcde04cedc25b80ad3c3"
+other = "An unrecoverable error occurred within the server."
 
-[titleLabel]
-description = "Label for the text box for entering the title of a new post"
-hash = "sha1-d20a1451ccdcf78c32c5aff9b5a01d498c4b5eaa"
-other = "Title"
+[justice]
+description = "A word for dealing with player actions that the corporation would deem criminal or unwanted"
+hash = "sha1-9fb1e127ff8b2881cf50f07a3b3ee47176845d57"
+other = "Justice"
 
-[unknownRegistrationError]
-description = "Error message shown when, upon registration, an error occurred but a programming error means it isn't being displayed properly. Should include a call to contact the site administrator and/or file a bug"
-hash = "sha1-af5dd337bc058caf8bc8e61f27fa4a34304e6b21"
-other = "A registration error occurred, please contact the site administrator and/or file a bug against the software"
+[login]
+description = "Login label for the button to submit the login page"
+hash = "sha1-e8fd2417d05bdef60d3ea8541b370a6215e9a7ba"
+other = "Login"
 
-[username]
-description = "A user account's name"
-hash = "sha1-968786f7a8d7d506d7cd0e9ce75e1230585a2716"
-other = "Username"
+[loginError]
+description = "Generic login error message when email, credentials, or something else is invalid"
+hash = "sha1-a069260bd7dc9d9b80b08f9df6fa080624ebc6af"
+other = "Invalid email or password"
 
-[usernameNotUnique]
-description = "Error message shown when, upon registration, the user's requested username is not unique"
-hash = "sha1-4374ca158b7c062e713943d2832c8a17d34ffa46"
-other = "Username is already taken"
+[market]
+description = "A word for the Market in EvE Online"
+hash = "sha1-fb28b9224d2aca98336e709bb05f87f78cf40191"
+other = "Market"
 
-[verifyEmail]
-description = "Request to the user to verify their email"
-hash = "sha1-b5abfba3dd5e321ed7fe4a84777f6b1ebdbddbae"
-other = "Please verify your email address."
+[methodNotAllowed]
+description = "Notifies the user that the browser issued an unsupported HTTP method"
+hash = "sha1-7be7c312d951dce96481296dce8897d3e653d95b"
+other = "Your browser issued a request with a method that is disallowed"
+
+[miscellaneous]
+description = "The categorical word for a collection of numerous other small arbitrary topics"
+hash = "sha1-2cbb92d624f24ffd87cb28f950a97e7bd38e7485"
+other = "Miscellaneous"
+
+[offtopic]
+description = "The categorical word for not being topical for any other topics"
+hash = "sha1-55856fd9f450cd711b6df2127a728e744d8f2e2d"
+other = "Off-Topic"
+
+[pageNotFound]
+description = "Notifies the user that the webpage was not found"
+hash = "sha1-86d27287b7d00987ea2a30d4b3f563091fcedf92"
+other = "The requested page was not found."
+
+[password]
+description = "Password label for the login & register pages"
+hash = "sha1-5f515cbca6ac1f9dd4d4df4a8b8b0f37c9d63b3d"
+other = "Password"
+
+[pleaseValidateEmailSubject]
+description = "Text email body for the email sent for new registrants to verify their account, must have a %s for the URL"
+hash = "sha1-6fee0951b67e41b9248d0c724ec61f38bb2e3718"
+other = "Please go to the following link to verify your account: %s"
+
+[pve]
+description = "An acronym or word for player-versus-environment gameplay"
+hash = "sha1-d1b5a09ca17b08893594f2268a2e25f7a0196924"
+other = "PVE"
+
+[pvp]
+description = "An acronym or word for player-versus-player gameplay"
+hash = "sha1-8753ed2f6eed618a969c1b4eab46710582a8ca4a"
+other = "PVP"
+
+[question-and-answer]
+description = "A word for dedicating a space for asking questions and receiving answers"
+hash = "sha1-eabe91eca288669daf9d02b1ce2ede1e954a8c59"
+other = "Q&A"
+
+[relations]
+description = "A word for political relationships between corporations or alliances within EvE"
+hash = "sha1-efcb97f6cef5ae0240674d93b48b66acd69c1759"
+other = "Relations"
+
+[social]
+description = "The categorical word for generally interacting with other people"
+hash = "sha1-eb2e9a7518126cbbe298801ef9eb3c4428bd26db"
+other = "Social"
+
+[uedamaGateCampRequest]
+description = "Jovial comment that perhaps a user's HTTP request was gate-camped and blown up in an EVE Online system named Uedama"
+hash = "sha1-9a5df48ea786c9e9087510c97a604009c52eebd0"
+other = "Perhaps your request was blown up in an Uedama gate camp?"
+
+[uhOh]
+description = "Exclaimation that a mistake or accident happened"
+hash = "sha1-50e6e9cc806d045631c457c3da6a3dd33d6143b3"
+other = "Uh oh!"
+
+[uncategorized]
+description = "The word for not having a category"
+hash = "sha1-24a131757321e846423a23ce80f8f7a6fd40fb7f"
+other = "Uncategorized"
+
+[verifySuccess]
+description = "Message displayed to a user after they have verified their email address by clicking a link in the email"
+hash = "sha1-805acabc9cadc6fa1309b1f5f50ba07f3a9517b6"
+other = "Your email has been successfully verified! You may now log in."

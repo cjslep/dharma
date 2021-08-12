@@ -37,6 +37,13 @@ const (
 
 var assets http.FileSystem = http.Dir(filepath.Join(".", prefix0, prefix1))
 
+func hasAllowedSuffix(s string) bool {
+	return strings.HasSuffix(s, ".tmpl") ||
+		strings.HasSuffix(s, ".js") ||
+		strings.HasSuffix(s, ".mjs") ||
+		strings.HasSuffix(s, ".css")
+}
+
 func Asset(name string) ([]byte, error) {
 	bs, err := ioutil.ReadFile(filepath.Join(prefix0, prefix1, name))
 	if err != nil && !os.IsNotExist(err) {
@@ -58,7 +65,7 @@ func AssetNames() []string {
 				return nil
 			}
 			name := locs[1][1:] // Omit leading slash
-			if !strings.HasSuffix(name, ".tmpl") {
+			if !hasAllowedSuffix(name) {
 				return nil
 			}
 			out = append(out, name)
@@ -72,6 +79,6 @@ func AssetNames() []string {
 
 func AddAssetHandlers(r app.Router) {
 	sr := r.PathPrefix("/static").Subrouter()
-	sr.Handle("/css/{rest:[a-zA-Z0-9=\\-\\/\\.]+}", http.StripPrefix("/static/", http.FileServer(assets)))
-	sr.Handle("/js/{rest:[a-zA-Z0-9=\\-\\/\\.]+}", http.StripPrefix("/static/", http.FileServer(assets)))
+	sr.Handle("/css/{rest:[a-zA-Z0-9=_\\-\\/\\.]+}", http.StripPrefix("/static/", http.FileServer(assets)))
+	sr.Handle("/js/{rest:[a-zA-Z0-9=_\\-\\/\\.]+}", http.StripPrefix("/static/", http.FileServer(assets)))
 }

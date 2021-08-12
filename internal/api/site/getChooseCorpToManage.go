@@ -17,6 +17,7 @@
 package site
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/api"
@@ -25,6 +26,7 @@ import (
 )
 
 func (s *Site) getChooseCorpToManage(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
+	fmt.Println("inhandler")
 	rc := api.From(r.Context())
 	v := render.NewHTMLView(
 		w,

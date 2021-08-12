@@ -1,0 +1,5 @@
+{{template "base/header" .}}
+<p>{{Locale.ChooseCorporationToManage}}</p>
+<corporation-search search-text="{{Locale.Search}}" submit-text="{{Locale.Submit}}" search-endpoint={{.nav.paths.corpSetupSearch}}>
+</corporation-search>
+{{template "base/footer" .}}
