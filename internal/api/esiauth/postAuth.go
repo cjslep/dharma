@@ -20,6 +20,7 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/esi"
+	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/sessions"
 	"github.com/go-fed/apcore/app"
 	"github.com/pkg/errors"
@@ -32,11 +33,12 @@ func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request, k app.Session
 		e.C.MustRenderError(w, r, errors.New("could not get any features selected"), langs...)
 		return
 	}
-	scopes, err := e.C.Features.Convert(f)
+	fl, err := e.C.Features.GetFeatures(f)
 	if err != nil {
-		e.C.MustRenderError(w, r, errors.Wrap(err, "could not convert features to scopes"), langs...)
+		e.C.MustRenderError(w, r, errors.Wrap(err, "could not obtain features"), langs...)
 		return
 	}
+	scopes := features.List(fl).Scopes()
 
 	state, err := esi.Random(64)
 	if err != nil {

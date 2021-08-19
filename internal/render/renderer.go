@@ -22,7 +22,7 @@ import (
 
 	"github.com/cjslep/dharma/assets"
 	"github.com/cjslep/dharma/internal/config"
-	d_i18n "github.com/cjslep/dharma/internal/render/i18n"
+	"github.com/cjslep/dharma/locales"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/unrolled/render"
 	"golang.org/x/text/language"
@@ -69,7 +69,7 @@ func (r *Renderer) assetNames() []string {
 }
 
 func (r *Renderer) newFuncMap(langs ...string) []template.FuncMap {
-	m := d_i18n.New(r.b, langs...)
+	m := locales.New(r.b, langs...)
 	return []template.FuncMap{
 		{
 			// Application
@@ -98,7 +98,7 @@ func (r *Renderer) newFuncMap(langs ...string) []template.FuncMap {
 			"Escape": func(s string) template.HTML {
 				return template.HTML(s)
 			},
-			"Locale": func() *d_i18n.Messages {
+			"Locale": func() *locales.Messages {
 				return m
 			},
 			"Languages": func() []language.Tag {

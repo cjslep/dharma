@@ -24,6 +24,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/cjslep/dharma/internal/features"
 )
 
 type OAuth2Client struct {
@@ -33,17 +35,21 @@ type OAuth2Client struct {
 	Client      *http.Client
 }
 
-func (o *OAuth2Client) GetURL(state string, scopes []string) *url.URL {
+func (o *OAuth2Client) GetURL(state string, scopes []features.Scope) *url.URL {
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "login.eveonline.com",
 		Path:   "/v2/oauth/authorize/",
 	}
+	s := make([]string, len(scopes))
+	for i := range scopes {
+		s[i] = string(scopes[i])
+	}
 	v := url.Values{}
 	v.Add("response_type", "code")
 	v.Add("redirect_uri", o.RedirectURI)
 	v.Add("client_id", o.ClientID)
-	v.Add("scope", strings.Join(scopes, ","))
+	v.Add("scope", strings.Join(s, ","))
 	v.Add("state", state)
 	u.RawQuery = v.Encode()
 	return u

@@ -21,12 +21,14 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/cjslep/dharma/internal/features"
 	"golang.org/x/text/language"
 )
 
 const (
 	TokenQueryParam = "t"
 	VerifyPath      = "/account/verify"
+	ESIAuthPath     = "/esi/auth"
 )
 
 func tokenizeVerifyPath(scheme, host, token string, lang language.Tag) string {
@@ -61,5 +63,17 @@ func GetPleaseVerifyURL(lang language.Tag, showThanksForRegistering bool) *url.U
 		v.Add("ty", "true")
 	}
 	u.RawQuery = v.Encode()
+	return u
+}
+
+func GetPostESIAuthPath(lang language.Tag, l features.List) *url.URL {
+	v := url.Values{}
+	for _, id := range l.IDs() {
+		v.Add("features", id)
+	}
+	u := &url.URL{
+		Path:     fmt.Sprintf("/%s%s", lang, ESIAuthPath),
+		RawQuery: v.Encode(),
+	}
 	return u
 }

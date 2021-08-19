@@ -1,0 +1,20 @@
+{{template "base/header" .}}
+<p>{{Locale.CharacterAuthorizationScopeOverview}}</p>
+<ul>
+{{range $_, $v := .explain}}
+  {{if eq (len $v.Explanations) 1}}
+    <li><b>{{$v.Scope}}:</b> {{index $v.Explanations 0}}</li>
+  {{else}}
+    <li><b>{{$v.Scope}}:</b><ul>
+    {{range $_, $e := $v.Explanations}}
+      <li>{{$e}}</li>
+    {{end}}
+    </ul></li>
+  {{end}}
+{{end}}
+</ul>
+<p>{{Locale.ScopeCheckWarning}}</p>
+<form method="post" action="{{.authPath}}">
+<button>Click here to authorize a character</button>
+</form>
+{{template "base/footer" .}}

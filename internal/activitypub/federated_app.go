@@ -83,7 +83,7 @@ type FederatedApp struct {
 	startupErr error
 }
 
-func New(bg context.Context, f *features.Engine, software app.Software) (*FederatedApp, error) {
+func New(bg context.Context, software app.Software) (*FederatedApp, error) {
 	b := i18n.NewBundle(language.English)
 	b.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
@@ -97,7 +97,7 @@ func New(bg context.Context, f *features.Engine, software app.Software) (*Federa
 		bg:       bg,
 		apiQueue: async.NewQueue(bg),
 		fedQueue: async.NewQueue(bg),
-		features: f,
+		features: features.New(b),
 	}, nil
 }
 

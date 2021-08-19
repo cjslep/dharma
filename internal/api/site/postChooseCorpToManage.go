@@ -70,5 +70,5 @@ func (s *Site) postChooseCorpToManage(w http.ResponseWriter, r *http.Request, k 
 	}
 
 	// TODO: Redirect with success message
-	http.Redirect(w, r, "/" + langs[0].String(), http.StatusFound)
+	http.Redirect(w, r, "/"+langs[0].String(), http.StatusFound)
 }

@@ -21,6 +21,14 @@ import (
 	"strings"
 )
 
+func MustPropagateString(f func() (string, error), e *error) (s string) {
+	if *e != nil {
+		return ""
+	}
+	s, *e = f()
+	return s
+}
+
 var _ error = &manyErrors{}
 
 type manyErrors []error

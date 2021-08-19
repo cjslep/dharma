@@ -1,2 +1,11 @@
 {{template "base/header" .}}
+<p>{{Locale.Characters}}</p>
+<a href="{{.nav.paths.beginCharacterAuth}}">{{Locale.AuthorizeCharacter}}</a>
+{{if eq (len .characters) 0}}
+  <div>{{Locale.NoCharactersAuthorized}}</div>
+{{else}}
+  {{range $_, $char := .characters}}
+    <div>{{$char}}</div>
+  {{end}}
+{{end}}
 {{template "base/footer" .}}

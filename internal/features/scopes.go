@@ -14,24 +14,39 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package esiauth
+package features
 
-import (
-	"github.com/cjslep/dharma/internal/api"
-	"github.com/cjslep/dharma/internal/api/paths"
-	"github.com/go-fed/apcore/app"
-)
+type Scope string
 
-const (
-	Callback = "/esi/callback"
-)
+type Scopes []Scope
 
-type ESIAuth struct {
-	C *api.Context
+func (s Scopes) Len() int {
+	return len(s)
 }
 
-func (e *ESIAuth) Route(r app.Router) {
-	r.NewRoute().Methods("GET").WebOnlyHandler("/esi/auth", api.MustHaveLanguageCode(e.getAuth))
-	r.NewRoute().Methods("POST").WebOnlyHandler(paths.ESIAuthPath, api.MustHaveSessionAndLanguageCode(e.C, e.postAuth))
-	r.NewRoute().Methods("GET").WebOnlyHandler(Callback, api.MustHaveSession(e.C, e.getCallback))
+func (s Scopes) Less(i, j int) bool {
+	return s[i] < s[j]
+}
+
+func (s Scopes) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+type ScopeExplanations struct {
+	Scope        Scope
+	Explanations []string
+}
+
+type ScopeExplanationsList []ScopeExplanations
+
+func (s ScopeExplanationsList) Len() int {
+	return len(s)
+}
+
+func (s ScopeExplanationsList) Less(i, j int) bool {
+	return s[i].Scope < s[j].Scope
+}
+
+func (s ScopeExplanationsList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
 }

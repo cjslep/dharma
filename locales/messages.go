@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package i18n
+package locales
 
 import (
 	"github.com/cjslep/dharma/internal/data"
@@ -580,6 +580,16 @@ func (m *Messages) ClickHereToSelectCorporation() (string, error) {
 	})
 }
 
+func (m *Messages) ClickHereToAuthorizeCharacter() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "clickHereToAuthorizeCharacter",
+			Description: "Linkified statement prompting an admin to click to authorize a CEO Character",
+			Other:       "Click here to authorize a CEO Character from Eve Online.",
+		},
+	})
+}
+
 func (m *Messages) NotifyAdminToManageCorp() (string, error) {
 	return m.l.Localize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -626,6 +636,206 @@ func (m *Messages) UnknownCorpSelectionError() (string, error) {
 			ID:          "unknownCorpSelectionError",
 			Description: "Error message shown to an administrator when they have selected to manage a corporation and an unknown error has occurred.",
 			Other:       "An unknown error has occurred",
+		},
+	})
+}
+
+func (m *Messages) Characters() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "characters",
+			Description: "The playable characters' categorical title",
+			Other:       "Characters",
+		},
+	})
+}
+
+func (m *Messages) AuthorizeCharacter() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "authorizeCharacter",
+			Description: "Link / button prompting to begin the ESI authorization process",
+			Other:       "Authorize A Character",
+		},
+	})
+}
+
+func (m *Messages) NoCharactersAuthorized() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "noCharactersAuthorized",
+			Description: "Message displayed in lieu of characters when no characters are authorized",
+			Other:       "No characters are authorized",
+		},
+	})
+}
+
+func (m *Messages) CharacterAuthorizationScopeOverview() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "characterAuthorizationScopeOverview",
+			Description: "Title displayed for the screen going over the ESI scopes being requested and the reasons why",
+			Other:       "Request Character ESI Scopes",
+		},
+	})
+}
+
+func (m *Messages) ScopeCheckWarning() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "scopeCheckWarning",
+			Description: "Message displayed on the authorize character pre-screen to prompt the user to scrutinize the scope list.",
+			Other:       "It is important that you match these displayed scopes with the ones that will be requested in your Eve Online account. A mismatch indicates a severe problem of some kind, ranging from innocent software bugs to malicious server operators.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCorporationName() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCorporationName",
+			Description: "A collection of dharma features that are core to managing a corporation",
+			Other:       "Core Corporation",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCorporationDescription() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCorporationDescription",
+			Description: "A description of the collection of dharma features that are core to managing a corporation",
+			Other:       "The corporation membership, wallet, mail, calendar, and killboard features.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCorporationReadCorporationMembershipScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCorporationReadCorporationMembershipScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for reading corporation membership",
+			Other:       "The corporation membership is needed to verify that accounts on this server for member characters are automatically treated as corporation members.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCorporationReadFactionWarfareStatsScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCorporationReadFactionWarfareStatsScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for reading corporation faction warfare stats",
+			Other:       "The corporation faction warfare stats scope is used as part of the killboard functionality for corporations that opt into faction warfare.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCorporationReadCorporationKillmailsScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCorporationReadCorporationKillmailsScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for reading corporation killmails",
+			Other:       "The corporation killmail scope is used to provide the corporation killboard.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCorporationReadCorporationWalletsScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCorporationReadCorporationWalletsScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for reading corporation wallets",
+			Other:       "The corporation wallet is used to provide basic financial and wallet overviews.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCalendarName() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCalendarName",
+			Description: "A collection of dharma features that are core to managing a corporation's calendar",
+			Other:       "Core Calendar",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreCalendarDescription() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreCalendarDescription",
+			Description: "A description of the collection of dharma features that are core to managing a corporation's calendar",
+			Other:       "The character and corporation calendars.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreReadCalendarEventsScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreReadCalendarEventsScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for reading calendar events",
+			Other:       "The read calendar events scope is required to provide basic data about the corporation and characters' calendar.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreRespondCalendarEventsScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreRespondCalendarEventsScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for responding to calendar events",
+			Other:       "The respond calendar events scope is required to provide basic acknowledgement functionality to calendar events.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreMailName() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreMailName",
+			Description: "A collection of dharma features that are core to managing a character's mail",
+			Other:       "Core Mail",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreMailDescription() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreMailDescription",
+			Description: "A description of the collection of dharma features that are core to managing a character's mail",
+			Other:       "Manages character Eve Mail.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreReadMailScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreReadMailScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for reading Eve Mail",
+			Other:       "The read mail scope is required to provide basic data about Eve Mail in dharma.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreSendMailScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreSendMailScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for sending Eve Mail",
+			Other:       "The send mail scope is required to provide basic functionality around Eve Mail in dharma.",
+		},
+	})
+}
+
+func (m *Messages) FeatureCoreOrganizeMailScopeExplanation() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "featureCoreOrganizeMailScopeExplanation",
+			Description: "Description of why dharma is requesting the Eve ESI scope for organizing Eve Mail",
+			Other:       "The organize mail scope is required to ensure Eve Mail in dharma is organized similarly to Eve Online.",
 		},
 	})
 }

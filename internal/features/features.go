@@ -17,10 +17,88 @@
 package features
 
 import (
-	"github.com/pkg/errors"
+	"sort"
+
+	"github.com/cjslep/dharma/internal/util"
+	"github.com/cjslep/dharma/locales"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
+var (
+	CoreCorporationFeatureId = "core-corporation"
+	CoreCalendarFeatureId    = "core-calendar"
+	CoreMailFeatureId        = "core-mail"
+)
+
+func allLocalizedFeatures(b *i18n.Bundle, langs ...string) ([]Feature, error) {
+	m := locales.New(b, langs...)
+	var err error
+	return []Feature{
+		{
+			ID:          CoreCorporationFeatureId,
+			Name:        util.MustPropagateString(m.FeatureCoreCorporationName, &err),
+			Description: util.MustPropagateString(m.FeatureCoreCorporationDescription, &err),
+			Scopes: []ScopeExplanation{
+				{
+					Scope:       "esi-corporations.read_corporation_membership.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreCorporationReadCorporationMembershipScopeExplanation, &err),
+				},
+				{
+					Scope:       "esi-corporations.read_fw_stats.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreCorporationReadFactionWarfareStatsScopeExplanation, &err),
+				},
+				{
+					Scope:       "esi-killmails.read_corporation_killmails.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreCorporationReadCorporationKillmailsScopeExplanation, &err),
+				},
+				{
+					Scope:       "esi-wallet.read_corporation_wallets.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreCorporationReadCorporationWalletsScopeExplanation, &err),
+				},
+			},
+			Required: true,
+		},
+		{
+			ID:          CoreCalendarFeatureId,
+			Name:        util.MustPropagateString(m.FeatureCoreCalendarName, &err),
+			Description: util.MustPropagateString(m.FeatureCoreCalendarDescription, &err),
+			Scopes: []ScopeExplanation{
+				{
+					Scope:       "esi-calendar.read_calendar_events.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreReadCalendarEventsScopeExplanation, &err),
+				},
+				{
+					Scope:       "esi-calendar.respond_calendar_events.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreRespondCalendarEventsScopeExplanation, &err),
+				},
+			},
+			Required: true,
+		},
+		{
+			ID:          CoreMailFeatureId,
+			Name:        util.MustPropagateString(m.FeatureCoreMailName, &err),
+			Description: util.MustPropagateString(m.FeatureCoreMailDescription, &err),
+			Scopes: []ScopeExplanation{
+				{
+					Scope:       "esi-mail.read_mail.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreReadMailScopeExplanation, &err),
+				},
+				{
+					Scope:       "esi-mail.send_mail.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreSendMailScopeExplanation, &err),
+				},
+				{
+					Scope:       "esi-mail.organize_mail.v1",
+					Explanation: util.MustPropagateString(m.FeatureCoreOrganizeMailScopeExplanation, &err),
+				},
+			},
+			Required: true,
+		},
+	}, err
+}
+
 type Feature struct {
+	ID          string
 	Name        string
 	Description string
 	Scopes      []ScopeExplanation
@@ -28,59 +106,62 @@ type Feature struct {
 }
 
 type ScopeExplanation struct {
-	Scope       string
+	Scope       Scope
 	Explanation string
 }
 
-type Engine struct {
-	f     []Feature
-	names map[string]int
+type List []Feature
+
+func (l List) IDs() []string {
+	s := make([]string, 0, len(l))
+	for _, f := range l {
+		s = append(s, f.ID)
+	}
+	// Deterministic list
+	sort.Strings(s)
+	return s
 }
 
-func New(f []Feature) *Engine {
-	e := &Engine{
-		f:     f,
-		names: make(map[string]int, 0),
+func (l List) Scopes() []Scope {
+	// Deduplicate scopes
+	m := make(map[Scope]bool, len(l))
+	for i := range l {
+		for _, se := range l[i].Scopes {
+			m[se.Scope] = true
+		}
 	}
-	for i, t := range f {
-		e.names[t.Name] = i
+	// Put into slice
+	s := make([]Scope, 0, len(m))
+	for k := range m {
+		s = append(s, k)
 	}
-	return e
+	// Deterministic list
+	sort.Sort(Scopes(s))
+	return s
 }
 
-func (e *Engine) Convert(features []string) (scopes []string, err error) {
-	// First, build map of requested scopes
-	m := make(map[string]bool, 1)
-	applied := make(map[string]bool, 1)
-	for _, f := range features {
-		idx, ok := e.names[f]
-		if !ok {
-			err = errors.New("no feature with name: " + f)
-			return
-		}
-		for _, s := range e.f[idx].Scopes {
-			m[s.Scope] = true
-		}
-		applied[f] = true
-	}
-
-	// Next, ensure all required features were applied
-	for _, f := range e.f {
-		_, ok := applied[f.Name]
-		if f.Required && !ok {
-			err = errors.New("required feature was not requested: " + f.Name)
-			return
+func (l List) ScopeExplanations() []ScopeExplanations {
+	// Deduplicate scopes
+	m := make(map[Scope][]string, len(l))
+	for i := range l {
+		for _, se := range l[i].Scopes {
+			if x, ok := m[se.Scope]; ok {
+				x = append(x, se.Explanation)
+				m[se.Scope] = x
+			} else {
+				m[se.Scope] = []string{se.Explanation}
+			}
 		}
 	}
-
-	// Finally, convert the map to a list
-	scopes = make([]string, 0, len(m))
-	for f, _ := range m {
-		scopes = append(scopes, f)
+	// Put into slice
+	s := make([]ScopeExplanations, 0, len(m))
+	for k, v := range m {
+		s = append(s, ScopeExplanations{
+			Scope:        k,
+			Explanations: v,
+		})
 	}
-	return
-}
-
-func (e *Engine) GetFeatures() []Feature {
-	return e.f
+	// Deterministic list
+	sort.Sort(ScopeExplanationsList(s))
+	return s
 }

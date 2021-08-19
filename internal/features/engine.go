@@ -14,23 +14,49 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package main
+package features
 
 import (
-	"context"
-
-	"github.com/cjslep/dharma/internal/activitypub"
-	"github.com/go-fed/apcore"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/pkgerrors"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"golang.org/x/text/language"
 )
 
-func main() {
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+type Engine struct {
+	b *i18n.Bundle
+}
 
-	a, err := activitypub.New(context.Background(), software)
-	if err != nil {
-		panic(err)
+func New(b *i18n.Bundle) *Engine {
+	e := &Engine{
+		b: b,
 	}
-	apcore.Run(a)
+	return e
+}
+
+func (e *Engine) getRequiredFeatures(langs ...language.Tag) ([]Feature, error) {
+	l := make([]string, len(langs))
+	for i := range langs {
+		l[i] = langs[i].String()
+	}
+
+	f, err := allLocalizedFeatures(e.b, l...)
+	if err != nil {
+		return nil, err
+	}
+	var out []Feature
+	for _, t := range f {
+		if t.Required {
+			out = append(out, t)
+		}
+	}
+	return out, nil
+}
+
+func (e *Engine) GetEnabledFeatures(langs ...language.Tag) ([]Feature, error) {
+	// TODO
+	return e.getRequiredFeatures(langs...)
+}
+
+func (e *Engine) GetFeatures(ids []string, langs ...language.Tag) ([]Feature, error) {
+	// TODO
+	return e.getRequiredFeatures(langs...)
 }

@@ -26,7 +26,7 @@ import (
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/config"
 	"github.com/cjslep/dharma/internal/db"
-	d_i18n "github.com/cjslep/dharma/internal/render/i18n"
+	"github.com/cjslep/dharma/locales"
 	"github.com/go-fed/apcore/app"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pkg/errors"
@@ -80,7 +80,7 @@ func New(bg context.Context, l *zerolog.Logger, b *i18n.Bundle, apc app.APCoreCo
 }
 
 func (m *Mailer) SendValidationEmail(c context.Context, userID, to, token string, lang language.Tag) error {
-	msg := d_i18n.New(m.B, lang.String())
+	msg := locales.New(m.B, lang.String())
 	subj, err := msg.PleaseValidateEmailSubject()
 	if err != nil {
 		return err

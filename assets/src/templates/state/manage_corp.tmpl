@@ -2,6 +2,7 @@
 <p>{{Locale.DharmaNotManagingACorporationTitle}}</p>
 <p>{{Locale.DharmaNotManagingACorporation}}</p>
 {{if and .nav.signedIn .nav.isAdmin}}
+<a href="{{.nav.paths.changeCharacter}}">{{Locale.ClickHereToAuthorizeCharacter}}</a>
 <a href="{{.nav.paths.corpSetup}}">{{Locale.ClickHereToSelectCorporation}}</a>
 {{else}}
 <p>{{Locale.NotifyAdminToManageCorp}}</p>
