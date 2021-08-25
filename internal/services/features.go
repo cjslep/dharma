@@ -29,20 +29,53 @@ type Features struct {
 	E  *features.Engine
 }
 
-func (f *Features) EnableFeature(ctx context.Context, id string) error {
-	if err := f.E.ValidateFeatureID(id); err != nil {
-		return err
+func (f *Features) DiffChangeEnabled(ctx context.Context, enableIDs, disableIDs []string) (added, removed []features.Scope, err error) {
+	// 0. Validate feature IDs
+	if err = f.E.ValidateFeatureIDs(enableIDs); err != nil {
+		return
 	}
-	// TODO: Invalidate existing tokens if scope change required
-	return f.DB.SetFeatureEnabled(ctx, id)
+	if err = f.E.ValidateFeatureIDs(disableIDs); err != nil {
+		return
+	}
+	// 1. Diff against existing state to determine scope change(s)
+	var ids []string
+	ids, err = f.DB.GetEnabledFeatureIDs(ctx)
+	if err != nil {
+		return
+	}
+	added, removed, err = f.E.DiffScopes(ids, enableIDs, disableIDs, language.English)
+	return
 }
 
-func (f *Features) DisableFeature(ctx context.Context, id string) error {
-	if err := f.E.ValidateFeatureID(id); err != nil {
+func (f *Features) ChangeEnabled(ctx context.Context, enableIDs, disableIDs []string) error {
+	// 0. Validate feature IDs
+	if err := f.E.ValidateFeatureIDs(enableIDs); err != nil {
 		return err
 	}
-	// TODO: Invalidate existing tokens if scope change required
-	return f.DB.SetFeatureDisabled(ctx, id)
+	if err := f.E.ValidateFeatureIDs(disableIDs); err != nil {
+		return err
+	}
+	// 1. Diff against existing state to determine scope change(s)
+	ids, err := f.DB.GetEnabledFeatureIDs(ctx)
+	if err != nil {
+		return err
+	}
+	added, removed, err := f.E.DiffScopes(ids, enableIDs, disableIDs, language.English)
+	if err != nil {
+		return err
+	}
+	scopeChange := len(added) > 0 || len(removed) > 0
+	// 2. Change the features
+	if err := f.DB.SetFeaturesEnabledDisabled(ctx, enableIDs, disableIDs); err != nil {
+		return err
+	}
+	// 3. If there is a scope change, mark tokens as needing rescope
+	if scopeChange {
+		if err := f.DB.MarkAllTokensNeedRescope(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (f *Features) GetAdminCEOInitialFeatures(ctx context.Context, langs ...language.Tag) ([]features.Feature, error) {

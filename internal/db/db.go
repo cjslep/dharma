@@ -76,9 +76,14 @@ func (d *DB) GetEvePublicKeys(c context.Context) (*esi.OAuthKeysMetadata, error)
 	return o, txb.Do(c)
 }
 
+const (
+	tokenOKState      = "ok"
+	tokenRescopeState = "rescope"
+)
+
 func (d *DB) SetEveTokens(c context.Context, userID string, t *esi.Tokens) error {
 	txb := d.db.Begin()
-	txb.ExecOneRow(d.pg.SetEveToken(), userID, t.CID, t)
+	txb.ExecOneRow(d.pg.SetEveToken(), userID, t.CID, t, tokenOKState)
 	return txb.Do(c)
 }
 
@@ -90,6 +95,12 @@ func (d *DB) GetEveToken(c context.Context, charID int32) (*esi.Tokens, error) {
 		return r.Scan(t)
 	}, charID)
 	return t, txb.Do(c)
+}
+
+func (d *DB) MarkAllTokensNeedRescope(c context.Context) error {
+	txb := d.db.Begin()
+	txb.Exec(d.pg.MarkAllTokensWithState(), tokenRescopeState)
+	return txb.Do(c)
 }
 
 type UserToken struct {
@@ -201,6 +212,10 @@ func (d *DB) setApplicationState(c context.Context, k, v string) error {
 	return txb.Do(c)
 }
 
+func (d *DB) setApplicationStateTx(tx app.TxBuilder, k, v string) {
+	tx.ExecOneRow(d.pg.SetApplicationStateKV(), k, v)
+}
+
 func (d *DB) getApplicationState(c context.Context, k string) (string, error) {
 	var value string
 	txb := d.db.Begin()
@@ -254,8 +269,8 @@ func (d *DB) SetExecutor(c context.Context, v int32) error {
 	return d.setApplicationStateAsInt32(c, kExecutorCorporationKey, v)
 }
 
-func (d *DB) setApplicationStateAsBool(c context.Context, k string, v bool) error {
-	return d.setApplicationState(c, k, boolToStateValue(v))
+func (d *DB) setApplicationStateAsBoolTx(tx app.TxBuilder, k string, v bool) {
+	d.setApplicationStateTx(tx, k, boolToStateValue(v))
 }
 
 const (
@@ -270,12 +285,23 @@ func (d *DB) removeFeaturePrefix(s string) string {
 	return strings.TrimPrefix(s, featurePrefix)
 }
 
-func (d *DB) SetFeatureEnabled(c context.Context, featureID string) error {
-	return d.setApplicationStateAsBool(c, d.addFeaturePrefix(featureID), true)
+func (d *DB) setFeatureEnabledTx(tx app.TxBuilder, featureID string) {
+	d.setApplicationStateAsBoolTx(tx, d.addFeaturePrefix(featureID), true)
 }
 
-func (d *DB) SetFeatureDisabled(c context.Context, featureID string) error {
-	return d.setApplicationStateAsBool(c, d.addFeaturePrefix(featureID), false)
+func (d *DB) setFeatureDisabledTx(tx app.TxBuilder, featureID string) {
+	d.setApplicationStateAsBoolTx(tx, d.addFeaturePrefix(featureID), false)
+}
+
+func (d *DB) SetFeaturesEnabledDisabled(c context.Context, enableIDs, disableIDs []string) error {
+	tx := d.db.Begin()
+	for _, id := range enableIDs {
+		d.setFeatureEnabledTx(tx, id)
+	}
+	for _, id := range disableIDs {
+		d.setFeatureDisabledTx(tx, id)
+	}
+	return tx.Do(c)
 }
 
 func (d *DB) GetEnabledFeatureIDs(c context.Context) (ids []string, err error) {
