@@ -22,7 +22,6 @@ import (
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/async"
-	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
 	"github.com/go-fed/apcore/app"
@@ -41,7 +40,7 @@ type Context struct {
 	Threads               *services.Threads
 	Users                 *services.Users
 	F                     app.Framework
-	Features              *features.Engine
+	Features              *services.Features
 	State                 *services.State
 	MustRender            func(*render.View)
 	SupportedLanguageTags func() []language.Tag

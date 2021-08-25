@@ -33,7 +33,7 @@ func (e *ESIAuth) postAuth(w http.ResponseWriter, r *http.Request, k app.Session
 		e.C.MustRenderError(w, r, errors.New("could not get any features selected"), langs...)
 		return
 	}
-	fl, err := e.C.Features.GetFeatures(f)
+	fl, err := e.C.Features.GetByIDs(e.C.F.Context(r), f)
 	if err != nil {
 		e.C.MustRenderError(w, r, errors.Wrap(err, "could not obtain features"), langs...)
 		return

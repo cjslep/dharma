@@ -21,12 +21,14 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cjslep/dharma/esi"
 	"github.com/cjslep/dharma/internal/data"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/go-fed/apcore/app"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -252,6 +254,44 @@ func (d *DB) SetExecutor(c context.Context, v int32) error {
 	return d.setApplicationStateAsInt32(c, kExecutorCorporationKey, v)
 }
 
+func (d *DB) setApplicationStateAsBool(c context.Context, k string, v bool) error {
+	return d.setApplicationState(c, k, boolToStateValue(v))
+}
+
+const (
+	featurePrefix = "feature-"
+)
+
+func (d *DB) addFeaturePrefix(s string) string {
+	return featurePrefix + s
+}
+
+func (d *DB) removeFeaturePrefix(s string) string {
+	return strings.TrimPrefix(s, featurePrefix)
+}
+
+func (d *DB) SetFeatureEnabled(c context.Context, featureID string) error {
+	return d.setApplicationStateAsBool(c, d.addFeaturePrefix(featureID), true)
+}
+
+func (d *DB) SetFeatureDisabled(c context.Context, featureID string) error {
+	return d.setApplicationStateAsBool(c, d.addFeaturePrefix(featureID), false)
+}
+
+func (d *DB) GetEnabledFeatureIDs(c context.Context) (ids []string, err error) {
+	txb := d.db.Begin()
+	txb.Query(d.pg.GetApplicationStateValueAndPrefix(), func(r app.SingleRow) error {
+		var id string
+		if err := r.Scan(&id); err != nil {
+			return err
+		}
+		ids = append(ids, id)
+		return nil
+	}, featurePrefix, boolToStateValue(true))
+	err = txb.Do(c)
+	return
+}
+
 func int32ToStateValue(i int32) string {
 	return strconv.FormatInt(int64(i), 10)
 }
@@ -259,4 +299,22 @@ func int32ToStateValue(i int32) string {
 func stateValueToInt32(s string) (int32, error) {
 	i, err := strconv.ParseInt(s, 10, 32)
 	return int32(i), err
+}
+
+func boolToStateValue(b bool) string {
+	if b {
+		return "true"
+	} else {
+		return "false"
+	}
+}
+
+func stateValueToBool(s string) (bool, error) {
+	if s == "true" {
+		return true, nil
+	} else if s == "false" {
+		return false, nil
+	} else {
+		return false, errors.Errorf("error parsing bool for state value: %s", s)
+	}
 }

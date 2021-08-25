@@ -18,6 +18,7 @@ package features
 
 import (
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
@@ -32,13 +33,17 @@ func New(b *i18n.Bundle) *Engine {
 	return e
 }
 
-func (e *Engine) getRequiredFeatures(langs ...language.Tag) ([]Feature, error) {
+func (e *Engine) localized(langs ...language.Tag) ([]Feature, error) {
 	l := make([]string, len(langs))
 	for i := range langs {
 		l[i] = langs[i].String()
 	}
 
-	f, err := allLocalizedFeatures(e.b, l...)
+	return allLocalizedFeatures(e.b, l...)
+}
+
+func (e *Engine) GetRequiredFeatures(langs ...language.Tag) ([]Feature, error) {
+	f, err := e.localized(langs...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,12 +56,33 @@ func (e *Engine) getRequiredFeatures(langs ...language.Tag) ([]Feature, error) {
 	return out, nil
 }
 
-func (e *Engine) GetEnabledFeatures(langs ...language.Tag) ([]Feature, error) {
-	// TODO
-	return e.getRequiredFeatures(langs...)
+func (e *Engine) GetFeatures(ids []string, langs ...language.Tag) ([]Feature, error) {
+	m := make(map[string]bool, len(ids))
+	for _, v := range ids {
+		m[v] = true
+	}
+
+	f, err := e.localized(langs...)
+	if err != nil {
+		return nil, err
+	}
+	var out []Feature
+	for _, t := range f {
+		if m[t.ID] {
+			out = append(out, t)
+		}
+	}
+	return out, nil
 }
 
-func (e *Engine) GetFeatures(ids []string, langs ...language.Tag) ([]Feature, error) {
-	// TODO
-	return e.getRequiredFeatures(langs...)
+func (e *Engine) GetAllFeatures(langs ...language.Tag) ([]Feature, error) {
+	return e.localized(langs...)
+}
+
+func (e *Engine) ValidateFeatureID(id string) error {
+	ok := allFeatureIDs[id]
+	if !ok {
+		return errors.Errorf("invalid feature id: %s", id)
+	}
+	return nil
 }

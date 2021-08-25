@@ -28,6 +28,11 @@ var (
 	CoreCorporationFeatureId = "core-corporation"
 	CoreCalendarFeatureId    = "core-calendar"
 	CoreMailFeatureId        = "core-mail"
+	allFeatureIDs            = map[string]bool{
+		CoreCorporationFeatureId: true,
+		CoreCalendarFeatureId:    true,
+		CoreMailFeatureId:        true,
+	}
 )
 
 func allLocalizedFeatures(b *i18n.Bundle, langs ...string) ([]Feature, error) {

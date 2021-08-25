@@ -138,6 +138,11 @@ func (p postgres) GetApplicationStateKV() string {
 WHERE kind = $1;`
 }
 
+func (p postgres) GetApplicationStateValueAndPrefix() string {
+	return `SELECT kind FROM ` + p.schema + `dharma_application_state
+WHERE kind LIKE CONCAT($1, "%") AND value = $2`
+}
+
 // User Supplementary Data Table
 
 func (p postgres) CreateUserSupplementTableV0() string {

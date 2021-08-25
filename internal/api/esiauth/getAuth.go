@@ -28,15 +28,27 @@ import (
 )
 
 func (e *ESIAuth) getAuth(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
-	fs, err := e.C.Features.GetEnabledFeatures(langs...)
-	if err != nil {
-		e.C.MustRenderError(w, r, errors.Wrap(err, "could not fetch enabled features"), langs...)
-		return
+	ctx := e.C.F.Context(r)
+	var fs []features.Feature
+	if e.C.State.RequiresCorpToBeManaged() {
+		var err error
+		fs, err = e.C.Features.GetAdminCEOInitialFeatures(ctx, langs...)
+		if err != nil {
+			e.C.MustRenderError(w, r, errors.Wrap(err, "could not fetch features for administration/CEO"), langs...)
+			return
+		}
+	} else {
+		var err error
+		fs, err = e.C.Features.GetEnabledFeatures(ctx, langs...)
+		if err != nil {
+			e.C.MustRenderError(w, r, errors.Wrap(err, "could not fetch enabled features"), langs...)
+			return
+		}
 	}
 	l := features.List(fs)
 
 	u := paths.GetPostESIAuthPath(langs[0], l)
-	rc := api.From(r.Context())
+	rc := api.From(ctx)
 	v := render.NewHTMLView(
 		w,
 		http.StatusOK,

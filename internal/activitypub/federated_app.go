@@ -113,7 +113,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		Threads:               &services.Threads{a.db},
 		Users:                 &services.Users{a.f, a.m, a.db},
 		F:                     a.f,
-		Features:              a.features,
+		Features:              &services.Features{a.db, a.features},
 		State:                 a.s,
 		MustRender:            a.mustRender,
 		SupportedLanguageTags: a.r.LanguageTags,
