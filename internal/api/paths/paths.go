@@ -26,9 +26,11 @@ import (
 )
 
 const (
-	TokenQueryParam = "t"
-	VerifyPath      = "/account/verify"
-	ESIAuthPath     = "/esi/auth"
+	TokenQueryParam       = "t"
+	RescopeQueryParam     = "rescope"
+	VerifyPath            = "/account/verify"
+	ESIAuthPath           = "/esi/auth"
+	AccountCharactersPath = "/account/characters"
 )
 
 func tokenizeVerifyPath(scheme, host, token string, lang language.Tag) string {
@@ -74,6 +76,23 @@ func GetPostESIAuthPath(lang language.Tag, l features.List) *url.URL {
 	u := &url.URL{
 		Path:     fmt.Sprintf("/%s%s", lang, ESIAuthPath),
 		RawQuery: v.Encode(),
+	}
+	return u
+}
+
+func GetESIAuthPathRescope(lang language.Tag) *url.URL {
+	v := url.Values{}
+	v.Add(RescopeQueryParam, "true")
+	u := &url.URL{
+		Path:     fmt.Sprintf("/%s%s", lang, ESIAuthPath),
+		RawQuery: v.Encode(),
+	}
+	return u
+}
+
+func GetCharacterSelection(lang language.Tag) *url.URL {
+	u := &url.URL{
+		Path: fmt.Sprintf("/%s%s", lang, AccountCharactersPath),
 	}
 	return u
 }

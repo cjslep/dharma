@@ -29,6 +29,8 @@ type Features struct {
 	E  *features.Engine
 }
 
+// TODO: Call this after selecting different features, before calling
+// ChangeEnabled.
 func (f *Features) DiffChangeEnabled(ctx context.Context, enableIDs, disableIDs []string) (added, removed []features.Scope, err error) {
 	// 0. Validate feature IDs
 	if err = f.E.ValidateFeatureIDs(enableIDs); err != nil {
@@ -47,6 +49,7 @@ func (f *Features) DiffChangeEnabled(ctx context.Context, enableIDs, disableIDs 
 	return
 }
 
+// TODO: Call this
 func (f *Features) ChangeEnabled(ctx context.Context, enableIDs, disableIDs []string) error {
 	// 0. Validate feature IDs
 	if err := f.E.ValidateFeatureIDs(enableIDs); err != nil {
@@ -94,6 +97,7 @@ func (f *Features) GetByIDs(ctx context.Context, ids []string, langs ...language
 	return f.E.GetFeatures(ids, langs...)
 }
 
+// TODO: Call this
 func (f *Features) GetAllFeatures(ctx context.Context, langs ...language.Tag) ([]features.Feature, error) {
 	return f.E.GetAllFeatures(langs...)
 }

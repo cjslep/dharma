@@ -20,10 +20,10 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/sessions"
 	"github.com/go-fed/apcore/app"
-	"github.com/go-fed/apcore/util"
 	"github.com/mholt/binding"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -59,7 +59,7 @@ func (a *Account) postCharacters(w http.ResponseWriter, r *http.Request, k app.S
 		return
 	}
 
-	if ok, err := a.C.ESI.HasCharacterForUser(util.Context{r.Context()}, userID, csr.CharacterID); err != nil {
+	if ok, err := a.C.ESI.HasCharacterForUser(r.Context(), userID, csr.CharacterID); err != nil {
 		a.C.MustRenderError(w, r, errors.Wrap(err, "could not determine if user has character"), langs...)
 		return
 	} else if !ok {
@@ -70,9 +70,22 @@ func (a *Account) postCharacters(w http.ResponseWriter, r *http.Request, k app.S
 
 	sessions.SetCharacterSelected(k, csr.CharacterID)
 	if err := k.Save(r, w); err != nil {
-		a.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not save session"))
+		a.C.MustRenderError(w, r, errors.Wrap(err, "could not save session"), langs...)
 		return
 	}
 
-	// TODO: Redirect
+	if rescope, err := a.C.ESI.DoesCharacterNeedRescope(r.Context(), csr.CharacterID); err != nil {
+		a.C.MustRenderError(w, r, errors.Wrap(err, "could not determine if character needed a rescope"), langs...)
+		return
+	} else if rescope {
+		l := language.English
+		if len(langs) > 0 {
+			l = langs[0]
+		}
+		u := paths.GetESIAuthPathRescope(l)
+		http.Redirect(w, r, u.String(), http.StatusFound)
+		return
+	} else {
+		http.Redirect(w, r, paths.AccountCharactersPath, http.StatusFound)
+	}
 }

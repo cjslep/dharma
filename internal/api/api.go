@@ -24,10 +24,12 @@ import (
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
+	"github.com/cjslep/dharma/internal/sessions"
 	"github.com/go-fed/apcore/app"
 	ap_paths "github.com/go-fed/apcore/paths"
 	"github.com/go-fed/apcore/util"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
@@ -238,6 +240,52 @@ func enforceLoggedInAsAdmin(ctx *Context) mux.MiddlewareFunc {
 				ctx.MustRender(render.NewNotFoundView(w, rc, langs...))
 			}
 			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// enforceCharacterSelected ensures that the endpoint is hit only if the user
+// has selected an active character to use, and that character's token is not
+// flagged as needing a re-scoping.
+func enforceCharacterSelected(ctx *Context) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rc := From(r.Context())
+			k, err := rc.Session()
+			if err != nil {
+				ctx.MustRenderError(w, r, errors.New("could not obtain session for enforcing character selection"))
+				return
+			}
+
+			charID := sessions.GetCharacterSelected(k)
+			if charID == 0 {
+				// No character selected
+				lts, err := rc.LanguageTags()
+				if err != nil {
+					ctx.MustRenderError(w, r, err)
+					return
+				}
+				u := paths.GetCharacterSelection(lts[0])
+				http.Redirect(w, r, u.String(), http.StatusFound)
+				return
+			}
+
+			rescope, err := ctx.ESI.DoesCharacterNeedRescope(ctx.F.Context(r), charID)
+			if err != nil {
+				ctx.MustRenderError(w, r, err)
+				return
+			} else if rescope {
+				lts, err := rc.LanguageTags()
+				if err != nil {
+					ctx.MustRenderError(w, r, err)
+					return
+				}
+				u := paths.GetESIAuthPathRescope(lts[0])
+				http.Redirect(w, r, u.String(), http.StatusFound)
+				return
+			} else {
+				next.ServeHTTP(w, r)
+			}
 		})
 	}
 }

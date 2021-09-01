@@ -1,5 +1,8 @@
 {{template "base/header" .}}
 <p>{{Locale.CharacterAuthorizationScopeOverview}}</p>
+{{if .isRescope}}
+  <p>{{Locale.ExplainRescope}}</p>
+{{end}}
 <ul>
 {{range $_, $v := .explain}}
   {{if eq (len $v.Explanations) 1}}

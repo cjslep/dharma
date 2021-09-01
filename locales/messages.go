@@ -839,3 +839,33 @@ func (m *Messages) FeatureCoreOrganizeMailScopeExplanation() (string, error) {
 		},
 	})
 }
+
+func (m *Messages) ExplainRescope() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "explainRescop",
+			Description: "Description that dharma is requesting ESI tokens once more because scopes have changed since last token renewal",
+			Other:       "The administrator has enabled or disabled Dharma's features. These changes require different scopes than what you previously granted Dharma, so reauthentication is necessary.",
+		},
+	})
+}
+
+func (m *Messages) TokenReauthorizationRequired() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "tokenReauthorizationRequired",
+			Description: "Brief statement that a character's ESI token needs to be reauthorized.",
+			Other:       "ESI Reauthorization Required",
+		},
+	})
+}
+
+func (m *Messages) Selected() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "selected",
+			Description: "The word(s) for having chosen something -- such as which character to use in Dharma.",
+			Other:       "Selected",
+		},
+	})
+}

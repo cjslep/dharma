@@ -47,6 +47,9 @@ func (e *ESIAuth) getAuth(w http.ResponseWriter, r *http.Request, langs []langua
 	}
 	l := features.List(fs)
 
+	isRescopeText := r.URL.Query().Get(paths.RescopeQueryParam)
+	isRescope := len(isRescopeText) > 0
+
 	u := paths.GetPostESIAuthPath(langs[0], l)
 	rc := api.From(ctx)
 	v := render.NewHTMLView(
@@ -55,9 +58,10 @@ func (e *ESIAuth) getAuth(w http.ResponseWriter, r *http.Request, langs []langua
 		"esiauth/auth",
 		rc,
 		map[string]interface{}{
-			"scopes":   l.Scopes(),
-			"explain":  l.ScopeExplanations(),
-			"authPath": u.String(),
+			"scopes":    l.Scopes(),
+			"explain":   l.ScopeExplanations(),
+			"authPath":  u.String(),
+			"isRescope": isRescope,
 		},
 		langs...)
 	e.C.MustRender(v)

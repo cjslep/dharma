@@ -88,3 +88,8 @@ func CorpMustBeManaged(ctx *Context, next http.Handler) http.Handler {
 func MustBeAdmin(ctx *Context, next http.Handler) http.Handler {
 	return enforceLoggedInAsAdmin(ctx)(next)
 }
+
+// TODO: Use this function
+func MustHaveCharacterSelected(ctx *Context, next http.Handler) http.Handler {
+	return enforceCharacterSelected(ctx)(next)
+}

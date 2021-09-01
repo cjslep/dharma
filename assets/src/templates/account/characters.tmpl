@@ -5,7 +5,15 @@
   <div>{{Locale.NoCharactersAuthorized}}</div>
 {{else}}
   {{range $_, $char := .characters}}
-    <div>{{$char}}</div>
+    <div>
+      {{$char}}
+      {{if eq $char.Character.ID .selectedID}}
+        <p>{{Locale.Selected}}</p>
+      {{end}}
+      {{if $char.TokenNeedsRescope}}
+        <p>{{Locale.TokenReauthorizationRequired}}</p>
+      {{end}}
+    </div>
   {{end}}
 {{end}}
 {{template "base/footer" .}}

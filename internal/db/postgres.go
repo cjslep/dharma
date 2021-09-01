@@ -60,7 +60,7 @@ func (p postgres) AddEvePublicKey() string {
 	return `INSERT INTO ` + p.schema + `dharma_eve_public_keys
 (hash, keys)
 VALUES
-(SHA512($1), $1)
+(SHA512($2), $1)
 ON CONFLICT (hash) DO NOTHING;`
 }
 
@@ -109,13 +109,18 @@ func (p postgres) MarkAllTokensWithState() string {
 }
 
 func (p postgres) GetEveCharactersForUser() string {
-	return `SELECT character_id FROM ` + p.schema + `dharma_eve_tokens
+	return `SELECT character_id, status FROM ` + p.schema + `dharma_eve_tokens
 WHERE user_id = $1;`
 }
 
 func (p postgres) HasCharacterForUser() string {
 	return `EXISTS(SELECT id FROM ` + p.schema + `dharma_eve_tokens
 WHERE user_id = $1 AND character_id = $2);`
+}
+
+func (p postgres) GetTokenStatusForCharacter() string {
+	return `SELECT status FROM ` + p.schema + `dharma_eve_tokens
+WHERE character_id = $1);`
 }
 
 // Application State Table

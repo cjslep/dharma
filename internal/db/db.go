@@ -60,9 +60,9 @@ func New(db app.Database, schema string) *DB {
 	}
 }
 
-func (d *DB) SetEvePublicKeys(c context.Context, o *esi.OAuthKeysMetadata) error {
+func (d *DB) SetEvePublicKeys(c context.Context, o esi.OAuthKeysMetadata) error {
 	txb := d.db.Begin()
-	txb.Exec(d.pg.AddEvePublicKey(), o)
+	txb.Exec(d.pg.AddEvePublicKey(), o, o)
 	return txb.Do(c)
 }
 
@@ -124,19 +124,21 @@ func (d *DB) GetExpiringEveTokensWithin(c context.Context, period time.Duration)
 	return ut, txb.Do(c)
 }
 
-func (d *DB) GetEveCharactersForUser(c context.Context, userID string) ([]int32, error) {
-	var ids []int32
+func (d *DB) GetEveCharactersForUser(c context.Context, userID string) (ids []int32, shouldRescope []bool, err error) {
 	txb := d.db.Begin()
 	txb.Query(d.pg.GetEveCharactersForUser(), func(r app.SingleRow) error {
 		var i int32
-		err := r.Scan(&i)
+		var status string
+		err := r.Scan(&i, &status)
 		if err != nil {
 			return err
 		}
 		ids = append(ids, i)
+		shouldRescope = append(shouldRescope, status == tokenRescopeState)
 		return nil
 	}, userID)
-	return ids, txb.Do(c)
+	err = txb.Do(c)
+	return
 }
 
 func (d *DB) HasCharacterForUser(c context.Context, userID string, charID int32) (bool, error) {
@@ -147,6 +149,18 @@ func (d *DB) HasCharacterForUser(c context.Context, userID string, charID int32)
 		return err
 	}, userID, charID)
 	return ok, txb.Do(c)
+}
+
+func (d *DB) DoesCharacterNeedRescope(c context.Context, charID int32) (bool, error) {
+	txb := d.db.Begin()
+	var isRescope bool
+	txb.QueryOneRow(d.pg.GetTokenStatusForCharacter(), func(r app.SingleRow) error {
+		var status string
+		err := r.Scan(&status)
+		isRescope = status == tokenRescopeState
+		return err
+	}, charID)
+	return isRescope, txb.Do(c)
 }
 
 type LatestPublicTagsResult struct {

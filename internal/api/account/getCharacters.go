@@ -21,6 +21,7 @@ import (
 
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/sessions"
 	"github.com/go-fed/apcore/app"
 	"github.com/go-fed/apcore/util"
 	"github.com/pkg/errors"
@@ -30,13 +31,13 @@ import (
 func (a *Account) getCharacters(w http.ResponseWriter, r *http.Request, k app.Session, langs []language.Tag) {
 	userID, err := k.UserID()
 	if err != nil {
-		a.C.MustRenderError(w, r, errors.New("no user associated with session"), langs...)
+		a.C.MustRenderError(w, r, errors.Wrap(err, "error getting user for session"), langs...)
 		return
 	}
 
 	chars, err := a.C.ESI.GetCharactersForUser(util.Context{r.Context()}, userID)
 	if err != nil {
-		a.C.MustRenderError(w, r, errors.New("no user associated with session"), langs...)
+		a.C.MustRenderError(w, r, errors.Wrap(err, "error getting characters for session"), langs...)
 		return
 	}
 
@@ -48,6 +49,7 @@ func (a *Account) getCharacters(w http.ResponseWriter, r *http.Request, k app.Se
 		rc,
 		map[string]interface{}{
 			"characters": chars,
+			"selectedID": sessions.GetCharacterSelected(k),
 		},
 		langs...)
 	a.C.MustRender(v)

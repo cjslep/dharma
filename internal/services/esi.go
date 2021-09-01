@@ -48,7 +48,7 @@ func (e *ESI) fetchEveOnlineKeys(c context.Context) error {
 	if err != nil {
 		return err
 	}
-	return e.DB.SetEvePublicKeys(c, keys)
+	return e.DB.SetEvePublicKeys(c, *keys)
 }
 
 func (e *ESI) GetEvePublicKeys(c context.Context) (*esi.OAuthKeysMetadata, error) {
@@ -125,14 +125,39 @@ func (e *ESI) SearchCorporations(c context.Context, query string, lang language.
 	return e.ESIClient.SearchCorp(c, s, lang)
 }
 
-func (e *ESI) GetCharactersForUser(c context.Context, userID string) ([]*esi.Character, error) {
-	ids, err := e.DB.GetEveCharactersForUser(c, userID)
+type Character struct {
+	Character         *esi.Character
+	TokenNeedsRescope bool
+}
+
+func (e *ESI) GetCharactersForUser(c context.Context, userID string) ([]Character, error) {
+	ids, rescope, err := e.DB.GetEveCharactersForUser(c, userID)
 	if err != nil {
 		return nil, err
 	}
-	return e.ESIClient.Characters(c, ids)
+	chars, err := e.ESIClient.Characters(c, ids)
+	if err != nil {
+		return nil, err
+	}
+	m := make(map[int32]bool, len(rescope))
+	for i, id := range ids {
+		m[id] = rescope[i]
+	}
+	out := make([]Character, 0, len(chars))
+	for _, char := range chars {
+		c := Character{
+			Character:         char,
+			TokenNeedsRescope: m[char.ID],
+		}
+		out = append(out, c)
+	}
+	return out, nil
 }
 
 func (e *ESI) HasCharacterForUser(c context.Context, userID string, charID int32) (bool, error) {
 	return e.DB.HasCharacterForUser(c, userID, charID)
+}
+
+func (e *ESI) DoesCharacterNeedRescope(c context.Context, charID int32) (bool, error) {
+	return e.DB.DoesCharacterNeedRescope(c, charID)
 }

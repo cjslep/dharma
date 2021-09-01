@@ -137,7 +137,7 @@ var (
 )
 
 func (s *State) ChooseCorporation(c util.Context, userID string, corpID int32) error {
-	charIDs, err := s.db.GetEveCharactersForUser(c, userID)
+	charIDs, _, err := s.db.GetEveCharactersForUser(c, userID)
 	if err != nil {
 		return err
 	}
