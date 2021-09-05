@@ -480,6 +480,26 @@ func (m *Messages) VerifyEmail() (string, error) {
 	})
 }
 
+func (m *Messages) ClickToVerify() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "clickToVerify",
+			Description: "Prompts the user to click a button to verify their email",
+			Other:       "Please continue to verify your email",
+		},
+	})
+}
+
+func (m *Messages) Verify() (string, error) {
+	return m.l.Localize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:          "verify",
+			Description: "Text on the button to verify the email",
+			Other:       "Verify",
+		},
+	})
+}
+
 func (m *Messages) ThanksForRegistering() (string, error) {
 	return m.l.Localize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{

@@ -1,10 +1,17 @@
 {{template "base/header" .}}
 {{if .verified}}
   <p>{{Locale.VerifySuccess}}</p>
-{{else}}
-  {{if .showty}}<p>{{Locale.ThanksForRegistering}}</p>
-  {{else}}<p>{{Locale.NotVerifiedEmailYet}}</p>{{end}}
+{{else if .showty}}
+  <p>{{Locale.ThanksForRegistering}}</p>
   <p>{{Locale.VerifyEmail}}</p>
   <p>{{Locale.CheckEmailForVerification}}</p>
+{{else if .token}}
+  <p>{{Locale.ClickToVerify}}</p>
+  <form method="POST">
+    <input type="hidden" name="token" value="{{.token}}"></input>
+    <button>{{Locale.Verify}}</button>
+  </form>
+{{else}}
+  <p>{{Locale.NotVerifiedEmailYet}}</p>
 {{end}}
 {{template "base/footer" .}}

@@ -22,45 +22,23 @@ import (
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
-	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
 
 func (a *Account) getVerify(w http.ResponseWriter, r *http.Request, langs []language.Tag) {
 	token := r.URL.Query().Get(paths.TokenQueryParam)
-	if token == "" {
-		// If no token, then display page directing user to verify
-		// their email.
-		showTY := r.URL.Query().Get("ty")
-		rc := api.From(r.Context())
-		v := render.NewHTMLView(
-			w,
-			http.StatusOK,
-			"account/verify",
-			rc,
-			map[string]interface{}{
-				"verified": false,
-				"showty":   showTY,
-			},
-			langs...)
-		a.C.MustRender(v)
-		return
-	}
-
-	// If token is present, instead attempt to verify.
-	err := a.C.Users.MarkUserVerified(a.C.F.Context(r), token)
-	if err != nil {
-		a.C.MustRenderError(w, r, errors.Wrap(err, "could not verify user"), langs...)
-		return
-	}
+	showTY := r.URL.Query().Get(paths.VerifyTYParam)
+	success := r.URL.Query().Get(paths.VerifySuccessParam)
+	rc := api.From(r.Context())
 	v := render.NewHTMLView(
 		w,
 		http.StatusOK,
 		"account/verify",
-		api.From(r.Context()),
+		rc,
 		map[string]interface{}{
-			"verified": true,
-			"showty":   false,
+			"token":    token,
+			"showty":   showTY,
+			"verified": success,
 		},
 		langs...)
 	a.C.MustRender(v)

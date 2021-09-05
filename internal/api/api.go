@@ -185,7 +185,7 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 					ctx.MustRenderError(w, r, err)
 					return
 				}
-				u := paths.GetPleaseVerifyURL(lts[0], false)
+				u := paths.GetPleaseVerifyURLWithTY(lts[0])
 				http.Redirect(w, r, u.String(), http.StatusFound)
 				return
 			}

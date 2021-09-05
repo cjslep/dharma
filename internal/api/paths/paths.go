@@ -27,6 +27,8 @@ import (
 
 const (
 	TokenQueryParam       = "t"
+	VerifyTYParam         = "ty"
+	VerifySuccessParam    = "s"
 	RescopeQueryParam     = "rescope"
 	VerifyPath            = "/account/verify"
 	ESIAuthPath           = "/esi/auth"
@@ -57,12 +59,23 @@ func IsVerifyPath(path string) bool {
 	return strings.HasSuffix(path, VerifyPath)
 }
 
-func GetPleaseVerifyURL(lang language.Tag, showThanksForRegistering bool) *url.URL {
+func GetPleaseVerifyURLWithTY(lang language.Tag) *url.URL {
+	return getPleaseVerifyURL(lang, true, false)
+}
+
+func GetPleaseVerifyURLWithSuccess(lang language.Tag) *url.URL {
+	return getPleaseVerifyURL(lang, false, true)
+}
+
+func getPleaseVerifyURL(lang language.Tag, showThanksForRegistering, showVerifySuccess bool) *url.URL {
 	u := &url.URL{}
 	u.Path = fmt.Sprintf("/%s%s", lang, VerifyPath)
 	v := url.Values{}
 	if showThanksForRegistering {
-		v.Add("ty", "true")
+		v.Add(VerifyTYParam, "true")
+	}
+	if showVerifySuccess {
+		v.Add(VerifySuccessParam, "true")
 	}
 	u.RawQuery = v.Encode()
 	return u

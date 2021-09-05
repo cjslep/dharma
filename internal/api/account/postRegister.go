@@ -89,6 +89,6 @@ func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, langs []l
 		}
 	}
 
-	u := paths.GetPleaseVerifyURL(langs[0], true)
+	u := paths.GetPleaseVerifyURLWithTY(langs[0])
 	http.Redirect(w, r, u.String(), http.StatusFound)
 }

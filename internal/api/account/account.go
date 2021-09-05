@@ -29,7 +29,10 @@ type Account struct {
 func (a *Account) Route(r app.Router) {
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		paths.VerifyPath,
-		api.MustHaveLanguageCode(a.getVerify)) // TODO: Make POST handler as well
+		api.MustHaveLanguageCode(a.getVerify))
+	r.NewRoute().Methods("POST").WebOnlyHandler(
+		paths.VerifyPath,
+		api.MustHaveLanguageCode(a.postVerify))
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/account/register",
 		api.MustHaveLanguageCode(a.getRegister))
