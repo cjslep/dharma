@@ -20,10 +20,12 @@ import (
 	"net/http"
 
 	"github.com/cjslep/dharma/internal/api"
+	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/services"
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/go-fed/apcore/app"
-	"github.com/go-fed/apcore/util"
+	aputil "github.com/go-fed/apcore/util"
 	"github.com/mholt/binding"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -59,7 +61,7 @@ func (s *Site) postChooseCorpToManage(w http.ResponseWriter, r *http.Request, k 
 		return
 	}
 
-	err = s.C.State.ChooseCorporation(util.Context{r.Context()}, userID, ccr.CorporationID)
+	err = s.C.State.ChooseCorporation(aputil.Context{r.Context()}, userID, ccr.CorporationID)
 	if err != nil && err != services.NotCEOError {
 		s.C.MustRenderError(w, r, errors.Wrap(err, "could not choose corporation"), langs...)
 		return
@@ -70,5 +72,5 @@ func (s *Site) postChooseCorpToManage(w http.ResponseWriter, r *http.Request, k 
 	}
 
 	// TODO: Redirect with success message
-	http.Redirect(w, r, "/"+langs[0].String(), http.StatusFound)
+	http.Redirect(w, r, paths.LocalizedRoot(util.GetPreferredLanguage(langs)).String(), http.StatusFound)
 }

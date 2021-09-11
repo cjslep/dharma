@@ -23,6 +23,7 @@ import (
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
 	"github.com/cjslep/dharma/internal/sessions"
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/go-fed/apcore/app"
 	"github.com/mholt/binding"
 	"github.com/pkg/errors"
@@ -78,14 +79,11 @@ func (a *Account) postCharacters(w http.ResponseWriter, r *http.Request, k app.S
 		a.C.MustRenderError(w, r, errors.Wrap(err, "could not determine if character needed a rescope"), langs...)
 		return
 	} else if rescope {
-		l := language.English
-		if len(langs) > 0 {
-			l = langs[0]
-		}
-		u := paths.GetESIAuthPathRescope(l)
+		u := paths.GetESIAuthPathRescope(util.GetPreferredLanguage(langs))
 		http.Redirect(w, r, u.String(), http.StatusFound)
 		return
 	} else {
-		http.Redirect(w, r, paths.AccountCharactersPath, http.StatusFound)
+		u := paths.GetCharacterSelection(util.GetPreferredLanguage(langs))
+		http.Redirect(w, r, u.String(), http.StatusFound)
 	}
 }

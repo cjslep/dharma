@@ -24,6 +24,7 @@ import (
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/mholt/binding"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -64,6 +65,6 @@ func (a *Account) postVerify(w http.ResponseWriter, r *http.Request, langs []lan
 		return
 	}
 
-	u := paths.GetPleaseVerifyURLWithSuccess(langs[0])
+	u := paths.GetPleaseVerifyURLWithSuccess(util.GetPreferredLanguage(langs))
 	http.Redirect(w, r, u.String(), http.StatusFound)
 }

@@ -23,6 +23,7 @@ import (
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/features"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
 )
@@ -50,7 +51,7 @@ func (e *ESIAuth) getAuth(w http.ResponseWriter, r *http.Request, langs []langua
 	isRescopeText := r.URL.Query().Get(paths.RescopeQueryParam)
 	isRescope := len(isRescopeText) > 0
 
-	u := paths.GetPostESIAuthPath(langs[0], l)
+	u := paths.GetPostESIAuthPath(util.GetPreferredLanguage(langs), l)
 	rc := api.From(ctx)
 	v := render.NewHTMLView(
 		w,

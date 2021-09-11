@@ -94,5 +94,5 @@ func (e *ESIAuth) getCallback(w http.ResponseWriter, r *http.Request, k app.Sess
 		e.C.MustRenderErrorEnglish(w, r, errors.Wrap(err, "could not save session"))
 		return
 	}
-	http.Redirect(w, r /*TODO: Make sure localized*/, "", http.StatusFound)
+	http.Redirect(w, r, "/en/", http.StatusFound)
 }

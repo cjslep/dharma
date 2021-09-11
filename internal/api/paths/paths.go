@@ -35,6 +35,13 @@ const (
 	AccountCharactersPath = "/account/characters"
 )
 
+func LocalizedRoot(lang language.Tag) *url.URL {
+	u := &url.URL{
+		Path: fmt.Sprintf("/%s", lang),
+	}
+	return u
+}
+
 func tokenizeVerifyPath(scheme, host, token string, lang language.Tag) string {
 	var v url.Values
 	v.Set(TokenQueryParam, token)

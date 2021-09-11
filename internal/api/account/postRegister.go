@@ -22,6 +22,7 @@ import (
 	"github.com/cjslep/dharma/internal/api"
 	"github.com/cjslep/dharma/internal/api/paths"
 	"github.com/cjslep/dharma/internal/render"
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/mholt/binding"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -73,7 +74,8 @@ func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, langs []l
 		return
 	}
 
-	err := a.C.Users.CreateUser(a.C.F.Context(r), rr.Username, rr.Email, rr.Password, langs[0])
+	lang := util.GetPreferredLanguage(langs)
+	err := a.C.Users.CreateUser(a.C.F.Context(r), rr.Username, rr.Email, rr.Password, lang)
 	if err != nil {
 		if a.C.F.IsNotUniqueEmail(err) {
 			u := getRegisterURLEmailNotUnique(r, rr.Username, rr.Email)
@@ -89,6 +91,6 @@ func (a *Account) postRegister(w http.ResponseWriter, r *http.Request, langs []l
 		}
 	}
 
-	u := paths.GetPleaseVerifyURLWithTY(langs[0])
+	u := paths.GetPleaseVerifyURLWithTY(lang)
 	http.Redirect(w, r, u.String(), http.StatusFound)
 }
