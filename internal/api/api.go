@@ -198,9 +198,21 @@ func enforceEmailValidation(ctx *Context) mux.MiddlewareFunc {
 // enforceCorpIsManaged ensures that the current state of the application is
 // managing a corporation before allowing HTTP requests to proceed.
 func enforceCorpIsManaged(ctx *Context) mux.MiddlewareFunc {
+	return enforceCorpManagedState(ctx, true)
+}
+
+// enforceCorpIsManaged ensures that the current state of the application is
+// not managing a corporation before allowing HTTP requests to proceed.
+func enforceCorpIsNotManaged(ctx *Context) mux.MiddlewareFunc {
+	return enforceCorpManagedState(ctx, false)
+}
+
+// enforceCorpManagedState is a helper for enforcing either "must be managed" or
+// "must not be managed"
+func enforceCorpManagedState(ctx *Context, mustBeState bool) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if ctx.State.RequiresCorpToBeManaged() {
+			if mustBeState && ctx.State.RequiresCorpToBeManaged() {
 				rc := From(r.Context())
 				langs, err := rc.LanguageTags()
 				if err != nil {
@@ -215,6 +227,7 @@ func enforceCorpIsManaged(ctx *Context) mux.MiddlewareFunc {
 					langs...)
 				ctx.MustRender(v)
 				return
+			} else if !mustBeState && !ctx.State.RequiresCorpToBeManaged() {
 			}
 			next.ServeHTTP(w, r)
 		})

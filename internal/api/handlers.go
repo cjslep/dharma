@@ -85,6 +85,10 @@ func CorpMustBeManaged(ctx *Context, next http.Handler) http.Handler {
 	return enforceCorpIsManaged(ctx)(next)
 }
 
+func CorpMustNotBeManaged(ctx *Context, next http.Handler) http.Handler {
+	return enforceCorpIsNotManaged(ctx)(next)
+}
+
 func MustBeAdmin(ctx *Context, next http.Handler) http.Handler {
 	return enforceLoggedInAsAdmin(ctx)(next)
 }

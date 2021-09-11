@@ -34,17 +34,19 @@ func (s *Site) Route(r app.Router) {
 		"/about",
 		api.CorpMustBeManaged(s.C,
 			api.MustHaveLanguageCode(s.getAbout)))
-	// TODO: Guard the below with Corp-must-not-be-managed
 	r.NewRoute().Methods("GET").WebOnlyHandler(
 		"/site/setup/corp",
-		api.MustBeAdmin(s.C,
-			api.MustHaveLanguageCode(s.getChooseCorpToManage)))
+		api.CorpMustNotBeManaged(s.C,
+			api.MustBeAdmin(s.C,
+				api.MustHaveLanguageCode(s.getChooseCorpToManage))))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/site/setup/corp",
-		api.MustBeAdmin(s.C,
-			api.MustHaveSessionAndLanguageCode(s.C, s.postChooseCorpToManage)))
+		api.CorpMustNotBeManaged(s.C,
+			api.MustBeAdmin(s.C,
+				api.MustHaveSessionAndLanguageCode(s.C, s.postChooseCorpToManage))))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/site/setup/corp/search",
-		api.MustBeAdmin(s.C,
-			api.MustHaveLanguageCode(s.postCorpSetupSearch)))
+		api.CorpMustNotBeManaged(s.C,
+			api.MustBeAdmin(s.C,
+				api.MustHaveLanguageCode(s.postCorpSetupSearch))))
 }
