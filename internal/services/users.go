@@ -21,6 +21,7 @@ import (
 
 	"github.com/cjslep/dharma/internal/db"
 	"github.com/cjslep/dharma/internal/mail"
+	"github.com/cjslep/dharma/internal/util"
 	"github.com/go-fed/apcore/app"
 	"golang.org/x/text/language"
 )
@@ -32,9 +33,11 @@ type Users struct {
 }
 
 func InitAsCommandLineAdminUser(ctx context.Context, db *db.DB, userID string) error {
-	// TODO: Generate token
-	var token string
-	err := db.AddUserEmailValidationTask(ctx, userID, token)
+	token, err := util.GenerateRandomToken()
+	if err != nil {
+		return err
+	}
+	err = db.AddUserEmailValidationTask(ctx, userID, token)
 	if err != nil {
 		return err
 	}
@@ -47,8 +50,10 @@ func (u *Users) CreateUser(ctx context.Context, username, email, password string
 	if err != nil {
 		return err
 	}
-	// TODO: Generate token
-	var token string
+	token, err := util.GenerateRandomToken()
+	if err != nil {
+		return err
+	}
 	err = u.DB.AddUserEmailValidationTask(ctx, userID, token)
 	if err != nil {
 		return err
