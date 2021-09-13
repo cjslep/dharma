@@ -40,6 +40,8 @@ func CreateTables(c context.Context, db app.Database, schema string) error {
 	tx.Exec(p.CreateEveTokensTableV0())
 	tx.Exec(p.CreateApplicationStateTableV0())
 	tx.Exec(p.CreateUserSupplementTableV0())
+	tx.Exec(p.CreateEveMediaDataTableV0())
+	tx.Exec(p.CreateMediaDataTableV0())
 	return tx.Do(c)
 }
 
