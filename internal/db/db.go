@@ -358,6 +358,30 @@ func (d *DB) GetAllianceIcon128(c context.Context, aID int32) (image.Image, time
 	return d.getAllianceIcon(c, mediaKindAllianceIcon128, aID)
 }
 
+func (d *DB) InsertMedia(c context.Context, name, contentType string, media []byte) (string, error) {
+	var id string
+	txb := d.db.Begin()
+	txb.QueryOneRow(d.pg.InsertMedia(), func(r app.SingleRow) error {
+		return r.Scan(&id)
+	}, name, contentType, media)
+	return id, txb.Do(c)
+}
+
+func (d *DB) GetMedia(c context.Context, id string) (name, contentType string, b []byte, err error) {
+	txb := d.db.Begin()
+	txb.QueryOneRow(d.pg.InsertMedia(), func(r app.SingleRow) error {
+		return r.Scan(&name, &contentType, &b)
+	}, id)
+	err = txb.Do(c)
+	return
+}
+
+func (d *DB) DeleteMedia(c context.Context, id string) error {
+	txb := d.db.Begin()
+	txb.ExecOneRow(d.pg.DeleteMedia(), id)
+	return txb.Do(c)
+}
+
 func (d *DB) setApplicationState(c context.Context, k, v string) error {
 	txb := d.db.Begin()
 	txb.ExecOneRow(d.pg.SetApplicationStateKV(), k, v)

@@ -270,14 +270,16 @@ func (m *Media) GetAllianceIcon(c context.Context, aID int32, size AllianceIconS
 	}
 }
 
-func (m *Media) GetImage(id string) {
-	// TODO
+func (m *Media) GetMedia(c context.Context, id string) (name, contentType string, b []byte, err error) {
+	name, contentType, b, err = m.DB.GetMedia(c, id)
+	return
 }
 
-func (m *Media) SaveImage(id string, img image.Image) {
-	// TODO
+func (m *Media) CreateMedia(c context.Context, name, contentType string, b []byte) (id string, err error) {
+	id, err = m.DB.InsertMedia(c, name, contentType, b)
+	return
 }
 
-func (m *Media) DeleteImage(id string) {
-	// TODO
+func (m *Media) DeleteMedia(c context.Context, id string) error {
+	return m.DB.DeleteMedia(c, id)
 }

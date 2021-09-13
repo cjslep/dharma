@@ -228,16 +228,26 @@ CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_media
 (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   create_time timestamp with time zone DEFAULT current_timestamp,
+  name text NOT NULL,
+  content_type text NOT NULL,
   media bytea NOT NULL
 );`
 }
 
-func (p postgres) SetMedia() string {
-	// TODO
-	return ``
+func (p postgres) InsertMedia() string {
+	return `
+INSERT INTO ` + p.schema + `dharma_media
+(name, content_type, media)
+VALUES
+($1, $2, $3)
+RETURNING id;`
 }
 
 func (p postgres) GetMedia() string {
-	// TODO
-	return ``
+	return `SELECT name, content_type, media FROM ` + p.schema + `dharma_media
+WHERE id = $1;`
+}
+
+func (p postgres) DeleteMedia() string {
+	return `DELETE FROM ` + p.schema + `dharma_media WHERE id = $1;`
 }
