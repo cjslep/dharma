@@ -24,7 +24,8 @@ import (
 )
 
 type Media struct {
-	C *api.Context
+	C       *api.Context
+	MaxSize int64
 }
 
 func (m *Media) Route(r app.Router) {
@@ -42,5 +43,5 @@ func (m *Media) Route(r app.Router) {
 		http.HandlerFunc(m.getAllianceIcon))
 	r.NewRoute().Methods("POST").WebOnlyHandler(
 		"/media",
-		api.MustHaveSession(m.C, m.postMedia))
+		api.MustHaveSessionAndLanguageCode(m.C, m.postMedia))
 }

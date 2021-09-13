@@ -29,6 +29,7 @@ type Config struct {
 	TokenRefreshPeriodicCheck           int    `ini:"dharma_token_refresh_periodic_hours" comment:"Every X hours, check all user ESI tokens and refresh them if they will expire within X hours. (default: 1)"`
 	EvePublicKeyPeriodicFetch           int    `ini:"dharma_eve_public_key_fetch_periodic_hours" comment:"Every X hours, fetch the latest public keys from CCP Games. (default: 8)"`
 	EveCachedMediaDefaultExpiryDuration int    `ini:"dharma_eve_cached_media_default_expiry_duration" comment:"If CCP's static serving does not specify a cache duration for media such as images, the default time period to cache the media in hours. (default: 24)"`
+	MediaUploadMaxSizeMB                int    `ini:"dharma_media_max_upload_size_mb" comment:"Maximum size of a single media upload in Megabytes (default: 10)"`
 
 	NPreview     int `ini:"dharma_length_post_preview" comment:"Number of preview texts to display per tag (default: 3)"`
 	LenPreview   int `ini:"dharma_length_post_preview" comment:"The length of preview text to display (default: 80)"`

@@ -45,6 +45,7 @@ import (
 	"github.com/go-fed/apcore/app"
 	"github.com/go-fed/apcore/util"
 	"github.com/gregjones/httpcache"
+	"github.com/mholt/binding"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
@@ -171,6 +172,7 @@ func (a *FederatedApp) NewConfiguration() interface{} {
 		TokenRefreshPeriodicCheck:           1,
 		EvePublicKeyPeriodicFetch:           8,
 		EveCachedMediaDefaultExpiryDuration: 24,
+		MediaUploadMaxSizeMB:                10,
 		NPreview:                            3,
 		LenPreview:                          80,
 		MaxHTMLDepth:                        255,
@@ -207,6 +209,7 @@ func (a *FederatedApp) SetConfiguration(i interface{}, apc app.APCoreConfig, deb
 	})
 	a.r, a.startupErr = render.New(c, debug, "/static", a.b)
 	a.l = log.Logger(debug || c.EnableConsoleLogging, c.LogDir, c.LogFile, c.NLogFiles, c.MaxMBSizeLogFiles, c.MaxDayAgeLogFiles)
+	binding.MaxMemory = 1024 * 1024 * int64(c.MediaUploadMaxSizeMB)
 	return nil
 }
 
@@ -352,7 +355,7 @@ func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framewor
 		&site.Site{ctx},
 		&account.Account{ctx},
 		&esiauth.ESIAuth{ctx},
-		&media.Media{ctx},
+		&media.Media{ctx, int64(a.config.MediaUploadMaxSizeMB) * 1024 * 1024},
 	}
 	api.BuildRoutes(ar, r, ctx)
 	return nil
