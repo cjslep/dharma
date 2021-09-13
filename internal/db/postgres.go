@@ -189,3 +189,55 @@ func (p postgres) GetUserSupplement() string {
 	return `SELECT validation_state FROM ` + p.schema + `dharma_user_supplement
 WHERE user_id = $1;`
 }
+
+// Eve Media Data Table
+
+func (p postgres) CreateEveMediaDataTableV0() string {
+	return `
+CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_eve_media
+(
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  create_time timestamp with time zone DEFAULT current_timestamp,
+  kind integer NOT NULL,
+  kind_meta integer NOT NULL,
+  expires_time timestamp with time zone NOT NULL,
+  media bytea NOT NULL,
+  CONSTRAINT unique_kind_eve_media UNIQUE(kind, kind_meta)
+);`
+}
+
+func (p postgres) SetEveMedia() string {
+	return `INSERT INTO ` + p.schema + `dharma_eve_media
+(kind, kind_meta, expires_time, media)
+VALUES
+($1, $2, $3, $4)
+ON CONFLICT ON CONSTRAINT unique_kind_eve_media DO UPDATE
+SET expires_time, media = EXCLUDED.expires_time, EXCLUDED.media;`
+}
+
+func (p postgres) GetEveMedia() string {
+	return `SELECT media, expires_time FROM ` + p.schema + `dharma_eve_media
+WHERE kind = $1 AND kind_meta = $2;`
+}
+
+// Media Data Table
+
+func (p postgres) CreateMediaDataTableV0() string {
+	return `
+CREATE TABLE IF NOT EXISTS ` + p.schema + `dharma_media
+(
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  create_time timestamp with time zone DEFAULT current_timestamp,
+  media bytea NOT NULL
+);`
+}
+
+func (p postgres) SetMedia() string {
+	// TODO
+	return ``
+}
+
+func (p postgres) GetMedia() string {
+	// TODO
+	return ``
+}

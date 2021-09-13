@@ -99,3 +99,45 @@ func (e *ThinClient) character(c context.Context, id int32) (*character.GetChara
 	}
 	return resp.GetPayload(), nil
 }
+
+// characterPortrait is a thin wrapper for ESI character portrait.
+func (e *ThinClient) characterPortrait(c context.Context, id int32) (*character.GetCharactersCharacterIDPortraitOKBody, error) {
+	p := character.NewGetCharactersCharacterIDPortraitParams()
+	p.WithTimeout(e.Timeout).
+		WithContext(c).
+		WithHTTPClient(e.Client).
+		WithCharacterID(id)
+	resp, err := e.ESIClient.Character.GetCharactersCharacterIDPortrait(p)
+	if err != nil {
+		return nil, err
+	}
+	return resp.GetPayload(), nil
+}
+
+// corporationIcon is a thin wrapper for ESI corporation icon.
+func (e *ThinClient) corporationIcon(c context.Context, id int32) (*corporation.GetCorporationsCorporationIDIconsOKBody, error) {
+	p := corporation.NewGetCorporationsCorporationIDIconsParams()
+	p.WithTimeout(e.Timeout).
+		WithContext(c).
+		WithHTTPClient(e.Client).
+		WithCorporationID(id)
+	resp, err := e.ESIClient.Corporation.GetCorporationsCorporationIDIcons(p)
+	if err != nil {
+		return nil, err
+	}
+	return resp.GetPayload(), nil
+}
+
+// allianceIcon is a thin wrapper for ESI alliance icon.
+func (e *ThinClient) allianceIcon(c context.Context, id int32) (*alliance.GetAlliancesAllianceIDIconsOKBody, error) {
+	p := alliance.NewGetAlliancesAllianceIDIconsParams()
+	p.WithTimeout(e.Timeout).
+		WithContext(c).
+		WithHTTPClient(e.Client).
+		WithAllianceID(id)
+	resp, err := e.ESIClient.Alliance.GetAlliancesAllianceIDIcons(p)
+	if err != nil {
+		return nil, err
+	}
+	return resp.GetPayload(), nil
+}

@@ -108,6 +108,87 @@ type Race struct {
 	ID int32 `json:"id,omitempty"`
 }
 
+type PortraitURLs struct {
+	Portrait64x64   *url.URL
+	Portrait128x128 *url.URL
+	Portrait256x256 *url.URL
+	Portrait512x512 *url.URL
+}
+
+type CorpIconURLs struct {
+	Icon64x64   *url.URL
+	Icon128x128 *url.URL
+	Icon256x256 *url.URL
+}
+
+type AllianceIconURLs struct {
+	Icon64x64   *url.URL
+	Icon128x128 *url.URL
+}
+
+// GetAllianceIcon returns the icon URLs for the specified Alliance.
+//
+// Does not fetch the image payloads.
+func (x *Client) GetAllianceIcon(ctx context.Context, id int32) (*AllianceIconURLs, error) {
+	p, err := x.t.allianceIcon(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	var a AllianceIconURLs
+	if a.Icon64x64, err = url.Parse(p.Px64x64); err != nil {
+		return nil, err
+	}
+	if a.Icon128x128, err = url.Parse(p.Px128x128); err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
+// GetCorporationIcon returns the icon URLs for the specified Corporation.
+//
+// Does not fetch the image payloads.
+func (x *Client) GetCorporationIcon(ctx context.Context, id int32) (*CorpIconURLs, error) {
+	p, err := x.t.corporationIcon(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	var c CorpIconURLs
+	if c.Icon64x64, err = url.Parse(p.Px64x64); err != nil {
+		return nil, err
+	}
+	if c.Icon128x128, err = url.Parse(p.Px128x128); err != nil {
+		return nil, err
+	}
+	if c.Icon256x256, err = url.Parse(p.Px256x256); err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+// GetPortrait returns the portrait URLs for the specified Character.
+//
+// Does not fetch the image payloads.
+func (x *Client) GetPortrait(ctx context.Context, id int32) (*PortraitURLs, error) {
+	p, err := x.t.characterPortrait(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	var pu PortraitURLs
+	if pu.Portrait64x64, err = url.Parse(p.Px64x64); err != nil {
+		return nil, err
+	}
+	if pu.Portrait128x128, err = url.Parse(p.Px128x128); err != nil {
+		return nil, err
+	}
+	if pu.Portrait256x256, err = url.Parse(p.Px256x256); err != nil {
+		return nil, err
+	}
+	if pu.Portrait512x512, err = url.Parse(p.Px512x512); err != nil {
+		return nil, err
+	}
+	return &pu, nil
+}
+
 // SearchCorp returns a slice of Corporations matching the search query
 //
 // Hydrates the Corporation, any associated alliance, the CEO, and Creator.

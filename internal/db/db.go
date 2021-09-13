@@ -19,6 +19,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"image"
 	"math"
 	"strconv"
 	"strings"
@@ -218,6 +219,143 @@ func (d *DB) IsUserVerified(c context.Context, userID string) (bool, error) {
 		return r.Scan(&valid)
 	}, userID)
 	return valid == kValidatedState, txb.Do(c)
+}
+
+func (d *DB) setEveMedia(c context.Context, kind int, eveEntity int32, b []byte, expires time.Time) error {
+	txb := d.db.Begin()
+	txb.ExecOneRow(d.pg.SetEveMedia(), kind, eveEntity, expires, b)
+	return txb.Do(c)
+}
+
+func (d *DB) getEveMedia(c context.Context, kind int, eveEntity int32) (b []byte, exp time.Time, err error) {
+	txb := d.db.Begin()
+	txb.QueryOneRow(d.pg.GetEveMedia(), func(r app.SingleRow) error {
+		return r.Scan(&b, &exp)
+	}, kind, eveEntity)
+	return b, exp, txb.Do(c)
+}
+
+func (d *DB) setCharacterPortrait(c context.Context, kind int, charID int32, i image.Image, expires time.Time) error {
+	b, err := encodePortrait(i)
+	if err != nil {
+		return err
+	}
+	return d.setEveMedia(c, kind, charID, b, expires)
+}
+
+func (d *DB) getCharacterPortrait(c context.Context, kind int, charID int32) (image.Image, time.Time, error) {
+	b, exp, err := d.getEveMedia(c, kind, charID)
+	if err != nil {
+		return nil, exp, err
+	}
+	i, err := toPortrait(b)
+	return i, exp, err
+}
+
+func (d *DB) SetCharacterPortrait64(c context.Context, charID int32, i image.Image, expires time.Time) error {
+	return d.setCharacterPortrait(c, mediaKindCharacterPortrait64, charID, i, expires)
+}
+
+func (d *DB) GetCharacterPortrait64(c context.Context, charID int32) (image.Image, time.Time, error) {
+	return d.getCharacterPortrait(c, mediaKindCharacterPortrait64, charID)
+}
+
+func (d *DB) SetCharacterPortrait128(c context.Context, charID int32, i image.Image, expires time.Time) error {
+	return d.setCharacterPortrait(c, mediaKindCharacterPortrait128, charID, i, expires)
+}
+
+func (d *DB) GetCharacterPortrait128(c context.Context, charID int32) (image.Image, time.Time, error) {
+	return d.getCharacterPortrait(c, mediaKindCharacterPortrait128, charID)
+}
+
+func (d *DB) SetCharacterPortrait256(c context.Context, charID int32, i image.Image, expires time.Time) error {
+	return d.setCharacterPortrait(c, mediaKindCharacterPortrait256, charID, i, expires)
+}
+
+func (d *DB) GetCharacterPortrait256(c context.Context, charID int32) (image.Image, time.Time, error) {
+	return d.getCharacterPortrait(c, mediaKindCharacterPortrait256, charID)
+}
+
+func (d *DB) SetCharacterPortrait512(c context.Context, charID int32, i image.Image, expires time.Time) error {
+	return d.setCharacterPortrait(c, mediaKindCharacterPortrait512, charID, i, expires)
+}
+
+func (d *DB) GetCharacterPortrait512(c context.Context, charID int32) (image.Image, time.Time, error) {
+	return d.getCharacterPortrait(c, mediaKindCharacterPortrait512, charID)
+}
+
+func (d *DB) setCorpIcon(c context.Context, kind int, corpID int32, i image.Image, expires time.Time) error {
+	b, err := encodeCorpIcon(i)
+	if err != nil {
+		return err
+	}
+	return d.setEveMedia(c, kind, corpID, b, expires)
+}
+
+func (d *DB) getCorpIcon(c context.Context, kind int, corpID int32) (image.Image, time.Time, error) {
+	b, exp, err := d.getEveMedia(c, kind, corpID)
+	if err != nil {
+		return nil, exp, err
+	}
+	i, err := toCorpIcon(b)
+	return i, exp, err
+}
+
+func (d *DB) SetCorpIcon64(c context.Context, corpID int32, i image.Image, expires time.Time) error {
+	return d.setCorpIcon(c, mediaKindCorpIcon64, corpID, i, expires)
+}
+
+func (d *DB) GetCorpIcon64(c context.Context, corpID int32) (image.Image, time.Time, error) {
+	return d.getCorpIcon(c, mediaKindCorpIcon64, corpID)
+}
+
+func (d *DB) SetCorpIcon128(c context.Context, corpID int32, i image.Image, expires time.Time) error {
+	return d.setCorpIcon(c, mediaKindCorpIcon128, corpID, i, expires)
+}
+
+func (d *DB) GetCorpIcon128(c context.Context, corpID int32) (image.Image, time.Time, error) {
+	return d.getCorpIcon(c, mediaKindCorpIcon128, corpID)
+}
+
+func (d *DB) SetCorpIcon256(c context.Context, corpID int32, i image.Image, expires time.Time) error {
+	return d.setCorpIcon(c, mediaKindCorpIcon256, corpID, i, expires)
+}
+
+func (d *DB) GetCorpIcon256(c context.Context, corpID int32) (image.Image, time.Time, error) {
+	return d.getCorpIcon(c, mediaKindCorpIcon256, corpID)
+}
+
+func (d *DB) setAllianceIcon(c context.Context, kind int, aID int32, i image.Image, expires time.Time) error {
+	b, err := encodeAllianceIcon(i)
+	if err != nil {
+		return err
+	}
+	return d.setEveMedia(c, kind, aID, b, expires)
+}
+
+func (d *DB) getAllianceIcon(c context.Context, kind int, aID int32) (image.Image, time.Time, error) {
+	b, exp, err := d.getEveMedia(c, kind, aID)
+	if err != nil {
+		return nil, exp, err
+	}
+	i, err := toAllianceIcon(b)
+	return i, exp, err
+}
+
+func (d *DB) SetAllianceIcon64(c context.Context, aID int32, i image.Image, expires time.Time) error {
+	return d.setAllianceIcon(c, mediaKindAllianceIcon64, aID, i, expires)
+}
+
+func (d *DB) GetAllianceIcon64(c context.Context, aID int32) (image.Image, time.Time, error) {
+	return d.getAllianceIcon(c, mediaKindAllianceIcon64, aID)
+}
+
+func (d *DB) SetAllianceIcon128(c context.Context, aID int32, i image.Image, expires time.Time) error {
+	return d.setAllianceIcon(c, mediaKindAllianceIcon128, aID, i, expires)
+}
+
+func (d *DB) GetAllianceIcon128(c context.Context, aID int32) (image.Image, time.Time, error) {
+	return d.getAllianceIcon(c, mediaKindAllianceIcon128, aID)
 }
 
 func (d *DB) setApplicationState(c context.Context, k, v string) error {
