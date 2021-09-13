@@ -35,6 +35,7 @@ type Context struct {
 	OAC                   *esi.OAuth2Client
 	L                     *zerolog.Logger
 	ESI                   *services.ESI
+	Media                 *services.Media
 	Tags                  *services.Tags
 	Posts                 *services.Posts
 	Threads               *services.Threads

@@ -30,6 +30,7 @@ const (
 	VerifyTYParam         = "ty"
 	VerifySuccessParam    = "s"
 	RescopeQueryParam     = "rescope"
+	EveMediaSizeParam     = "size"
 	VerifyPath            = "/account/verify"
 	ESIAuthPath           = "/esi/auth"
 	AccountCharactersPath = "/account/characters"

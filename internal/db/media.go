@@ -17,38 +17,21 @@
 package db
 
 import (
-	"bytes"
 	"image"
-	"image/jpeg"
 
-	_ "image/gif"
-	_ "image/png"
+	"github.com/cjslep/dharma/internal/util"
 )
 
-// toImage turns bytes into a JPEG, GIF, or PNG image.
-func toImage(b []byte) (image.Image, error) {
-	buf := bytes.NewBuffer(b)
-	i /*image type=*/, _, err := image.Decode(buf)
-	return i, err
-}
-
 func toPortrait(b []byte) (image.Image, error) {
-	return toImage(b)
+	return util.ToImage(b)
 }
 
 func toCorpIcon(b []byte) (image.Image, error) {
-	return toImage(b)
+	return util.ToImage(b)
 }
 
 func toAllianceIcon(b []byte) (image.Image, error) {
-	return toImage(b)
-}
-
-func encodeJPEG(i image.Image) ([]byte, error) {
-	var b bytes.Buffer
-	o := &jpeg.Options{Quality: 100}
-	err := jpeg.Encode(&b, i, o)
-	return b.Bytes(), err
+	return util.ToImage(b)
 }
 
 // encodePortrait encodes the given Eve Online Character portrait image into a
@@ -57,7 +40,7 @@ func encodeJPEG(i image.Image) ([]byte, error) {
 // Eve Online provides portraits in JPEG format. Since the lossy conversion has
 // already occurred at this point, re-encode into JPEG.
 func encodePortrait(i image.Image) ([]byte, error) {
-	return encodeJPEG(i)
+	return util.EncodeJPEG(i)
 }
 
 // encodeCorpIcon encodes the given Eve Online Corporation icon image into a
@@ -66,7 +49,7 @@ func encodePortrait(i image.Image) ([]byte, error) {
 // Eve Online provides corp icons in JPEG format. Since the lossy conversion has
 // already occurred at this point, re-encode into JPEG.
 func encodeCorpIcon(i image.Image) ([]byte, error) {
-	return encodeJPEG(i)
+	return util.EncodeJPEG(i)
 }
 
 // encodeAllianceIcon encodes the given Eve Online Alliance icon image into a
@@ -75,5 +58,5 @@ func encodeCorpIcon(i image.Image) ([]byte, error) {
 // Eve Online provides alliance icons in JPEG format. Since the lossy conversion
 // has already occurred at this point, re-encode into JPEG.
 func encodeAllianceIcon(i image.Image) ([]byte, error) {
-	return encodeJPEG(i)
+	return util.EncodeJPEG(i)
 }

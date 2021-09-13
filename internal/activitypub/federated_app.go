@@ -28,6 +28,7 @@ import (
 	"github.com/cjslep/dharma/internal/api/account"
 	"github.com/cjslep/dharma/internal/api/esiauth"
 	"github.com/cjslep/dharma/internal/api/forum"
+	"github.com/cjslep/dharma/internal/api/media"
 	"github.com/cjslep/dharma/internal/api/site"
 	"github.com/cjslep/dharma/internal/async"
 	"github.com/cjslep/dharma/internal/config"
@@ -108,6 +109,7 @@ func (a *FederatedApp) apiContext() *api.Context {
 		OAC:                   a.oac,
 		L:                     a.l,
 		ESI:                   &services.ESI{a.db, a.oac, a.l, a.esi, time.Hour * time.Duration(a.config.TokenRefreshPeriodicCheck), time.Hour * time.Duration(a.config.EvePublicKeyPeriodicFetch)},
+		Media:                 &services.Media{a.db, a.esi, time.Hour * time.Duration(a.config.EveCachedMediaDefaultExpiryDuration)},
 		Tags:                  &services.Tags{a.db},
 		Posts:                 &services.Posts{a.db, a.f, a.fedQueue},
 		Threads:               &services.Threads{a.db},
@@ -159,24 +161,25 @@ func (a *FederatedApp) Stop() error {
 
 func (a *FederatedApp) NewConfiguration() interface{} {
 	return &config.Config{
-		ESITimeout:                60,
-		EnableConsoleLogging:      false,
-		LogDir:                    "./",
-		LogFile:                   "dharma.log",
-		NLogFiles:                 5,
-		MaxMBSizeLogFiles:         100,
-		MaxDayAgeLogFiles:         0,
-		TokenRefreshPeriodicCheck: 1,
-		EvePublicKeyPeriodicFetch: 8,
-		NPreview:                  3,
-		LenPreview:                80,
-		MaxHTMLDepth:              255,
-		NListThreads:              25,
-		MailerEncryption:          "starttls",
-		MailerAuthentication:      "none",
-		MailerKeepAlive:           false,
-		MailerConnectTimeout:      60,
-		MailerSendTimeout:         60,
+		ESITimeout:                          60,
+		EnableConsoleLogging:                false,
+		LogDir:                              "./",
+		LogFile:                             "dharma.log",
+		NLogFiles:                           5,
+		MaxMBSizeLogFiles:                   100,
+		MaxDayAgeLogFiles:                   0,
+		TokenRefreshPeriodicCheck:           1,
+		EvePublicKeyPeriodicFetch:           8,
+		EveCachedMediaDefaultExpiryDuration: 24,
+		NPreview:                            3,
+		LenPreview:                          80,
+		MaxHTMLDepth:                        255,
+		NListThreads:                        25,
+		MailerEncryption:                    "starttls",
+		MailerAuthentication:                "none",
+		MailerKeepAlive:                     false,
+		MailerConnectTimeout:                60,
+		MailerSendTimeout:                   60,
 	}
 }
 
@@ -349,6 +352,7 @@ func (a *FederatedApp) BuildRoutes(ar app.Router, d app.Database, f app.Framewor
 		&site.Site{ctx},
 		&account.Account{ctx},
 		&esiauth.ESIAuth{ctx},
+		&media.Media{ctx},
 	}
 	api.BuildRoutes(ar, r, ctx)
 	return nil
